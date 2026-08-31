@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
+import { Route as StatsRouteImport } from './routes/stats'
+import { Route as TableRouteImport } from './routes/table'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FixturesResultsRoute = FixturesResultsRouteImport.update({
+  id: '/fixtures-results',
+  path: '/fixtures-results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TableRoute = TableRouteImport.update({
+  id: '/table',
+  path: '/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/fixtures-results': typeof FixturesResultsRoute
+  '/stats': typeof StatsRoute
+  '/table': typeof TableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/fixtures-results': typeof FixturesResultsRoute
+  '/stats': typeof StatsRoute
+  '/table': typeof TableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/fixtures-results': typeof FixturesResultsRoute
+  '/stats': typeof StatsRoute
+  '/table': typeof TableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/fixtures-results' | '/stats' | '/table'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/fixtures-results' | '/stats' | '/table'
+  id: '__root__' | '/' | '/fixtures-results' | '/stats' | '/table'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FixturesResultsRoute: typeof FixturesResultsRoute
+  StatsRoute: typeof StatsRoute
+  TableRoute: typeof TableRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fixtures-results': {
+      id: '/fixtures-results'
+      path: '/fixtures-results'
+      fullPath: '/fixtures-results'
+      preLoaderRoute: typeof FixturesResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/table': {
+      id: '/table'
+      path: '/table'
+      fullPath: '/table'
+      preLoaderRoute: typeof TableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FixturesResultsRoute: FixturesResultsRoute,
+  StatsRoute: StatsRoute,
+  TableRoute: TableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
