@@ -20,9 +20,15 @@ export const Route = createFileRoute("/teams/$teamSlug")({
     meta: getTeam(params.teamSlug)
       ? [
           { title: `${getTeam(params.teamSlug)!.name} — Bhooja Football League` },
-          { name: "description", content: `Team page for ${getTeam(params.teamSlug)!.name} in the BFL.` },
+          {
+            name: "description",
+            content: `Team page for ${getTeam(params.teamSlug)!.name} in the BFL.`,
+          },
           { property: "og:title", content: `${getTeam(params.teamSlug)!.name} — BFL` },
-          { property: "og:description", content: `Fixtures, results and squad for ${getTeam(params.teamSlug)!.name}.` },
+          {
+            property: "og:description",
+            content: `Fixtures, results and squad for ${getTeam(params.teamSlug)!.name}.`,
+          },
         ]
       : [{ title: "Team not found" }, { name: "robots", content: "noindex" }],
   }),

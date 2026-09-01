@@ -10,7 +10,9 @@ export const Route = createFileRoute("/teams/$teamSlug/results")({
 
 function TeamResults() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
-  const results = teamMatches(teamSlug).filter((m) => m.status === "completed").reverse();
+  const results = teamMatches(teamSlug)
+    .filter((m) => m.status === "completed")
+    .reverse();
   return (
     <Card title="Results">
       <MatchRows matches={results} />

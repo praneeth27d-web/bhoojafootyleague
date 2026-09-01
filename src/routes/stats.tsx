@@ -20,10 +20,14 @@ export const Route = createFileRoute("/stats")({
       { title: "Player Stats — Bhooja Football League" },
       {
         name: "description",
-        content: "Sortable BFL player statistics: goals, assists, G/A and Player of the Match awards.",
+        content:
+          "Sortable BFL player statistics: goals, assists, G/A and Player of the Match awards.",
       },
       { property: "og:title", content: "BFL Player Stats" },
-      { property: "og:description", content: "Goals, assists, G/A and POTM awards for every BFL player." },
+      {
+        property: "og:description",
+        content: "Goals, assists, G/A and POTM awards for every BFL player.",
+      },
     ],
   }),
   component: StatsPage,
@@ -63,7 +67,9 @@ function StatsPage() {
       typeof av === "string" && typeof bv === "string"
         ? av.localeCompare(bv)
         : Number(av) - Number(bv);
-    return dir === "asc" ? cmp || a.name.localeCompare(b.name) : -cmp || a.name.localeCompare(b.name);
+    return dir === "asc"
+      ? cmp || a.name.localeCompare(b.name)
+      : -cmp || a.name.localeCompare(b.name);
   });
 
   const toggle = (key: SortKey) =>
@@ -87,7 +93,9 @@ function StatsPage() {
                   <th
                     key={c.key}
                     scope="col"
-                    aria-sort={sort === c.key ? (dir === "asc" ? "ascending" : "descending") : "none"}
+                    aria-sort={
+                      sort === c.key ? (dir === "asc" ? "ascending" : "descending") : "none"
+                    }
                     className={c.numeric ? "px-3 py-2 text-right" : "px-4 py-2"}
                   >
                     <button

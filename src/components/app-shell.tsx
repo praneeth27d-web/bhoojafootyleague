@@ -45,8 +45,19 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Link to="/" onClick={onNavigate} className="flex items-center gap-3" aria-label="Bhooja Football League home">
-      <img src={logo} alt="Bhooja Football League crest" width={40} height={40} className="size-10" />
+    <Link
+      to="/"
+      onClick={onNavigate}
+      className="flex items-center gap-3"
+      aria-label="Bhooja Football League home"
+    >
+      <img
+        src={logo}
+        alt="Bhooja Football League crest"
+        width={40}
+        height={40}
+        className="size-10"
+      />
       <span className="leading-tight">
         <span className="block text-sm font-extrabold">Bhooja</span>
         <span className="block text-xs text-muted-foreground">Football League</span>

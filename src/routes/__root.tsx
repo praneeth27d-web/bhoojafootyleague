@@ -78,10 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Bhooja Football League" },
-      { name: "description", content: "Standings, fixtures, results and player stats for the Bhooja Football League." },
+      {
+        name: "description",
+        content: "Standings, fixtures, results and player stats for the Bhooja Football League.",
+      },
       { name: "author", content: "Bhooja Football League" },
       { property: "og:title", content: "Bhooja Football League" },
-      { property: "og:description", content: "Live BFL standings, fixtures, results and player stats." },
+      {
+        property: "og:description",
+        content: "Live BFL standings, fixtures, results and player stats.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@BhoojaLeague" },

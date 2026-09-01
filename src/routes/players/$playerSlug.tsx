@@ -11,9 +11,15 @@ export const Route = createFileRoute("/players/$playerSlug")({
     meta: getPlayer(params.playerSlug)
       ? [
           { title: `${getPlayer(params.playerSlug)!.name} — BFL Stats` },
-          { name: "description", content: `Player profile for ${getPlayer(params.playerSlug)!.name} in the Bhooja Football League.` },
+          {
+            name: "description",
+            content: `Player profile for ${getPlayer(params.playerSlug)!.name} in the Bhooja Football League.`,
+          },
           { property: "og:title", content: `${getPlayer(params.playerSlug)!.name} — BFL` },
-          { property: "og:description", content: `Goals, assists, G/A and POTM for ${getPlayer(params.playerSlug)!.name}.` },
+          {
+            property: "og:description",
+            content: `Goals, assists, G/A and POTM for ${getPlayer(params.playerSlug)!.name}.`,
+          },
         ]
       : [{ title: "Player not found" }, { name: "robots", content: "noindex" }],
   }),

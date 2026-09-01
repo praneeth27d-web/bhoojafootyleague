@@ -1,10 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  formatShortDate,
-  getPlayer,
-  playerContributions,
-  teamName,
-} from "@/lib/league";
+import { formatShortDate, getPlayer, playerContributions, teamName } from "@/lib/league";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function PlayerStatGrid({ slug }: { slug: string }) {
@@ -19,9 +14,14 @@ export function PlayerStatGrid({ slug }: { slug: string }) {
   return (
     <dl className="grid grid-cols-4 gap-2">
       {stats.map((s) => (
-        <div key={s.label} className="rounded-md border border-border bg-surface-muted px-2 py-3 text-center">
+        <div
+          key={s.label}
+          className="rounded-md border border-border bg-surface-muted px-2 py-3 text-center"
+        >
           <dd className="num text-xl font-bold">{s.value}</dd>
-          <dt className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</dt>
+          <dt className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+            {s.label}
+          </dt>
         </div>
       ))}
     </dl>
@@ -42,7 +42,8 @@ export function PlayerContributions({ slug }: { slug: string }) {
             params={{ matchId: match.id }}
             className="text-sm font-semibold hover:text-primary"
           >
-            {teamName(match.homeSlug)} {match.homeGoals}–{match.awayGoals} {teamName(match.awaySlug)}
+            {teamName(match.homeSlug)} {match.homeGoals}–{match.awayGoals}{" "}
+            {teamName(match.awaySlug)}
           </Link>
           <p className="text-xs text-muted-foreground">
             MD{match.matchday} · {formatShortDate(match.date)}
@@ -60,13 +61,7 @@ export function PlayerContributions({ slug }: { slug: string }) {
   );
 }
 
-export function PlayerSheet({
-  slug,
-  onClose,
-}: {
-  slug: string | null;
-  onClose: () => void;
-}) {
+export function PlayerSheet({ slug, onClose }: { slug: string | null; onClose: () => void }) {
   const player = slug ? getPlayer(slug) : undefined;
   return (
     <Sheet open={!!player} onOpenChange={(o) => !o && onClose()}>

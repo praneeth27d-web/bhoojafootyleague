@@ -43,7 +43,10 @@ function Dashboard() {
           <Card
             title="Next fixtures"
             action={
-              <Link to="/fixtures-results" className="text-xs font-semibold text-primary hover:underline">
+              <Link
+                to="/fixtures-results"
+                className="text-xs font-semibold text-primary hover:underline"
+              >
                 All fixtures
               </Link>
             }
@@ -55,7 +58,11 @@ function Dashboard() {
           <Card
             title="Top scorers"
             action={
-              <Link to="/stats" search={{ sort: "ga", dir: "desc" }} className="text-xs font-semibold text-primary hover:underline">
+              <Link
+                to="/stats"
+                search={{ sort: "ga", dir: "desc" }}
+                className="text-xs font-semibold text-primary hover:underline"
+              >
                 All stats
               </Link>
             }

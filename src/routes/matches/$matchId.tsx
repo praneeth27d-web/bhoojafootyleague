@@ -9,10 +9,21 @@ export const Route = createFileRoute("/matches/$matchId")({
   head: ({ params }) => ({
     meta: getMatch(params.matchId)
       ? [
-          { title: `${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)} — BFL` },
-          { name: "description", content: `Match details for ${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)}.` },
-          { property: "og:title", content: `${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)}` },
-          { property: "og:description", content: `Matchday ${getMatch(params.matchId)!.matchday} in the Bhooja Football League.` },
+          {
+            title: `${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)} — BFL`,
+          },
+          {
+            name: "description",
+            content: `Match details for ${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)}.`,
+          },
+          {
+            property: "og:title",
+            content: `${teamName(getMatch(params.matchId)!.homeSlug)} vs ${teamName(getMatch(params.matchId)!.awaySlug)}`,
+          },
+          {
+            property: "og:description",
+            content: `Matchday ${getMatch(params.matchId)!.matchday} in the Bhooja Football League.`,
+          },
         ]
       : [{ title: "Match not found" }, { name: "robots", content: "noindex" }],
   }),
@@ -24,7 +35,11 @@ function MatchDetail() {
   const m = getMatch(matchId);
   if (!m) return null;
   return (
-    <AppShell title={`${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}`} subtitle={`Matchday ${m.matchday}`} badge={m.status === "upcoming" ? "Upcoming" : "Full time"}>
+    <AppShell
+      title={`${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}`}
+      subtitle={`Matchday ${m.matchday}`}
+      badge={m.status === "upcoming" ? "Upcoming" : "Full time"}
+    >
       <div className="max-w-2xl space-y-5">
         <Card>
           <div className="px-4 py-6 text-center">

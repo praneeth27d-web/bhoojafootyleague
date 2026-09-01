@@ -13,7 +13,9 @@ export const Route = createFileRoute("/fixtures-results")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     team: typeof search["team"] === "string" ? search["team"] : undefined,
     status:
-      search["status"] === "completed" || search["status"] === "upcoming" ? search["status"] : "all",
+      search["status"] === "completed" || search["status"] === "upcoming"
+        ? search["status"]
+        : "all",
     matchday: search["matchday"] ? Number(search["matchday"]) : undefined,
   }),
   head: () => ({
@@ -24,7 +26,10 @@ export const Route = createFileRoute("/fixtures-results")({
         content: "Every BFL fixture and result with filters by team, status and matchday.",
       },
       { property: "og:title", content: "BFL Fixtures & Results" },
-      { property: "og:description", content: "Completed results and upcoming fixtures for the BFL." },
+      {
+        property: "og:description",
+        content: "Completed results and upcoming fixtures for the BFL.",
+      },
     ],
   }),
   component: FixturesResults,
@@ -49,10 +54,7 @@ function FixturesResults() {
 
   return (
     <AppShell title="Fixtures & Results" subtitle="Single round-robin · 10 matches">
-      <Card
-        title="Filters"
-        className="mb-5"
-      >
+      <Card title="Filters" className="mb-5">
         <div className="flex flex-wrap gap-3 px-4 py-4">
           <label className="flex flex-col gap-1 text-xs font-semibold text-muted-foreground">
             Team
@@ -86,7 +88,9 @@ function FixturesResults() {
             <select
               className={selectClass}
               value={matchday ?? ""}
-              onChange={(e) => update({ matchday: e.target.value ? Number(e.target.value) : undefined })}
+              onChange={(e) =>
+                update({ matchday: e.target.value ? Number(e.target.value) : undefined })
+              }
             >
               <option value="">All matchdays</option>
               {matchdays.map((md) => (
