@@ -5,13 +5,20 @@ import logo from "@/assets/bfl-logo.png";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const nav = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ElementType;
+  soon?: boolean;
+};
+
+const nav: NavItem[] = [
   { to: "/table", label: "Table", icon: Table2 },
   { to: "/fixtures-results", label: "Fixtures & Results", icon: CalendarDays },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/news", label: "News", icon: Newspaper, soon: true },
   { to: "/transfer-rumours", label: "Transfer Rumours", icon: ArrowLeftRight, soon: true },
-] as const;
+];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   return (
@@ -38,8 +45,19 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
 
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <Link to="/" onClick={onNavigate} className="flex items-center gap-3" aria-label="Bhooja Football League home">
-      <img src={logo} alt="Bhooja Football League crest" width={40} height={40} className="size-10" />
+    <Link
+      to="/"
+      onClick={onNavigate}
+      className="flex items-center gap-3"
+      aria-label="Bhooja Football League home"
+    >
+      <img
+        src={logo}
+        alt="Bhooja Football League crest"
+        width={40}
+        height={40}
+        className="size-10"
+      />
       <span className="leading-tight">
         <span className="block text-sm font-extrabold">Bhooja</span>
         <span className="block text-xs text-muted-foreground">Football League</span>

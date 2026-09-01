@@ -11,8 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
+import { Route as TransferRumoursRouteImport } from './routes/transfer-rumours'
+import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
+import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
+import { Route as TeamsTeamSlugRouteImport } from './routes/teams/$teamSlug'
+import { Route as TeamsTeamSlugFixturesRouteImport } from './routes/teams/$teamSlug/fixtures'
+import { Route as TeamsTeamSlugResultsRouteImport } from './routes/teams/$teamSlug/results'
+import { Route as TeamsTeamSlugSquadRouteImport } from './routes/teams/$teamSlug/squad'
+import { Route as TeamsTeamSlugTableRouteImport } from './routes/teams/$teamSlug/table'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
 const FixturesResultsRoute = FixturesResultsRouteImport.update({
   id: '/fixtures-results',
   path: '/fixtures-results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatsRoute = StatsRouteImport.update({
@@ -34,39 +48,151 @@ const TableRoute = TableRouteImport.update({
   path: '/table',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransferRumoursRoute = TransferRumoursRouteImport.update({
+  id: '/transfer-rumours',
+  path: '/transfer-rumours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
+  id: '/matches/$matchId',
+  path: '/matches/$matchId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayersPlayerSlugRoute = PlayersPlayerSlugRouteImport.update({
+  id: '/players/$playerSlug',
+  path: '/players/$playerSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamsTeamSlugRoute = TeamsTeamSlugRouteImport.update({
+  id: '/teams/$teamSlug',
+  path: '/teams/$teamSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamsTeamSlugFixturesRoute = TeamsTeamSlugFixturesRouteImport.update({
+  id: '/fixtures',
+  path: '/fixtures',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
+const TeamsTeamSlugResultsRoute = TeamsTeamSlugResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
+const TeamsTeamSlugSquadRoute = TeamsTeamSlugSquadRouteImport.update({
+  id: '/squad',
+  path: '/squad',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
+const TeamsTeamSlugTableRoute = TeamsTeamSlugTableRouteImport.update({
+  id: '/table',
+  path: '/table',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
+  '/transfer-rumours': typeof TransferRumoursRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/players/$playerSlug': typeof PlayersPlayerSlugRoute
+  '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
+  '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
+  '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
+  '/transfer-rumours': typeof TransferRumoursRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/players/$playerSlug': typeof PlayersPlayerSlugRoute
+  '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
+  '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
+  '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
+  '/transfer-rumours': typeof TransferRumoursRoute
+  '/matches/$matchId': typeof MatchesMatchIdRoute
+  '/players/$playerSlug': typeof PlayersPlayerSlugRoute
+  '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
+  '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
+  '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/fixtures-results' | '/stats' | '/table'
+  fullPaths:
+    | '/'
+    | '/fixtures-results'
+    | '/news'
+    | '/stats'
+    | '/table'
+    | '/transfer-rumours'
+    | '/matches/$matchId'
+    | '/players/$playerSlug'
+    | '/teams/$teamSlug'
+    | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/results'
+    | '/teams/$teamSlug/squad'
+    | '/teams/$teamSlug/table'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fixtures-results' | '/stats' | '/table'
-  id: '__root__' | '/' | '/fixtures-results' | '/stats' | '/table'
+  to:
+    | '/'
+    | '/fixtures-results'
+    | '/news'
+    | '/stats'
+    | '/table'
+    | '/transfer-rumours'
+    | '/matches/$matchId'
+    | '/players/$playerSlug'
+    | '/teams/$teamSlug'
+    | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/results'
+    | '/teams/$teamSlug/squad'
+    | '/teams/$teamSlug/table'
+  id:
+    | '__root__'
+    | '/'
+    | '/fixtures-results'
+    | '/news'
+    | '/stats'
+    | '/table'
+    | '/transfer-rumours'
+    | '/matches/$matchId'
+    | '/players/$playerSlug'
+    | '/teams/$teamSlug'
+    | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/results'
+    | '/teams/$teamSlug/squad'
+    | '/teams/$teamSlug/table'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
+  NewsRoute: typeof NewsRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
+  TransferRumoursRoute: typeof TransferRumoursRoute
+  MatchesMatchIdRoute: typeof MatchesMatchIdRoute
+  PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
+  TeamsTeamSlugRoute: typeof TeamsTeamSlugRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -85,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixturesResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stats': {
       id: '/stats'
       path: '/stats'
@@ -99,14 +232,93 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TableRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transfer-rumours': {
+      id: '/transfer-rumours'
+      path: '/transfer-rumours'
+      fullPath: '/transfer-rumours'
+      preLoaderRoute: typeof TransferRumoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/matches/$matchId': {
+      id: '/matches/$matchId'
+      path: '/matches/$matchId'
+      fullPath: '/matches/$matchId'
+      preLoaderRoute: typeof MatchesMatchIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/players/$playerSlug': {
+      id: '/players/$playerSlug'
+      path: '/players/$playerSlug'
+      fullPath: '/players/$playerSlug'
+      preLoaderRoute: typeof PlayersPlayerSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams/$teamSlug': {
+      id: '/teams/$teamSlug'
+      path: '/teams/$teamSlug'
+      fullPath: '/teams/$teamSlug'
+      preLoaderRoute: typeof TeamsTeamSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams/$teamSlug/fixtures': {
+      id: '/teams/$teamSlug/fixtures'
+      path: '/fixtures'
+      fullPath: '/teams/$teamSlug/fixtures'
+      preLoaderRoute: typeof TeamsTeamSlugFixturesRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
+    '/teams/$teamSlug/results': {
+      id: '/teams/$teamSlug/results'
+      path: '/results'
+      fullPath: '/teams/$teamSlug/results'
+      preLoaderRoute: typeof TeamsTeamSlugResultsRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
+    '/teams/$teamSlug/squad': {
+      id: '/teams/$teamSlug/squad'
+      path: '/squad'
+      fullPath: '/teams/$teamSlug/squad'
+      preLoaderRoute: typeof TeamsTeamSlugSquadRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
+    '/teams/$teamSlug/table': {
+      id: '/teams/$teamSlug/table'
+      path: '/table'
+      fullPath: '/teams/$teamSlug/table'
+      preLoaderRoute: typeof TeamsTeamSlugTableRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
   }
 }
+
+interface TeamsTeamSlugRouteChildren {
+  TeamsTeamSlugFixturesRoute: typeof TeamsTeamSlugFixturesRoute
+  TeamsTeamSlugResultsRoute: typeof TeamsTeamSlugResultsRoute
+  TeamsTeamSlugSquadRoute: typeof TeamsTeamSlugSquadRoute
+  TeamsTeamSlugTableRoute: typeof TeamsTeamSlugTableRoute
+}
+
+const TeamsTeamSlugRouteChildren: TeamsTeamSlugRouteChildren = {
+  TeamsTeamSlugFixturesRoute: TeamsTeamSlugFixturesRoute,
+  TeamsTeamSlugResultsRoute: TeamsTeamSlugResultsRoute,
+  TeamsTeamSlugSquadRoute: TeamsTeamSlugSquadRoute,
+  TeamsTeamSlugTableRoute: TeamsTeamSlugTableRoute,
+}
+
+const TeamsTeamSlugRouteWithChildren = TeamsTeamSlugRoute._addFileChildren(
+  TeamsTeamSlugRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FixturesResultsRoute: FixturesResultsRoute,
+  NewsRoute: NewsRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
+  TransferRumoursRoute: TransferRumoursRoute,
+  MatchesMatchIdRoute: MatchesMatchIdRoute,
+  PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
+  TeamsTeamSlugRoute: TeamsTeamSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -96,7 +96,12 @@ export const getPlayer = (slug: string) => players.find((p) => p.slug === slug);
 export const teamName = (slug: string) => getTeam(slug)?.name ?? slug;
 export const squad = (teamSlug: string) => players.filter((p) => p.teamSlug === teamSlug);
 
-const ev = (minute: number, type: MatchEvent["type"], playerName: string, label: string): MatchEvent => ({
+const ev = (
+  minute: number,
+  type: MatchEvent["type"],
+  playerName: string,
+  label: string,
+): MatchEvent => ({
   minute,
   type,
   playerSlug: slugify(playerName),
@@ -257,10 +262,7 @@ export type StandingRow = {
 
 export function standings(): StandingRow[] {
   const base = new Map(
-    teams.map((t) => [
-      t.slug,
-      { team: t, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0 },
-    ]),
+    teams.map((t) => [t.slug, { team: t, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0 }]),
   );
 
   for (const m of completedMatches) {
@@ -294,10 +296,7 @@ export function standings(): StandingRow[] {
     }))
     .sort(
       (a, b) =>
-        b.points - a.points ||
-        b.gd - a.gd ||
-        b.gf - a.gf ||
-        a.team.name.localeCompare(b.team.name),
+        b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.team.name.localeCompare(b.team.name),
     )
     .map((r, i) => ({ pos: i + 1, ...r }));
 }
@@ -314,23 +313,23 @@ export function playerContributions(playerSlug: string) {
     }));
 }
 
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 export function formatKickoff(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const wd = weekdays[d.getUTCDay()];
+  const day = d.getUTCDate();
+  const month = months[d.getUTCMonth()];
+  const year = d.getUTCFullYear();
+  const hours = String(d.getUTCHours()).padStart(2, "0");
+  const minutes = String(d.getUTCMinutes()).padStart(2, "0");
+  return `${wd}, ${day} ${month} ${year}, ${hours}:${minutes}`;
 }
 
 export function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
 export const topScorers = () =>

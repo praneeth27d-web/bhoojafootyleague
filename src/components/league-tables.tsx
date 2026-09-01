@@ -11,10 +11,16 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
         <caption className="sr-only">League standings</caption>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-            <th scope="col" className="px-4 py-2 font-semibold">Pos</th>
-            <th scope="col" className="px-4 py-2 font-semibold">Team</th>
+            <th scope="col" className="px-4 py-2 font-semibold">
+              Pos
+            </th>
+            <th scope="col" className="px-4 py-2 font-semibold">
+              Team
+            </th>
             {["P", "W", "D", "L", "GF", "GA", "GD", "Pts"].map((h) => (
-              <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">{h}</th>
+              <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
+                {h}
+              </th>
             ))}
           </tr>
         </thead>
@@ -38,7 +44,9 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                 </Link>
               </td>
               {[r.played, r.won, r.drawn, r.lost, r.gf, r.ga].map((v, i) => (
-                <td key={i} className="num px-3 py-3 text-right text-muted-foreground">{v}</td>
+                <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
+                  {v}
+                </td>
               ))}
               <td className="num px-3 py-3 text-right text-muted-foreground">
                 {r.gd > 0 ? `+${r.gd}` : r.gd}
@@ -54,7 +62,11 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
 
 export function MatchRows({ matches }: { matches: Match[] }) {
   if (matches.length === 0) {
-    return <p className="px-4 py-8 text-center text-sm text-muted-foreground">No matches match these filters.</p>;
+    return (
+      <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+        No matches match these filters.
+      </p>
+    );
   }
   return (
     <ul className="divide-y divide-border">
@@ -68,7 +80,8 @@ export function MatchRows({ matches }: { matches: Match[] }) {
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">
-                {teamName(m.homeSlug)} <span className="text-muted-foreground">vs</span> {teamName(m.awaySlug)}
+                {teamName(m.homeSlug)} <span className="text-muted-foreground">vs</span>{" "}
+                {teamName(m.awaySlug)}
               </span>
               <span className="block truncate text-xs text-muted-foreground">
                 {formatKickoff(m.date)}
@@ -101,10 +114,16 @@ export function PlayerRows({
       <table className="w-full min-w-[520px] text-sm">
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-            <th scope="col" className="px-4 py-2 font-semibold">Player</th>
-            <th scope="col" className="px-4 py-2 font-semibold">Team</th>
+            <th scope="col" className="px-4 py-2 font-semibold">
+              Player
+            </th>
+            <th scope="col" className="px-4 py-2 font-semibold">
+              Team
+            </th>
             {["G", "A", "G/A", "POTM"].map((h) => (
-              <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">{h}</th>
+              <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
+                {h}
+              </th>
             ))}
           </tr>
         </thead>
