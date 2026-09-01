@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
-import { getTeam, teamMatches } from "@/lib/league";
+import { getTeam, standings } from "@/lib/league";
 import { cn } from "@/lib/utils";
 import { notFound } from "@tanstack/react-router";
 
@@ -39,11 +39,13 @@ function TeamLayout() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
   const team = getTeam(teamSlug);
   if (!team) return null;
-  const played = teamMatches(teamSlug).filter((m) => m.status === "completed").length;
-  const remaining = teamMatches(teamSlug).filter((m) => m.status === "upcoming").length;
+  const position = standings().find((r) => r.team.slug === teamSlug);
 
   return (
-    <AppShell title={team.name} subtitle={`${played} played · ${remaining} remaining`}>
+    <AppShell
+      title={team.name}
+      subtitle={`Position ${position?.pos ?? "—"} · ${position?.points ?? 0} pts · ${position?.played ?? 0} played`}
+    >
       <div className="mb-5 border-b border-border">
         <div className="flex gap-1 overflow-x-auto pb-0">
           {tabs.map((t) => (

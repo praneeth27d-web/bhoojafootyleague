@@ -1,7 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Table2, CalendarDays, BarChart3, Newspaper, ArrowLeftRight } from "lucide-react";
+import {
+  Menu,
+  Table2,
+  CalendarDays,
+  BarChart3,
+  Newspaper,
+  ArrowLeftRight,
+  Shield,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
-import logo from "@/assets/bfl-logo.png";
+import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +22,7 @@ type NavItem = {
 
 const nav: NavItem[] = [
   { to: "/table", label: "Table", icon: Table2 },
+  { to: "/teams", label: "Teams", icon: Shield },
   { to: "/fixtures-results", label: "Fixtures & Results", icon: CalendarDays },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/news", label: "News", icon: Newspaper, soon: true },
@@ -51,13 +60,7 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
       className="flex items-center gap-3"
       aria-label="Bhooja Football League home"
     >
-      <img
-        src={logo}
-        alt="Bhooja Football League crest"
-        width={40}
-        height={40}
-        className="size-10"
-      />
+      <img src={logoAsset.url} alt="Bhooja Football League crest" className="h-10 w-auto" />
       <span className="leading-tight">
         <span className="block text-sm font-extrabold">Bhooja</span>
         <span className="block text-xs text-muted-foreground">Football League</span>
@@ -69,7 +72,7 @@ function Brand({ onNavigate }: { onNavigate?: () => void }) {
 export function AppShell({
   title,
   subtitle,
-  badge = "Halfway through league",
+  badge = null,
   children,
 }: {
   title: string;
@@ -86,7 +89,7 @@ export function AppShell({
         <div className="mt-8 flex-1">
           <NavList />
         </div>
-        <p className="text-[11px] text-muted-foreground">Season 2026 · Matchday 3 of 5</p>
+        <p className="text-[11px] text-muted-foreground">Season 2026</p>
       </aside>
 
       <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface px-4 py-3 lg:hidden">

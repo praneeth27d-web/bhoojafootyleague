@@ -17,6 +17,7 @@ import { Route as TableRouteImport } from './routes/table'
 import { Route as TransferRumoursRouteImport } from './routes/transfer-rumours'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
+import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as TeamsTeamSlugRouteImport } from './routes/teams/$teamSlug'
 import { Route as TeamsTeamSlugFixturesRouteImport } from './routes/teams/$teamSlug/fixtures'
 import { Route as TeamsTeamSlugResultsRouteImport } from './routes/teams/$teamSlug/results'
@@ -63,6 +64,11 @@ const PlayersPlayerSlugRoute = PlayersPlayerSlugRouteImport.update({
   path: '/players/$playerSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamsIndexRoute = TeamsIndexRouteImport.update({
+  id: '/teams/',
+  path: '/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeamsTeamSlugRoute = TeamsTeamSlugRouteImport.update({
   id: '/teams/$teamSlug',
   path: '/teams/$teamSlug',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
+  '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
+    | '/teams/'
     | '/teams/$teamSlug/fixtures'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
+    | '/teams'
     | '/teams/$teamSlug/fixtures'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
+    | '/teams/'
     | '/teams/$teamSlug/fixtures'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
   TeamsTeamSlugRoute: typeof TeamsTeamSlugRouteWithChildren
+  TeamsIndexRoute: typeof TeamsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/players/$playerSlug'
       fullPath: '/players/$playerSlug'
       preLoaderRoute: typeof PlayersPlayerSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teams/': {
+      id: '/teams/'
+      path: '/teams'
+      fullPath: '/teams/'
+      preLoaderRoute: typeof TeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamSlug': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
   TeamsTeamSlugRoute: TeamsTeamSlugRouteWithChildren,
+  TeamsIndexRoute: TeamsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
