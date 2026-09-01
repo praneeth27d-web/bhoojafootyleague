@@ -37,7 +37,11 @@ export const Route = createFileRoute("/matches/$matchId")({
 });
 
 const nameFromLabel = (label: string, prefix: string) =>
-  label.replace(prefix, "").replace(/\(.*\)/, "").replace(/—/g, "").trim();
+  label
+    .replace(prefix, "")
+    .replace(/\(.*\)/, "")
+    .replace(/—/g, "")
+    .trim();
 
 function parseGoals(m: Match) {
   return (m.events ?? [])
@@ -118,7 +122,9 @@ function MatchDetail() {
                 <ul className="divide-y divide-border">
                   {goals.map((g, i) => (
                     <li key={i} className="flex items-baseline gap-3 px-4 py-3 text-sm">
-                      <span className="num w-10 shrink-0 text-muted-foreground">{g.minute}&apos;</span>
+                      <span className="num w-10 shrink-0 text-muted-foreground">
+                        {g.minute}&apos;
+                      </span>
                       <span>
                         <PlayerLink slug={g.scorerSlug} name={g.scorerName} />
                         {g.teamSlug && (

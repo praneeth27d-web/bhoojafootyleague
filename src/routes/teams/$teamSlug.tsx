@@ -44,13 +44,8 @@ function TeamLayout() {
   return (
     <AppShell
       title={team.name}
-      subtitle={
-        position
-          ? `Position ${position.pos} · ${position.points} pts · ${position.played} played`
-          : undefined
-      }
+      subtitle={`Position ${position?.pos ?? "—"} · ${position?.points ?? 0} pts · ${position?.played ?? 0} played`}
     >
-
       <div className="mb-5 border-b border-border">
         <div className="flex gap-1 overflow-x-auto pb-0">
           {tabs.map((t) => (
