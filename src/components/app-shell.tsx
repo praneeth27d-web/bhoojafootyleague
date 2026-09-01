@@ -5,13 +5,20 @@ import logo from "@/assets/bfl-logo.png";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-const nav = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ElementType;
+  soon?: boolean;
+};
+
+const nav: NavItem[] = [
   { to: "/table", label: "Table", icon: Table2 },
   { to: "/fixtures-results", label: "Fixtures & Results", icon: CalendarDays },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/news", label: "News", icon: Newspaper, soon: true },
   { to: "/transfer-rumours", label: "Transfer Rumours", icon: ArrowLeftRight, soon: true },
-] as const;
+];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
   return (
