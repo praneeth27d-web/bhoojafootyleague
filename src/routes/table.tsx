@@ -23,7 +23,7 @@ export const Route = createFileRoute("/table")({
 function TablePage() {
   const rows = standings();
   return (
-    <AppShell title="League Table" subtitle="5 matches played of 10 · sorted by Pts, GD, GF">
+    <AppShell title="League Table" subtitle="Sorted by Pts, GD, GF">
       <div className="space-y-5">
         <Card>
           <StandingsTable />
