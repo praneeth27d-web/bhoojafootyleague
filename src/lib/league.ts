@@ -314,23 +314,23 @@ export function playerContributions(playerSlug: string) {
     }));
 }
 
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
 export function formatKickoff(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const wd = weekdays[d.getUTCDay()];
+  const day = d.getUTCDate();
+  const month = months[d.getUTCMonth()];
+  const year = d.getUTCFullYear();
+  const hours = String(d.getUTCHours()).padStart(2, "0");
+  const minutes = String(d.getUTCMinutes()).padStart(2, "0");
+  return `${wd}, ${day} ${month} ${year}, ${hours}:${minutes}`;
 }
 
 export function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
 export const topScorers = () =>
