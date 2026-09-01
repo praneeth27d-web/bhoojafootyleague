@@ -55,7 +55,7 @@ function Dashboard() {
           <Card
             title="Top scorers"
             action={
-              <Link to="/stats" className="text-xs font-semibold text-primary hover:underline">
+              <Link to="/stats" search={{ sort: "ga", dir: "desc" }} className="text-xs font-semibold text-primary hover:underline">
                 All stats
               </Link>
             }

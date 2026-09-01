@@ -3,14 +3,18 @@ import { AppShell, Card } from "@/components/app-shell";
 import { MatchRows } from "@/components/league-tables";
 import { matchdays, matches, teams } from "@/lib/league";
 
-type Search = { team?: string; status?: "all" | "completed" | "upcoming"; matchday?: number };
+type Search = {
+  team?: string | undefined;
+  status?: "all" | "completed" | "upcoming" | undefined;
+  matchday?: number | undefined;
+};
 
 export const Route = createFileRoute("/fixtures-results")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    team: typeof search.team === "string" ? search.team : undefined,
+    team: typeof search["team"] === "string" ? search["team"] : undefined,
     status:
-      search.status === "completed" || search.status === "upcoming" ? search.status : "all",
-    matchday: search.matchday ? Number(search.matchday) : undefined,
+      search["status"] === "completed" || search["status"] === "upcoming" ? search["status"] : "all",
+    matchday: search["matchday"] ? Number(search["matchday"]) : undefined,
   }),
   head: () => ({
     meta: [

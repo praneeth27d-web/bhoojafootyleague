@@ -12,8 +12,8 @@ type Search = { sort: SortKey; dir: "asc" | "desc" };
 
 export const Route = createFileRoute("/stats")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    sort: sortKeys.includes(search.sort as SortKey) ? (search.sort as SortKey) : "ga",
-    dir: search.dir === "asc" ? "asc" : "desc",
+    sort: sortKeys.includes(search["sort"] as SortKey) ? (search["sort"] as SortKey) : "ga",
+    dir: search["dir"] === "asc" ? "asc" : "desc",
   }),
   head: () => ({
     meta: [

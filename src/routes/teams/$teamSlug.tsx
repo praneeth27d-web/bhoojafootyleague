@@ -46,7 +46,7 @@ function TeamLayout() {
               to={t.to}
               params={{ teamSlug }}
               activeOptions={{ exact: true }}
-              className={({ isActive }) =>
+              className={({ isActive }: { isActive: boolean }) =>
                 cn(
                   "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-semibold transition-colors",
                   isActive
