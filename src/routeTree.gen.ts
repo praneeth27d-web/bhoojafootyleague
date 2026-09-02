@@ -11,10 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
-import { Route as TransferRumoursRouteImport } from './routes/transfer-rumours'
 import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
@@ -35,11 +33,6 @@ const FixturesResultsRoute = FixturesResultsRouteImport.update({
   path: '/fixtures-results',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
@@ -48,11 +41,6 @@ const StatsRoute = StatsRouteImport.update({
 const TableRoute = TableRouteImport.update({
   id: '/table',
   path: '/table',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TransferRumoursRoute = TransferRumoursRouteImport.update({
-  id: '/transfer-rumours',
-  path: '/transfer-rumours',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransfersRoute = TransfersRouteImport.update({
@@ -104,10 +92,8 @@ const TeamsTeamSlugTableRoute = TeamsTeamSlugTableRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
   '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
@@ -121,10 +107,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
   '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
@@ -139,10 +123,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
   '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
@@ -158,10 +140,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
     | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
@@ -175,10 +155,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
     | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
@@ -192,10 +170,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
     | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
@@ -210,10 +186,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
-  NewsRoute: typeof NewsRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
-  TransferRumoursRoute: typeof TransferRumoursRoute
   TransfersRoute: typeof TransfersRoute
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
@@ -237,13 +211,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixturesResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/stats': {
       id: '/stats'
       path: '/stats'
@@ -256,13 +223,6 @@ declare module '@tanstack/react-router' {
       path: '/table'
       fullPath: '/table'
       preLoaderRoute: typeof TableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/transfer-rumours': {
-      id: '/transfer-rumours'
-      path: '/transfer-rumours'
-      fullPath: '/transfer-rumours'
-      preLoaderRoute: typeof TransferRumoursRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transfers': {
@@ -352,10 +312,8 @@ const TeamsTeamSlugRouteWithChildren = TeamsTeamSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FixturesResultsRoute: FixturesResultsRoute,
-  NewsRoute: NewsRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
-  TransferRumoursRoute: TransferRumoursRoute,
   TransfersRoute: TransfersRoute,
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
