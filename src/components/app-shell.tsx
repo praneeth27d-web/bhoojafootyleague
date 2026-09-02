@@ -1,16 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import {
-  Menu,
-  Table2,
-  CalendarDays,
-  BarChart3,
-  Newspaper,
-  ArrowLeftRight,
-  Shield,
-} from "lucide-react";
+import { Menu, Table2, CalendarDays, BarChart3, ArrowLeftRight, Shield } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -25,8 +18,7 @@ const nav: NavItem[] = [
   { to: "/teams", label: "Teams", icon: Shield },
   { to: "/fixtures-results", label: "Fixtures & Results", icon: CalendarDays },
   { to: "/stats", label: "Stats", icon: BarChart3 },
-  { to: "/news", label: "News", icon: Newspaper, soon: true },
-  { to: "/transfer-rumours", label: "Transfer Rumours", icon: ArrowLeftRight, soon: true },
+  { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
 ];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -89,7 +81,7 @@ export function AppShell({
         <div className="mt-8 flex-1">
           <NavList />
         </div>
-        <p className="text-[11px] text-muted-foreground">Season 2026</p>
+        <ThemeToggle className="w-full justify-center" />
       </aside>
 
       <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface px-4 py-3 lg:hidden">
@@ -104,6 +96,9 @@ export function AppShell({
             <Brand onNavigate={() => setOpen(false)} />
             <div className="mt-8">
               <NavList onNavigate={() => setOpen(false)} />
+            </div>
+            <div className="mt-8">
+              <ThemeToggle className="w-full justify-center" />
             </div>
           </SheetContent>
         </Sheet>

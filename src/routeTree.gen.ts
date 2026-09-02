@@ -11,10 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
-import { Route as NewsRouteImport } from './routes/news'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
-import { Route as TransferRumoursRouteImport } from './routes/transfer-rumours'
+import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
@@ -34,11 +33,6 @@ const FixturesResultsRoute = FixturesResultsRouteImport.update({
   path: '/fixtures-results',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
@@ -49,9 +43,9 @@ const TableRoute = TableRouteImport.update({
   path: '/table',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TransferRumoursRoute = TransferRumoursRouteImport.update({
-  id: '/transfer-rumours',
-  path: '/transfer-rumours',
+const TransfersRoute = TransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
@@ -98,10 +92,9 @@ const TeamsTeamSlugTableRoute = TeamsTeamSlugTableRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -114,10 +107,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -131,10 +123,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/fixtures-results': typeof FixturesResultsRoute
-  '/news': typeof NewsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
-  '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -149,10 +140,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -165,10 +155,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -181,10 +170,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/fixtures-results'
-    | '/news'
     | '/stats'
     | '/table'
-    | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -198,10 +186,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
-  NewsRoute: typeof NewsRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
-  TransferRumoursRoute: typeof TransferRumoursRoute
+  TransfersRoute: typeof TransfersRoute
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
   TeamsTeamSlugRoute: typeof TeamsTeamSlugRouteWithChildren
@@ -224,13 +211,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixturesResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/stats': {
       id: '/stats'
       path: '/stats'
@@ -245,11 +225,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TableRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/transfer-rumours': {
-      id: '/transfer-rumours'
-      path: '/transfer-rumours'
-      fullPath: '/transfer-rumours'
-      preLoaderRoute: typeof TransferRumoursRouteImport
+    '/transfers': {
+      id: '/transfers'
+      path: '/transfers'
+      fullPath: '/transfers'
+      preLoaderRoute: typeof TransfersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/matches/$matchId': {
@@ -332,10 +312,9 @@ const TeamsTeamSlugRouteWithChildren = TeamsTeamSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FixturesResultsRoute: FixturesResultsRoute,
-  NewsRoute: NewsRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
-  TransferRumoursRoute: TransferRumoursRoute,
+  TransfersRoute: TransfersRoute,
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
   TeamsTeamSlugRoute: TeamsTeamSlugRouteWithChildren,

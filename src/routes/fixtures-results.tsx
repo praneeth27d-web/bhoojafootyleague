@@ -36,7 +36,7 @@ export const Route = createFileRoute("/fixtures-results")({
 });
 
 const selectClass =
-  "rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground";
+  "appearance-none rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors hover:bg-accent focus:border-primary focus-visible:outline-none [&>option]:bg-surface [&>option]:text-foreground";
 
 function FixturesResults() {
   const { team, status, matchday } = Route.useSearch();
