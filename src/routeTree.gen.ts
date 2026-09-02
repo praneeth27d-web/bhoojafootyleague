@@ -15,6 +15,7 @@ import { Route as NewsRouteImport } from './routes/news'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
 import { Route as TransferRumoursRouteImport } from './routes/transfer-rumours'
+import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
@@ -52,6 +53,11 @@ const TableRoute = TableRouteImport.update({
 const TransferRumoursRoute = TransferRumoursRouteImport.update({
   id: '/transfer-rumours',
   path: '/transfer-rumours',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransfersRoute = TransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfer-rumours': typeof TransferRumoursRoute
+  '/transfers': typeof TransfersRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/table'
     | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/table'
     | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/stats'
     | '/table'
     | '/transfer-rumours'
+    | '/transfers'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/teams/$teamSlug'
@@ -202,6 +214,7 @@ export interface RootRouteChildren {
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
   TransferRumoursRoute: typeof TransferRumoursRoute
+  TransfersRoute: typeof TransfersRoute
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
   TeamsTeamSlugRoute: typeof TeamsTeamSlugRouteWithChildren
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       path: '/transfer-rumours'
       fullPath: '/transfer-rumours'
       preLoaderRoute: typeof TransferRumoursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transfers': {
+      id: '/transfers'
+      path: '/transfers'
+      fullPath: '/transfers'
+      preLoaderRoute: typeof TransfersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/matches/$matchId': {
@@ -336,6 +356,7 @@ const rootRouteChildren: RootRouteChildren = {
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
   TransferRumoursRoute: TransferRumoursRoute,
+  TransfersRoute: TransfersRoute,
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
   TeamsTeamSlugRoute: TeamsTeamSlugRouteWithChildren,

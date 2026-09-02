@@ -1,127 +1,105 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerSheet } from "@/components/player-sheet";
 import { players, teamName } from "@/lib/league";
-import { Link } from "@tanstack/react-router";
 
-const sortKeys = ["player", "team", "goals", "assists", "ga", "potm"] as const;
-type SortKey = (typeof sortKeys)[number];
-type Search = { sort: SortKey; dir: "asc" | "desc" };
+const metrics = ["goals", "assists", "ga", "potm"] as const;
+type Metric = (typeof metrics)[number];
+type Search = { metric: Metric };
+
+const metricLabel: Record<Metric, string> = {
+  goals: "Goals",
+  assists: "Assists",
+  ga: "Total G/A",
+  potm: "POTM",
+};
 
 export const Route = createFileRoute("/stats")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    sort: sortKeys.includes(search["sort"] as SortKey) ? (search["sort"] as SortKey) : "ga",
-    dir: search["dir"] === "asc" ? "asc" : "desc",
+    metric: metrics.includes(search["metric"] as Metric) ? (search["metric"] as Metric) : "goals",
   }),
   head: () => ({
     meta: [
       { title: "Player Stats — Bhooja Football League" },
       {
         name: "description",
-        content:
-          "Sortable BFL player statistics: goals, assists, G/A and Player of the Match awards.",
+        content: "BFL player statistics: goals, assists, total G/A and Player of the Match awards.",
       },
       { property: "og:title", content: "BFL Player Stats" },
       {
         property: "og:description",
-        content: "Goals, assists, G/A and POTM awards for every BFL player.",
+        content: "Goals, assists, total G/A and POTM awards for every BFL player.",
       },
     ],
   }),
   component: StatsPage,
 });
 
-const columns: Array<{ key: SortKey; label: string; numeric?: boolean }> = [
-  { key: "player", label: "Player" },
-  { key: "team", label: "Team" },
-  { key: "goals", label: "Goals", numeric: true },
-  { key: "assists", label: "Assists", numeric: true },
-  { key: "ga", label: "G/A", numeric: true },
-  { key: "potm", label: "POTM", numeric: true },
-];
+const selectClass =
+  "appearance-none rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors hover:bg-accent focus:border-primary focus-visible:outline-none";
 
 function StatsPage() {
-  const { sort, dir } = Route.useSearch();
+  const { metric } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const [selected, setSelected] = useState<string | null>(null);
 
-  const value = (p: (typeof players)[number], key: SortKey) => {
-    switch (key) {
-      case "player":
-        return p.name;
-      case "team":
-        return teamName(p.teamSlug);
-      case "ga":
-        return p.goals + p.assists;
-      default:
-        return p[key];
-    }
-  };
+  const value = (p: (typeof players)[number]) =>
+    metric === "ga" ? p.goals + p.assists : p[metric];
 
-  const rows = [...players].sort((a, b) => {
-    const av = value(a, sort);
-    const bv = value(b, sort);
-    const cmp =
-      typeof av === "string" && typeof bv === "string"
-        ? av.localeCompare(bv)
-        : Number(av) - Number(bv);
-    return dir === "asc"
-      ? cmp || a.name.localeCompare(b.name)
-      : -cmp || a.name.localeCompare(b.name);
-  });
-
-  const toggle = (key: SortKey) =>
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        sort: key,
-        dir: prev.sort === key && prev.dir === "desc" ? "asc" : "desc",
-      }),
-      replace: true,
-    });
+  const rows = [...players]
+    .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
+    .map((p, i) => ({ ...p, pos: i + 1 }));
 
   return (
-    <AppShell title="Player Stats" subtitle="Tap a column to sort · tap a player for their profile">
-      <Card>
+    <AppShell title="Player Stats" subtitle="Tap a player for their profile">
+      <Card
+        title={metricLabel[metric]}
+        action={
+          <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+            Filter
+            <select
+              className={selectClass}
+              value={metric}
+              onChange={(e) =>
+                navigate({
+                  to: ".",
+                  search: (prev) => ({ ...prev, metric: e.target.value as Metric }),
+                  replace: true,
+                })
+              }
+            >
+              {metrics.map((m) => (
+                <option key={m} value={m}>
+                  {metricLabel[m]}
+                </option>
+              ))}
+            </select>
+          </label>
+        }
+      >
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[620px] text-sm">
+          <table className="w-full min-w-[420px] text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                {columns.map((c) => (
-                  <th
-                    key={c.key}
-                    scope="col"
-                    aria-sort={
-                      sort === c.key ? (dir === "asc" ? "ascending" : "descending") : "none"
-                    }
-                    className={c.numeric ? "px-3 py-2 text-right" : "px-4 py-2"}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => toggle(c.key)}
-                      className={
-                        "inline-flex items-center gap-1 font-semibold uppercase " +
-                        (sort === c.key ? "text-primary" : "hover:text-foreground")
-                      }
-                      aria-label={`Sort by ${c.label}`}
-                    >
-                      {c.label}
-                      {sort === c.key &&
-                        (dir === "asc" ? (
-                          <ArrowUp className="size-3" aria-hidden="true" />
-                        ) : (
-                          <ArrowDown className="size-3" aria-hidden="true" />
-                        ))}
-                    </button>
-                  </th>
-                ))}
+                <th scope="col" className="px-4 py-2 font-semibold">
+                  Pos
+                </th>
+                <th scope="col" className="px-4 py-2 font-semibold">
+                  Name
+                </th>
+                <th scope="col" className="px-4 py-2 font-semibold">
+                  Team
+                </th>
+                <th scope="col" className="px-3 py-2 text-right font-semibold">
+                  {metricLabel[metric]}
+                </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((p) => (
                 <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent">
+                  <td className="num px-4 py-3 text-muted-foreground">{p.pos}</td>
                   <td className="px-4 py-3">
                     <button
                       type="button"
@@ -130,6 +108,7 @@ function StatsPage() {
                       aria-label={`Open profile for ${p.name}`}
                     >
                       {p.name}
+                      {p.captain && <span className="text-muted-foreground"> (C)</span>}
                     </button>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
@@ -141,10 +120,9 @@ function StatsPage() {
                       {teamName(p.teamSlug)}
                     </Link>
                   </td>
-                  <td className="num px-3 py-3 text-right">{p.goals}</td>
-                  <td className="num px-3 py-3 text-right">{p.assists}</td>
-                  <td className="num px-3 py-3 text-right font-bold">{p.goals + p.assists}</td>
-                  <td className="num px-3 py-3 text-right">{p.potm}</td>
+                  <td className="num px-3 py-3 text-right font-bold">
+                    {metric === "ga" ? p.goals + p.assists : p[metric]}
+                  </td>
                 </tr>
               ))}
             </tbody>
