@@ -76,7 +76,11 @@ export function PlayerSheet({ slug, onClose }: { slug: string | null; onClose: (
           <>
             <SheetHeader className="px-0">
               <SheetTitle className="text-xl font-extrabold">{player.name}</SheetTitle>
-              <TeamBadge slug={player.teamSlug} showName className="text-sm text-muted-foreground" />
+              <TeamBadge
+                slug={player.teamSlug}
+                showName
+                className="text-sm text-muted-foreground"
+              />
             </SheetHeader>
             <div className="mt-4 space-y-5">
               <PlayerStatGrid slug={player.slug} />
