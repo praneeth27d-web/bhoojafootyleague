@@ -1,6 +1,6 @@
 import acMilan from "@/assets/ac-milan.png.asset.json";
 import realMadrid from "@/assets/real-madrid.png.asset.json";
-import juventus from "@/assets/juventus.jpg.asset.json";
+import juventus from "@/assets/juventus.png.asset.json";
 import chelsea from "@/assets/chelsea.png.asset.json";
 import arsenal from "@/assets/arsenal.png.asset.json";
 import { teamName } from "@/lib/league";
@@ -24,7 +24,11 @@ export function TeamCrest({ slug, className }: { slug: string; className?: strin
       alt={`${name} crest`}
       title={name}
       loading="lazy"
-      className={cn("size-6 shrink-0 object-contain", className)}
+      className={cn(
+        "size-6 shrink-0 object-contain",
+        slug === "juventus" && "dark:invert",
+        className,
+      )}
     />
   );
 }
