@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { formatShortDate, getPlayer, playerContributions, teamName } from "@/lib/league";
+import { formatShortDate, getPlayer, playerContributions } from "@/lib/league";
 import { TeamBadge } from "@/components/team-badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
