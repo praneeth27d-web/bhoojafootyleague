@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { AppShell, Card } from "@/components/app-shell";
 import { standings, teamMatches } from "@/lib/league";
+import { TeamBadge } from "@/components/team-badge";
 
 export const Route = createFileRoute("/teams/")({
   head: () => ({
@@ -45,7 +46,12 @@ function TeamsPage() {
                     {r.pos}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-bold">{r.team.name}</span>
+                    <TeamBadge
+                      slug={r.team.slug}
+                      showName
+                      className="text-sm font-bold"
+                      crestClassName="size-7"
+                    />
                     <span className="block text-xs text-muted-foreground">
                       <span className="num">{r.points}</span> pts ·{" "}
                       <span className="num">{r.played}</span> played ·{" "}

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { formatKickoff, standings, type Match, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
 import { StatusPill } from "@/components/app-shell";
+import { TeamBadge } from "@/components/team-badge";
 
 export function StandingsTable({ highlight }: { highlight?: string }) {
   const rows = standings();
@@ -38,9 +39,10 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                 <Link
                   to="/teams/$teamSlug/table"
                   params={{ teamSlug: r.team.slug }}
-                  className="font-semibold hover:text-primary"
+                  className="inline-flex hover:opacity-80"
+                  aria-label={r.team.name}
                 >
-                  {r.team.name}
+                  <TeamBadge slug={r.team.slug} crestClassName="size-7" />
                 </Link>
               </td>
               {[r.played, r.won, r.drawn, r.lost, r.gf, r.ga].map((v, i) => (
@@ -79,9 +81,10 @@ export function MatchRows({ matches }: { matches: Match[] }) {
           >
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold">
-                {teamName(m.homeSlug)} <span className="text-muted-foreground">vs</span>{" "}
-                {teamName(m.awaySlug)}
+              <span className="flex items-center gap-2 text-sm font-semibold">
+                <TeamBadge slug={m.homeSlug} />
+                <span className="text-muted-foreground">vs</span>
+                <TeamBadge slug={m.awaySlug} />
               </span>
               <span className="block truncate text-xs text-muted-foreground">
                 {formatKickoff(m.date)}
@@ -154,9 +157,10 @@ export function PlayerRows({
                 <Link
                   to="/teams/$teamSlug/squad"
                   params={{ teamSlug: p.teamSlug }}
-                  className="hover:text-primary"
+                  className="inline-flex hover:opacity-80"
+                  aria-label={teamName(p.teamSlug)}
                 >
-                  {teamName(p.teamSlug)}
+                  <TeamBadge slug={p.teamSlug} />
                 </Link>
               </td>
               <td className="num px-3 py-3 text-right">{p.goals}</td>
