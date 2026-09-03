@@ -46,9 +46,10 @@ export function TeamBadge({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <TeamCrest slug={slug} className={crestClassName} />
       {showName && <span className="truncate font-semibold">{teamName(slug)}</span>}
+      <TeamCrest slug={slug} className={crestClassName} />
       {!showName && <span className="sr-only">{teamName(slug)}</span>}
     </span>
   );
 }
+
