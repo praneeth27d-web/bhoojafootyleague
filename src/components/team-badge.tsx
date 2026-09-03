@@ -14,7 +14,7 @@ const crests: Record<string, string> = {
   arsenal: arsenal.url,
 };
 
-export function TeamCrest({ slug, className }: { slug: string; className?: string }) {
+export function TeamCrest({ slug, className }: { slug: string; className?: string | undefined }) {
   const src = crests[slug];
   const name = teamName(slug);
   if (!src) return <span className="font-semibold">{name}</span>;
@@ -37,8 +37,8 @@ export function TeamBadge({
 }: {
   slug: string;
   showName?: boolean;
-  className?: string;
-  crestClassName?: string;
+  className?: string | undefined;
+  crestClassName?: string | undefined;
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
