@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { formatShortDate, getPlayer, playerContributions, teamName } from "@/lib/league";
+import { formatShortDate, getPlayer, playerContributions } from "@/lib/league";
+import { TeamBadge } from "@/components/team-badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function PlayerStatGrid({ slug }: { slug: string }) {
@@ -42,8 +43,13 @@ export function PlayerContributions({ slug }: { slug: string }) {
             params={{ matchId: match.id }}
             className="text-sm font-semibold hover:text-primary"
           >
-            {teamName(match.homeSlug)} {match.homeGoals}–{match.awayGoals}{" "}
-            {teamName(match.awaySlug)}
+            <span className="flex items-center gap-2">
+              <TeamBadge slug={match.homeSlug} />
+              <span className="num">
+                {match.homeGoals}–{match.awayGoals}
+              </span>
+              <TeamBadge slug={match.awaySlug} />
+            </span>
           </Link>
           <p className="text-xs text-muted-foreground">
             MD{match.matchday} · {formatShortDate(match.date)}
@@ -70,7 +76,11 @@ export function PlayerSheet({ slug, onClose }: { slug: string | null; onClose: (
           <>
             <SheetHeader className="px-0">
               <SheetTitle className="text-xl font-extrabold">{player.name}</SheetTitle>
-              <p className="text-sm text-muted-foreground">{teamName(player.teamSlug)}</p>
+              <TeamBadge
+                slug={player.teamSlug}
+                showName
+                className="text-sm text-muted-foreground"
+              />
             </SheetHeader>
             <div className="mt-4 space-y-5">
               <PlayerStatGrid slug={player.slug} />

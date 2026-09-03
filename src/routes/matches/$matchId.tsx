@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
+import { TeamCrest } from "@/components/team-badge";
 import {
   formatKickoff,
   getMatch,
@@ -106,11 +107,11 @@ function MatchDetail() {
         <Card>
           <div className="px-4 py-6 text-center">
             <div className="flex items-center justify-center gap-4">
-              <div className="text-lg font-bold">{teamName(m.homeSlug)}</div>
+              <TeamCrest slug={m.homeSlug} className="size-12" />
               <div className="num rounded-md bg-surface-muted px-4 py-2 text-2xl font-bold">
                 {completed ? `${m.homeGoals}–${m.awayGoals}` : "vs"}
               </div>
-              <div className="text-lg font-bold">{teamName(m.awaySlug)}</div>
+              <TeamCrest slug={m.awaySlug} className="size-12" />
             </div>
           </div>
         </Card>

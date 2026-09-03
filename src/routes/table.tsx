@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
 import { standings } from "@/lib/league";
+import { TeamBadge } from "@/components/team-badge";
 
 export const Route = createFileRoute("/table")({
   head: () => ({
@@ -38,7 +39,7 @@ function TablePage() {
                   className="flex items-center gap-3 px-4 py-3 hover:bg-accent"
                 >
                   <span className="num w-5 text-xs text-muted-foreground">{r.pos}</span>
-                  <span className="flex-1 text-sm font-semibold">{r.team.name}</span>
+                  <TeamBadge slug={r.team.slug} className="flex-1" crestClassName="size-7" />
                   <span className="num text-sm text-muted-foreground">{r.points} pts</span>
                   <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
                 </Link>

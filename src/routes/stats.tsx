@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerSheet } from "@/components/player-sheet";
+import { TeamBadge } from "@/components/team-badge";
 import { players, teamName } from "@/lib/league";
 
 const metrics = ["goals", "assists", "ga", "potm"] as const;
@@ -115,9 +116,10 @@ function StatsPage() {
                     <Link
                       to="/teams/$teamSlug/squad"
                       params={{ teamSlug: p.teamSlug }}
-                      className="hover:text-primary"
+                      className="inline-flex hover:opacity-80"
+                      aria-label={teamName(p.teamSlug)}
                     >
-                      {teamName(p.teamSlug)}
+                      <TeamBadge slug={p.teamSlug} />
                     </Link>
                   </td>
                   <td className="num px-3 py-3 text-right font-bold">
