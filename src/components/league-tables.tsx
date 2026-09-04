@@ -34,7 +34,22 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                 (highlight === r.team.slug ? "bg-primary/5" : "")
               }
             >
-              <td className="num px-4 py-3 text-muted-foreground">{r.pos}</td>
+              <td className="py-3 pl-0 pr-4">
+                <span className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className={
+                      "block h-7 w-1 rounded-r-sm " +
+                      (r.pos === 1
+                        ? "bg-pos-top"
+                        : r.pos <= 3
+                          ? "bg-pos-mid"
+                          : "bg-pos-low")
+                    }
+                  />
+                  <span className="num text-muted-foreground">{r.pos}</span>
+                </span>
+              </td>
               <td className="px-4 py-3">
                 <Link
                   to="/teams/$teamSlug/table"
@@ -45,6 +60,7 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                   <TeamBadge slug={r.team.slug} crestClassName="size-7" />
                 </Link>
               </td>
+
               {[r.played, r.won, r.drawn, r.lost, r.gf, r.ga].map((v, i) => (
                 <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
                   {v}
