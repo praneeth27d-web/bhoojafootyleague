@@ -1,8 +1,8 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
-import { AppShell, Card } from "@/components/app-shell";
-import { StandingsTable } from "@/components/league-tables";
+import { AppShell } from "@/components/app-shell";
 import { getTeam, standings } from "@/lib/league";
 import { cn } from "@/lib/utils";
+
 import { notFound } from "@tanstack/react-router";
 
 const tabs = [
