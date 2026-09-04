@@ -1,9 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
-import { standings } from "@/lib/league";
-import { TeamBadge } from "@/components/team-badge";
+
 
 export const Route = createFileRoute("/table")({
   head: () => ({

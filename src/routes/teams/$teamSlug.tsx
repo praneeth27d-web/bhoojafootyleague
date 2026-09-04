@@ -65,16 +65,8 @@ function TeamLayout() {
           ))}
         </div>
       </div>
-      <div className="grid gap-5 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Outlet />
-        </div>
-        <div>
-          <Card title="Full table">
-            <StandingsTable highlight={teamSlug} />
-          </Card>
-        </div>
-      </div>
+      <Outlet />
+
     </AppShell>
   );
 }
