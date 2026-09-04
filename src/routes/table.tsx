@@ -22,32 +22,12 @@ export const Route = createFileRoute("/table")({
 });
 
 function TablePage() {
-  const rows = standings();
   return (
     <AppShell title="League Table" subtitle="Sorted by Pts, GD, GF">
-      <div className="space-y-5">
-        <Card>
-          <StandingsTable />
-        </Card>
-        <Card title="Teams">
-          <ul className="divide-y divide-border">
-            {rows.map((r) => (
-              <li key={r.team.slug}>
-                <Link
-                  to="/teams/$teamSlug/table"
-                  params={{ teamSlug: r.team.slug }}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-accent"
-                >
-                  <span className="num w-5 text-xs text-muted-foreground">{r.pos}</span>
-                  <TeamBadge slug={r.team.slug} className="flex-1" crestClassName="size-7" />
-                  <span className="num text-sm text-muted-foreground">{r.points} pts</span>
-                  <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+      <Card>
+        <StandingsTable />
+      </Card>
     </AppShell>
   );
 }
+
