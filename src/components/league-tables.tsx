@@ -57,7 +57,7 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                   className="inline-flex hover:opacity-80"
                   aria-label={r.team.name}
                 >
-                  <TeamBadge slug={r.team.slug} crestClassName="size-7" />
+                  <TeamBadge slug={r.team.slug} showName nameFirst crestClassName="size-7" />
                 </Link>
               </td>
 
