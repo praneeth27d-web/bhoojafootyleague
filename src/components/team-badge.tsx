@@ -35,7 +35,7 @@ export function TeamCrest({ slug, className }: { slug: string; className?: strin
 
 export function TeamBadge({
   slug,
-  showName = false,
+  showName = true,
   nameFirst = false,
   className,
   crestClassName,
