@@ -63,6 +63,10 @@
   --color-surface-muted: var(--surface-muted);
   --color-live: var(--live);
   --color-live-foreground: var(--live-foreground);
+  --color-pos-top: var(--pos-top);
+  --color-pos-mid: var(--pos-mid);
+  --color-pos-low: var(--pos-low);
+
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-numeric: "IBM Plex Mono", ui-monospace, monospace;
   --shadow-card: 0 1px 2px oklch(0.2542 0.0111 254.04 / 6%);
@@ -93,6 +97,10 @@
   --live-foreground: oklch(1 0 0);
   --border: oklch(0.9276 0.0058 264.53);
   --input: oklch(0.9276 0.0058 264.53);
+  --pos-top: oklch(0.78 0.16 145);
+  --pos-mid: oklch(0.82 0.14 75);
+  --pos-low: oklch(0.62 0.2 27);
+
   --ring: oklch(0.5973 0.1574 249.07);
   --chart-1: oklch(0.5973 0.1574 249.07);
   --chart-2: oklch(0.5676 0.2084 27.06);
@@ -114,6 +122,10 @@
   --foreground: oklch(0.9611 0.0043 258.32);
   --surface: oklch(0.2597 0.0161 258.36);
   --surface-muted: oklch(0.2951 0.0166 258.35);
+  --pos-top: oklch(0.8 0.17 145);
+  --pos-mid: oklch(0.84 0.15 75);
+  --pos-low: oklch(0.66 0.21 27);
+
   --card: oklch(0.2597 0.0161 258.36);
   --card-foreground: oklch(0.9611 0.0043 258.32);
   --popover: oklch(0.2597 0.0161 258.36);
