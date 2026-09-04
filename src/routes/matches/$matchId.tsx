@@ -107,11 +107,17 @@ function MatchDetail() {
         <Card>
           <div className="px-4 py-6 text-center">
             <div className="flex items-center justify-center gap-4">
-              <TeamCrest slug={m.homeSlug} className="size-12" />
+              <span className="flex flex-1 flex-col items-center gap-2">
+                <TeamCrest slug={m.homeSlug} className="size-12" />
+                <span className="text-sm font-semibold">{teamName(m.homeSlug)}</span>
+              </span>
               <div className="num rounded-md bg-surface-muted px-4 py-2 text-2xl font-bold">
                 {completed ? `${m.homeGoals}–${m.awayGoals}` : "vs"}
               </div>
-              <TeamCrest slug={m.awaySlug} className="size-12" />
+              <span className="flex flex-1 flex-col items-center gap-2">
+                <TeamCrest slug={m.awaySlug} className="size-12" />
+                <span className="text-sm font-semibold">{teamName(m.awaySlug)}</span>
+              </span>
             </div>
           </div>
         </Card>
