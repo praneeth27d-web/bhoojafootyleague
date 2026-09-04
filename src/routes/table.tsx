@@ -25,6 +25,20 @@ function TablePage() {
       <Card>
         <StandingsTable />
       </Card>
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-top" />
+          Green — Qualified
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-mid" />
+          Orange — Playoffs
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-low" />
+          Red — Disqualified
+        </span>
+      </div>
     </AppShell>
   );
 }

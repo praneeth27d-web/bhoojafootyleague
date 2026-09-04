@@ -36,24 +36,41 @@ export function TeamCrest({ slug, className }: { slug: string; className?: strin
 export function TeamBadge({
   slug,
   showName = false,
+  nameFirst = false,
   className,
   crestClassName,
 }: {
   slug: string;
   showName?: boolean;
+  nameFirst?: boolean;
   className?: string | undefined;
   crestClassName?: string | undefined;
 }) {
+  const name = <span className="truncate font-semibold">{teamName(slug)}</span>;
+  const crest = <TeamCrest slug={slug} className={crestClassName} />;
+  const hiddenName = <span className="sr-only">{teamName(slug)}</span>;
+
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <TeamCrest slug={slug} className={crestClassName} />
       {showName ? (
-        <span className="truncate font-semibold">{teamName(slug)}</span>
+        nameFirst ? (
+          <>
+            {name}
+            {crest}
+          </>
+        ) : (
+          <>
+            {crest}
+            {name}
+          </>
+        )
       ) : (
-        <span className="sr-only">{teamName(slug)}</span>
+        <>
+          {crest}
+          {hiddenName}
+        </>
       )}
     </span>
   );
-
 }
 
