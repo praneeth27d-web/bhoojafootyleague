@@ -19,9 +19,11 @@ import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerS
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as TeamsTeamSlugRouteImport } from './routes/teams/$teamSlug'
 import { Route as TeamsTeamSlugFixturesRouteImport } from './routes/teams/$teamSlug/fixtures'
+import { Route as TeamsTeamSlugHistoryRouteImport } from './routes/teams/$teamSlug/history'
 import { Route as TeamsTeamSlugResultsRouteImport } from './routes/teams/$teamSlug/results'
 import { Route as TeamsTeamSlugSquadRouteImport } from './routes/teams/$teamSlug/squad'
 import { Route as TeamsTeamSlugTableRouteImport } from './routes/teams/$teamSlug/table'
+import { Route as TeamsTeamSlugTransfersRouteImport } from './routes/teams/$teamSlug/transfers'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -73,6 +75,11 @@ const TeamsTeamSlugFixturesRoute = TeamsTeamSlugFixturesRouteImport.update({
   path: '/fixtures',
   getParentRoute: () => TeamsTeamSlugRoute,
 } as any)
+const TeamsTeamSlugHistoryRoute = TeamsTeamSlugHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
 const TeamsTeamSlugResultsRoute = TeamsTeamSlugResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -88,6 +95,11 @@ const TeamsTeamSlugTableRoute = TeamsTeamSlugTableRouteImport.update({
   path: '/table',
   getParentRoute: () => TeamsTeamSlugRoute,
 } as any)
+const TeamsTeamSlugTransfersRoute = TeamsTeamSlugTransfersRouteImport.update({
+  id: '/transfers',
+  path: '/transfers',
+  getParentRoute: () => TeamsTeamSlugRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,9 +112,11 @@ export interface FileRoutesByFullPath {
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/history': typeof TeamsTeamSlugHistoryRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
   '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
+  '/teams/$teamSlug/transfers': typeof TeamsTeamSlugTransfersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,9 +129,11 @@ export interface FileRoutesByTo {
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/history': typeof TeamsTeamSlugHistoryRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
   '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
+  '/teams/$teamSlug/transfers': typeof TeamsTeamSlugTransfersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,9 +147,11 @@ export interface FileRoutesById {
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
+  '/teams/$teamSlug/history': typeof TeamsTeamSlugHistoryRoute
   '/teams/$teamSlug/results': typeof TeamsTeamSlugResultsRoute
   '/teams/$teamSlug/squad': typeof TeamsTeamSlugSquadRoute
   '/teams/$teamSlug/table': typeof TeamsTeamSlugTableRoute
+  '/teams/$teamSlug/transfers': typeof TeamsTeamSlugTransfersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -148,9 +166,11 @@ export interface FileRouteTypes {
     | '/teams/$teamSlug'
     | '/teams/'
     | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/history'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
     | '/teams/$teamSlug/table'
+    | '/teams/$teamSlug/transfers'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -163,9 +183,11 @@ export interface FileRouteTypes {
     | '/teams/$teamSlug'
     | '/teams'
     | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/history'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
     | '/teams/$teamSlug/table'
+    | '/teams/$teamSlug/transfers'
   id:
     | '__root__'
     | '/'
@@ -178,9 +200,11 @@ export interface FileRouteTypes {
     | '/teams/$teamSlug'
     | '/teams/'
     | '/teams/$teamSlug/fixtures'
+    | '/teams/$teamSlug/history'
     | '/teams/$teamSlug/results'
     | '/teams/$teamSlug/squad'
     | '/teams/$teamSlug/table'
+    | '/teams/$teamSlug/transfers'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -267,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamSlugFixturesRouteImport
       parentRoute: typeof TeamsTeamSlugRoute
     }
+    '/teams/$teamSlug/history': {
+      id: '/teams/$teamSlug/history'
+      path: '/history'
+      fullPath: '/teams/$teamSlug/history'
+      preLoaderRoute: typeof TeamsTeamSlugHistoryRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
     '/teams/$teamSlug/results': {
       id: '/teams/$teamSlug/results'
       path: '/results'
@@ -288,21 +319,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamSlugTableRouteImport
       parentRoute: typeof TeamsTeamSlugRoute
     }
+    '/teams/$teamSlug/transfers': {
+      id: '/teams/$teamSlug/transfers'
+      path: '/transfers'
+      fullPath: '/teams/$teamSlug/transfers'
+      preLoaderRoute: typeof TeamsTeamSlugTransfersRouteImport
+      parentRoute: typeof TeamsTeamSlugRoute
+    }
   }
 }
 
 interface TeamsTeamSlugRouteChildren {
   TeamsTeamSlugFixturesRoute: typeof TeamsTeamSlugFixturesRoute
+  TeamsTeamSlugHistoryRoute: typeof TeamsTeamSlugHistoryRoute
   TeamsTeamSlugResultsRoute: typeof TeamsTeamSlugResultsRoute
   TeamsTeamSlugSquadRoute: typeof TeamsTeamSlugSquadRoute
   TeamsTeamSlugTableRoute: typeof TeamsTeamSlugTableRoute
+  TeamsTeamSlugTransfersRoute: typeof TeamsTeamSlugTransfersRoute
 }
 
 const TeamsTeamSlugRouteChildren: TeamsTeamSlugRouteChildren = {
   TeamsTeamSlugFixturesRoute: TeamsTeamSlugFixturesRoute,
+  TeamsTeamSlugHistoryRoute: TeamsTeamSlugHistoryRoute,
   TeamsTeamSlugResultsRoute: TeamsTeamSlugResultsRoute,
   TeamsTeamSlugSquadRoute: TeamsTeamSlugSquadRoute,
   TeamsTeamSlugTableRoute: TeamsTeamSlugTableRoute,
+  TeamsTeamSlugTransfersRoute: TeamsTeamSlugTransfersRoute,
 }
 
 const TeamsTeamSlugRouteWithChildren = TeamsTeamSlugRoute._addFileChildren(
