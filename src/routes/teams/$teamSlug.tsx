@@ -11,6 +11,8 @@ const tabs = [
   { id: "fixtures", label: "Fixtures", to: "/teams/$teamSlug/fixtures" },
   { id: "results", label: "Results", to: "/teams/$teamSlug/results" },
   { id: "squad", label: "Squad", to: "/teams/$teamSlug/squad" },
+  { id: "transfers", label: "Transfers", to: "/teams/$teamSlug/transfers" },
+  { id: "history", label: "History", to: "/teams/$teamSlug/history" },
 ] as const;
 
 export const Route = createFileRoute("/teams/$teamSlug")({
