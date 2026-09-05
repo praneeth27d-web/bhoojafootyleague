@@ -16,7 +16,7 @@ function TeamSquad() {
   const [selected, setSelected] = useState<string | null>(null);
   return (
     <Card title="Squad">
-      <PlayerRows players={list} onSelect={setSelected} />
+      <PlayerRows players={list} onSelect={setSelected} showTeam={false} />
       <PlayerSheet slug={selected} onClose={() => setSelected(null)} />
     </Card>
   );

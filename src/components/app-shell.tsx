@@ -67,7 +67,7 @@ export function AppShell({
   badge = null,
   children,
 }: {
-  title: string;
+  title: ReactNode;
   subtitle?: string;
   badge?: string | null;
   children: ReactNode;
