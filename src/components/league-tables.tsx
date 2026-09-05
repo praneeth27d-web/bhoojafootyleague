@@ -3,6 +3,7 @@ import { formatKickoff, standings, type Match, type Player } from "@/lib/league"
 import { teamName } from "@/lib/league";
 import { StatusPill } from "@/components/app-shell";
 import { TeamBadge } from "@/components/team-badge";
+import { cn } from "@/lib/utils";
 
 export function StandingsTable({ highlight }: { highlight?: string }) {
   const rows = standings();
