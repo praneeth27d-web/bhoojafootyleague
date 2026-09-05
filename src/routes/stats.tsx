@@ -105,11 +105,15 @@ function StatsPage() {
                     <button
                       type="button"
                       onClick={() => setSelected(p.slug)}
-                      className="font-semibold hover:text-primary"
-                      aria-label={`Open profile for ${p.name}`}
+                      className="inline-flex items-center gap-2 font-semibold hover:text-primary"
+                      aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : ""}`}
                     >
                       {p.name}
-                      {p.captain && <span className="text-muted-foreground"> (C)</span>}
+                      {p.captain && (
+                        <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                          C
+                        </span>
+                      )}
                     </button>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
