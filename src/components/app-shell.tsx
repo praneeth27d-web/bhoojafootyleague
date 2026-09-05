@@ -29,7 +29,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           key={item.to}
           to={item.to}
           onClick={onNavigate}
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary/10 data-[status=active]:text-primary"
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary/15 data-[status=active]:text-primary"
         >
           <item.icon className="size-4 shrink-0" aria-hidden="true" />
           <span className="flex-1">{item.label}</span>
