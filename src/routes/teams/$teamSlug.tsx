@@ -1,5 +1,6 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
+import { TeamCrest } from "@/components/team-badge";
 import { getTeam, standings } from "@/lib/league";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +44,12 @@ function TeamLayout() {
 
   return (
     <AppShell
-      title={team.name}
+      title={
+        <span className="inline-flex items-center gap-3">
+          <TeamCrest slug={teamSlug} className="size-10" />
+          {team.name}
+        </span>
+      }
       subtitle={`Position ${position?.pos ?? "—"} · ${position?.points ?? 0} pts · ${position?.played ?? 0} played`}
     >
       <div className="mb-5 border-b border-border">

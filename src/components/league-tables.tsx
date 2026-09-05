@@ -124,21 +124,25 @@ export function MatchRows({ matches }: { matches: Match[] }) {
 export function PlayerRows({
   players,
   onSelect,
+  showTeam = true,
 }: {
   players: Player[];
   onSelect?: (slug: string) => void;
+  showTeam?: boolean;
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[520px] text-sm">
+      <table className={cn("w-full text-sm", showTeam ? "min-w-[520px]" : "min-w-[360px]")}>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
             <th scope="col" className="px-4 py-2 font-semibold">
               Player
             </th>
-            <th scope="col" className="px-4 py-2 font-semibold">
-              Team
-            </th>
+            {showTeam && (
+              <th scope="col" className="px-4 py-2 font-semibold">
+                Team
+              </th>
+            )}
             {["G", "A", "G/A", "POTM"].map((h) => (
               <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
                 {h}
@@ -169,16 +173,18 @@ export function PlayerRows({
                   </Link>
                 )}
               </td>
-              <td className="px-4 py-3 text-muted-foreground">
-                <Link
-                  to="/teams/$teamSlug/squad"
-                  params={{ teamSlug: p.teamSlug }}
-                  className="inline-flex hover:opacity-80"
-                  aria-label={teamName(p.teamSlug)}
-                >
-                  <TeamBadge slug={p.teamSlug} />
-                </Link>
-              </td>
+              {showTeam && (
+                <td className="px-4 py-3 text-muted-foreground">
+                  <Link
+                    to="/teams/$teamSlug/squad"
+                    params={{ teamSlug: p.teamSlug }}
+                    className="inline-flex hover:opacity-80"
+                    aria-label={teamName(p.teamSlug)}
+                  >
+                    <TeamBadge slug={p.teamSlug} />
+                  </Link>
+                </td>
+              )}
               <td className="num px-3 py-3 text-right">{p.goals}</td>
               <td className="num px-3 py-3 text-right">{p.assists}</td>
               <td className="num px-3 py-3 text-right font-bold">{p.goals + p.assists}</td>
