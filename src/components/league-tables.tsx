@@ -131,6 +131,9 @@ export function PlayerRows({
   onSelect?: (slug: string) => void;
   showTeam?: boolean;
 }) {
+  const sorted = [...players].sort(
+    (a, b) => Number(b.captain) - Number(a.captain) || a.name.localeCompare(b.name),
+  );
   return (
     <div className="overflow-x-auto">
       <table className={cn("w-full text-sm", showTeam ? "min-w-[520px]" : "min-w-[360px]")}>
@@ -152,25 +155,35 @@ export function PlayerRows({
           </tr>
         </thead>
         <tbody>
-          {players.map((p) => (
+          {sorted.map((p) => (
             <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent">
               <td className="px-4 py-3">
                 {onSelect ? (
                   <button
                     type="button"
                     onClick={() => onSelect(p.slug)}
-                    className="font-semibold hover:text-primary"
-                    aria-label={`Open profile for ${p.name}`}
+                    className="inline-flex items-center gap-2 font-semibold hover:text-primary"
+                    aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : ""}`}
                   >
                     {p.name}
+                    {p.captain && (
+                      <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                        C
+                      </span>
+                    )}
                   </button>
                 ) : (
                   <Link
                     to="/players/$playerSlug"
                     params={{ playerSlug: p.slug }}
-                    className="font-semibold hover:text-primary"
+                    className="inline-flex items-center gap-2 font-semibold hover:text-primary"
                   >
                     {p.name}
+                    {p.captain && (
+                      <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                        C
+                      </span>
+                    )}
                   </Link>
                 )}
               </td>
