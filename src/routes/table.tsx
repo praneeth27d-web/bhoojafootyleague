@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
-
+import { useSeason } from "@/components/season-context";
+import { Season1Knockouts, Season1Table } from "@/components/season1-views";
 
 export const Route = createFileRoute("/table")({
   head: () => ({
@@ -20,6 +21,19 @@ export const Route = createFileRoute("/table")({
 });
 
 function TablePage() {
+  const { season } = useSeason();
+
+  if (season === "1") {
+    return (
+      <AppShell title="League Table" subtitle="Season 1 — final positions and points">
+        <Card>
+          <Season1Table />
+        </Card>
+        <Season1Knockouts />
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell title="League Table" subtitle="Sorted by Pts, GD, GF">
       <Card>
@@ -42,4 +56,3 @@ function TablePage() {
     </AppShell>
   );
 }
-
