@@ -85,7 +85,10 @@ export function AppShell({
         <div className="mt-8 flex-1">
           <NavList />
         </div>
-        <ThemeToggle className="w-full justify-center" />
+        <div className="space-y-2">
+          <SeasonSwitcher className="w-full" />
+          <ThemeToggle className="w-full justify-center" />
+        </div>
       </aside>
 
       <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface px-4 py-3 lg:hidden">
@@ -101,7 +104,8 @@ export function AppShell({
             <div className="mt-8">
               <NavList onNavigate={() => setOpen(false)} />
             </div>
-            <div className="mt-8">
+            <div className="mt-8 space-y-2">
+              <SeasonSwitcher className="w-full" />
               <ThemeToggle className="w-full justify-center" />
             </div>
           </SheetContent>
