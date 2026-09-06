@@ -24,9 +24,11 @@ const nav: NavItem[] = [
 ];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const { season } = useSeason();
+  const items = season === "1" ? nav.filter((i) => i.to === "/table" || i.to === "/teams") : nav;
   return (
     <nav aria-label="Main navigation" className="flex flex-col gap-1">
-      {nav.map((item) => (
+      {items.map((item) => (
         <Link
           key={item.to}
           to={item.to}
