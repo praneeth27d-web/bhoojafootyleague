@@ -3,6 +3,9 @@ import realMadrid from "@/assets/real-madrid.png.asset.json";
 import juventus from "@/assets/juventus.png.asset.json";
 import chelsea from "@/assets/chelsea.png.asset.json";
 import arsenal from "@/assets/arsenal.png.asset.json";
+import manCity from "@/assets/man-city.png.asset.json";
+import { useSeason } from "@/components/season-context";
+import { season1Name } from "@/lib/season1";
 import { teamName } from "@/lib/league";
 import { cn } from "@/lib/utils";
 
@@ -14,9 +17,20 @@ const crests: Record<string, string> = {
   arsenal: arsenal.url,
 };
 
+const season1Crests: Record<string, string> = {
+  "ac-milan": manCity.url,
+};
+
+/** Team name for the currently selected season (Season 1 rebrands apply). */
+export function useTeamName(slug: string) {
+  const { season } = useSeason();
+  return (season === "1" ? season1Name(slug) : undefined) ?? teamName(slug);
+}
+
 export function TeamCrest({ slug, className }: { slug: string; className?: string | undefined }) {
-  const src = crests[slug];
-  const name = teamName(slug);
+  const { season } = useSeason();
+  const name = useTeamName(slug);
+  const src = (season === "1" ? season1Crests[slug] : undefined) ?? crests[slug];
   if (!src) return <span className="font-semibold">{name}</span>;
   return (
     <img
@@ -46,9 +60,10 @@ export function TeamBadge({
   className?: string | undefined;
   crestClassName?: string | undefined;
 }) {
-  const name = <span className="truncate font-semibold">{teamName(slug)}</span>;
+  const label = useTeamName(slug);
+  const name = <span className="truncate font-semibold">{label}</span>;
   const crest = <TeamCrest slug={slug} className={crestClassName} />;
-  const hiddenName = <span className="sr-only">{teamName(slug)}</span>;
+  const hiddenName = <span className="sr-only">{label}</span>;
 
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
@@ -73,4 +88,3 @@ export function TeamBadge({
     </span>
   );
 }
-
