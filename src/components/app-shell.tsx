@@ -4,6 +4,8 @@ import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SeasonSwitcher } from "@/components/season-switcher";
+import { useSeason } from "@/components/season-context";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
