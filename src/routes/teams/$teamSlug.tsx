@@ -1,6 +1,8 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { AppShell } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
+import { useSeason } from "@/components/season-context";
+import { season1Name, season1Table } from "@/lib/season1";
 import { getTeam, standings } from "@/lib/league";
 import { cn } from "@/lib/utils";
 
@@ -40,23 +42,32 @@ export const Route = createFileRoute("/teams/$teamSlug")({
 
 function TeamLayout() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
+  const { season } = useSeason();
   const team = getTeam(teamSlug);
   if (!team) return null;
   const position = standings().find((r) => r.team.slug === teamSlug);
+  const s1 = season1Table.find((r) => r.slug === teamSlug);
+  const label = (season === "1" ? season1Name(teamSlug) : undefined) ?? team.name;
+  const visibleTabs =
+    season === "1" ? tabs.filter((t) => t.id === "table" || t.id === "squad") : tabs;
 
   return (
     <AppShell
       title={
         <span className="inline-flex items-center gap-3">
           <TeamCrest slug={teamSlug} className="size-10" />
-          {team.name}
+          {label}
         </span>
       }
-      subtitle={`Position ${position?.pos ?? "—"} · ${position?.points ?? 0} pts · ${position?.played ?? 0} played`}
+      subtitle={
+        season === "1"
+          ? `Season 1 · Position ${s1?.pos ?? "—"} · ${s1?.points ?? 0} pts`
+          : `Position ${position?.pos ?? "—"} · ${position?.points ?? 0} pts · ${position?.played ?? 0} played`
+      }
     >
       <div className="mb-5 border-b border-border">
         <div className="flex gap-1 overflow-x-auto pb-0">
-          {tabs.map((t) => (
+          {visibleTabs.map((t) => (
             <Link
               key={t.id}
               to={t.to}
