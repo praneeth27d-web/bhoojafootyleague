@@ -3,6 +3,8 @@ import { ChevronRight } from "lucide-react";
 import { AppShell, Card } from "@/components/app-shell";
 import { standings, teamMatches } from "@/lib/league";
 import { TeamBadge } from "@/components/team-badge";
+import { useSeason } from "@/components/season-context";
+import { season1Table } from "@/lib/season1";
 
 export const Route = createFileRoute("/teams/")({
   head: () => ({
@@ -27,6 +29,43 @@ export const Route = createFileRoute("/teams/")({
 
 function TeamsPage() {
   const rows = standings();
+  const { season } = useSeason();
+
+  if (season === "1") {
+    return (
+      <AppShell title="Teams" subtitle="Season 1 — final position, points and squads">
+        <Card>
+          <ul className="divide-y divide-border">
+            {season1Table.map((r) => (
+              <li key={r.slug}>
+                <Link
+                  to="/teams/$teamSlug/squad"
+                  params={{ teamSlug: r.slug }}
+                  className="flex items-center gap-4 px-4 py-4 hover:bg-accent"
+                >
+                  <span className="num flex size-8 items-center justify-center rounded-md bg-surface-muted text-sm font-bold">
+                    {r.pos}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <TeamBadge
+                      slug={r.slug}
+                      showName
+                      className="text-sm font-bold"
+                      crestClassName="size-7"
+                    />
+                    <span className="block text-xs text-muted-foreground">
+                      <span className="num">{r.points}</span> pts
+                    </span>
+                  </span>
+                  <ChevronRight className="size-4 text-muted-foreground" aria-hidden="true" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell title="Teams" subtitle="Club pages with position, fixtures, results and squad">
