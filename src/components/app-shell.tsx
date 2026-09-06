@@ -4,6 +4,8 @@ import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SeasonSwitcher } from "@/components/season-switcher";
+import { useSeason } from "@/components/season-context";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -22,9 +24,11 @@ const nav: NavItem[] = [
 ];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const { season } = useSeason();
+  const items = season === "1" ? nav.filter((i) => i.to === "/table" || i.to === "/teams") : nav;
   return (
     <nav aria-label="Main navigation" className="flex flex-col gap-1">
-      {nav.map((item) => (
+      {items.map((item) => (
         <Link
           key={item.to}
           to={item.to}
@@ -81,7 +85,10 @@ export function AppShell({
         <div className="mt-8 flex-1">
           <NavList />
         </div>
-        <ThemeToggle className="w-full justify-center" />
+        <div className="space-y-2">
+          <SeasonSwitcher className="w-full" />
+          <ThemeToggle className="w-full justify-center" />
+        </div>
       </aside>
 
       <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-surface px-4 py-3 lg:hidden">
@@ -97,7 +104,8 @@ export function AppShell({
             <div className="mt-8">
               <NavList onNavigate={() => setOpen(false)} />
             </div>
-            <div className="mt-8">
+            <div className="mt-8 space-y-2">
+              <SeasonSwitcher className="w-full" />
               <ThemeToggle className="w-full justify-center" />
             </div>
           </SheetContent>
