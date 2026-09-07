@@ -19,7 +19,7 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
             <th scope="col" className="px-4 py-2 font-semibold">
               Team
             </th>
-            {["P", "W", "D", "L", "GF", "GA", "GD", "Pts"].map((h) => (
+            {["PL", "W", "D", "L", "+/-", "GD", "Pts"].map((h) => (
               <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
                 {h}
               </th>
@@ -62,11 +62,14 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                 </Link>
               </td>
 
-              {[r.played, r.won, r.drawn, r.lost, r.gf, r.ga].map((v, i) => (
+              {[r.played, r.won, r.drawn, r.lost].map((v, i) => (
                 <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
                   {v}
                 </td>
               ))}
+              <td className="num px-3 py-3 text-right text-muted-foreground">
+                {r.gf}-{r.ga}
+              </td>
               <td className="num px-3 py-3 text-right text-muted-foreground">
                 {r.gd > 0 ? `+${r.gd}` : r.gd}
               </td>

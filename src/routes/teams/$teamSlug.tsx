@@ -59,6 +59,7 @@ function TeamLayout() {
           {label}
         </span>
       }
+      back
       subtitle={
         season === "1"
           ? `Season 1 · Position ${s1?.pos ?? "—"} · ${s1?.points ?? 0} pts`

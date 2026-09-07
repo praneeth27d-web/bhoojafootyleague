@@ -102,6 +102,7 @@ function MatchDetail() {
       title={`${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}`}
       subtitle={`Matchday ${m.matchday}`}
       badge={completed ? "Full time" : "Upcoming"}
+      back
     >
       <div className="max-w-2xl space-y-5">
         <Card>

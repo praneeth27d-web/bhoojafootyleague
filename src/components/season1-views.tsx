@@ -1,11 +1,13 @@
+import { Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { TeamBadge } from "@/components/team-badge";
 import { Card } from "@/components/app-shell";
-import { season1Knockouts, season1Table, season1TableNote } from "@/lib/season1";
+import { season1Knockouts, season1Table } from "@/lib/season1";
 
 export function Season1Table({ highlight }: { highlight?: string }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[280px] text-sm">
+      <table className="w-full min-w-[480px] text-sm">
         <caption className="sr-only">Season 1 final standings</caption>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -15,9 +17,11 @@ export function Season1Table({ highlight }: { highlight?: string }) {
             <th scope="col" className="px-4 py-2 font-semibold">
               Team
             </th>
-            <th scope="col" className="px-4 py-2 text-right font-semibold">
-              Pts
-            </th>
+            {["MP", "W", "D", "L", "GD", "Pts"].map((h) => (
+              <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -44,14 +48,19 @@ export function Season1Table({ highlight }: { highlight?: string }) {
               <td className="px-4 py-3">
                 <TeamBadge slug={r.slug} showName crestClassName="size-7" />
               </td>
-              <td className="num px-4 py-3 text-right font-bold">{r.points}</td>
+              {[r.played, r.won, r.drawn, r.lost].map((v, i) => (
+                <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
+                  {v}
+                </td>
+              ))}
+              <td className="num px-3 py-3 text-right text-muted-foreground">
+                {r.gd > 0 ? `+${r.gd}` : r.gd}
+              </td>
+              <td className="num px-3 py-3 text-right font-bold">{r.points}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-        {season1TableNote}
-      </p>
     </div>
   );
 }
@@ -61,33 +70,30 @@ export function Season1Knockouts() {
     <Card title="Knockouts" className="mt-6">
       <ul className="divide-y divide-border">
         {season1Knockouts.map((k) => (
-          <li key={k.id} className="px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">{k.round}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <TeamBadge slug={k.homeSlug} showName className="text-sm" />
-              {k.homeGoals === undefined ? (
-                <span className="text-xs font-semibold text-muted-foreground">vs</span>
-              ) : (
-                <span className="num rounded-md bg-surface-muted px-2.5 py-1 text-sm font-bold">
-                  {k.homeGoals}–{k.awayGoals}
+          <li key={k.id}>
+            <Link
+              to="/season-1/$knockoutId"
+              params={{ knockoutId: k.id }}
+              className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-accent"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs font-semibold uppercase tracking-wide text-primary">
+                  {k.round}
                 </span>
-              )}
-              <TeamBadge slug={k.awaySlug} showName className="text-sm" />
-            </div>
-            {k.scorers && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Goals:{" "}
-                {k.scorers.map((s, i) => (
-                  <span key={s.name}>
-                    {i > 0 && ", "}
-                    {s.name} <span className="num">({s.goals})</span>
-                  </span>
-                ))}
-              </p>
-            )}
-            {k.homeGoals === undefined && (
-              <p className="mt-2 text-xs text-muted-foreground">Result to be added.</p>
-            )}
+                <span className="mt-2 flex flex-wrap items-center gap-3">
+                  <TeamBadge slug={k.homeSlug} showName className="text-sm" />
+                  {k.homeGoals === undefined ? (
+                    <span className="text-xs font-semibold text-muted-foreground">vs</span>
+                  ) : (
+                    <span className="num rounded-md bg-surface-muted px-2.5 py-1 text-sm font-bold">
+                      {k.homeGoals}–{k.awayGoals}
+                    </span>
+                  )}
+                  <TeamBadge slug={k.awaySlug} showName className="text-sm" />
+                </span>
+              </span>
+              <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            </Link>
           </li>
         ))}
       </ul>

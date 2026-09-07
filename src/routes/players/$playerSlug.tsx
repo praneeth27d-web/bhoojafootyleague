@@ -31,7 +31,7 @@ function PlayerProfile() {
   const player = getPlayer(playerSlug);
   if (!player) return null;
   return (
-    <AppShell title={player.name} subtitle={teamName(player.teamSlug)}>
+    <AppShell title={player.name} subtitle={teamName(player.teamSlug)} back>
       <div className="max-w-2xl space-y-5">
         <Card title="Season stats">
           <div className="px-4 py-4">
