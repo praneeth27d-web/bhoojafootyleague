@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Menu, Table2, CalendarDays, BarChart3, ArrowLeftRight, Shield } from "lucide-react";
+import { Link, useRouter } from "@tanstack/react-router";
+import { Menu, Table2, CalendarDays, BarChart3, ArrowLeftRight, Shield, ArrowLeft } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -69,11 +69,13 @@ export function AppShell({
   title,
   subtitle,
   badge = null,
+  back = false,
   children,
 }: {
   title: ReactNode;
   subtitle?: string;
   badge?: string | null;
+  back?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -115,6 +117,7 @@ export function AppShell({
 
       <div className="lg:pl-60">
         <div className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 lg:py-10">
+          {back && <BackButton />}
           <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h1 className="text-2xl font-extrabold sm:text-3xl">{title}</h1>
@@ -130,6 +133,23 @@ export function AppShell({
         </div>
       </div>
     </div>
+  );
+}
+
+export function BackButton({ className }: { className?: string }) {
+  const router = useRouter();
+  return (
+    <button
+      type="button"
+      onClick={() => router.history.back()}
+      className={cn(
+        "mb-4 inline-flex items-center gap-2 rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+        className,
+      )}
+    >
+      <ArrowLeft className="size-4" aria-hidden="true" />
+      Back
+    </button>
   );
 }
 
