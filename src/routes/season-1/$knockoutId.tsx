@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest, useTeamName } from "@/components/team-badge";
+import { players, slugify } from "@/lib/league";
 import { getSeason1Knockout } from "@/lib/season1";
 
 export const Route = createFileRoute("/season-1/$knockoutId")({
