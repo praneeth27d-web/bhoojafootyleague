@@ -37,11 +37,54 @@ function TeamColumn({ slug }: { slug: string }) {
   );
 }
 
+function GoalRow({ name, goals, side }: { name: string; goals: number; side: "home" | "away" }) {
+  const label = (
+    <span className="flex items-center gap-2 text-sm">
+      <span className="font-semibold">{name}</span>
+      {goals > 1 && <span className="num text-muted-foreground">({goals})</span>}
+    </span>
+  );
+  const ball = (
+    <span
+      aria-hidden="true"
+      className="flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-muted text-[11px]"
+    >
+      ⚽
+    </span>
+  );
+  return (
+    <li className="grid grid-cols-2 gap-3 px-4 py-2.5">
+      {side === "home" ? (
+        <span className="flex items-center gap-2">
+          {ball}
+          {label}
+        </span>
+      ) : (
+        <span />
+      )}
+      {side === "away" ? (
+        <span className="flex items-center justify-end gap-2 text-right">
+          {label}
+          {ball}
+        </span>
+      ) : (
+        <span />
+      )}
+    </li>
+  );
+}
+
 function Season1KnockoutDetail() {
   const { knockoutId } = Route.useParams();
   const k = getSeason1Knockout(knockoutId);
   if (!k) return null;
   const played = k.homeGoals !== undefined && k.awayGoals !== undefined;
+
+  const scorers = (k.scorers ?? []).map((s) => {
+    const p = players.find((pl) => pl.slug === slugify(s.name));
+    const side: "home" | "away" = p?.teamSlug === k.awaySlug ? "away" : "home";
+    return { ...s, side };
+  });
 
   return (
     <AppShell title={k.round} subtitle="Season 1 knockouts" back badge={played ? "Full time" : "To be played"}>
@@ -58,16 +101,11 @@ function Season1KnockoutDetail() {
           </div>
         </Card>
 
-        <Card title="Goalscorers">
-          {k.scorers && k.scorers.length > 0 ? (
+        <Card title="Goals">
+          {scorers.length > 0 ? (
             <ul className="divide-y divide-border">
-              {k.scorers.map((s) => (
-                <li key={s.name} className="flex items-center justify-between px-4 py-3 text-sm">
-                  <span className="font-semibold">{s.name}</span>
-                  <span className="num text-muted-foreground">
-                    {s.goals} {s.goals === 1 ? "goal" : "goals"}
-                  </span>
-                </li>
+              {scorers.map((s) => (
+                <GoalRow key={s.name} name={s.name} goals={s.goals} side={s.side} />
               ))}
             </ul>
           ) : (
@@ -80,3 +118,4 @@ function Season1KnockoutDetail() {
     </AppShell>
   );
 }
+
