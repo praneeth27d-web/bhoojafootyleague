@@ -124,7 +124,8 @@ function MatchDetail() {
   return (
     <AppShell
       title={`${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}`}
-      subtitle={`Matchday ${m.matchday}`}
+      subtitle={m.round ? `Season ${m.season} · ${m.round}` : `Season ${m.season} · Matchday ${m.matchday}`}
+
       badge={completed ? "Full time" : "Upcoming"}
       back
     >
