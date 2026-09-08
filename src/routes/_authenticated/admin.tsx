@@ -300,10 +300,41 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const [scorer, setScorer] = useState("");
   const [assist, setAssist] = useState("");
   const [minute, setMinute] = useState("");
+  // Fixture details
+  const [season, setSeason] = useState(match.season);
+  const [round, setRound] = useState(match.round ?? "");
+  const [matchday, setMatchday] = useState(match.matchday);
+  const [home, setHome] = useState(match.homeSlug);
+  const [away, setAway] = useState(match.awaySlug);
+  const [kickoff, setKickoff] = useState(new Date(match.date).toISOString().slice(0, 16));
+  const [venue, setVenue] = useState(match.venue ?? "");
 
   const involved = league.players.filter(
     (p) => p.teamSlug === match.homeSlug || p.teamSlug === match.awaySlug,
   );
+
+  async function saveDetails() {
+    setError(null);
+    if (home === away) {
+      setError("Pick two different teams.");
+      return;
+    }
+    const { error: err } = await supabase
+      .from("matches")
+      .update({
+        season,
+        round: round.trim() || null,
+        matchday,
+        home_slug: home,
+        away_slug: away,
+        kickoff: new Date(kickoff).toISOString(),
+        venue: venue || null,
+      })
+      .eq("id", match.id);
+    if (err) setError(err.message);
+    else refresh();
+  }
+
 
   async function saveResult() {
     setError(null);
