@@ -2,7 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { TeamBadge } from "@/components/team-badge";
 import { Card } from "@/components/app-shell";
-import { season1Knockouts, season1Table } from "@/lib/season1";
+import { useLeague } from "@/lib/league-data";
+import { season1Table } from "@/lib/season1";
+
 
 export function Season1Table({ highlight }: { highlight?: string }) {
   return (
