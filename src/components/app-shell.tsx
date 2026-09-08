@@ -132,6 +132,7 @@ export function AppShell({
             <div className="mt-8 space-y-2">
               <SeasonSwitcher className="w-full" />
               <ThemeToggle className="w-full justify-center" />
+              <AdminLink onNavigate={() => setOpen(false)} />
             </div>
           </SheetContent>
         </Sheet>
