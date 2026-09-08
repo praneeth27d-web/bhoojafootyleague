@@ -65,6 +65,25 @@ export function Season1Table({ highlight }: { highlight?: string }) {
   );
 }
 
+export function PositionLegend() {
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+      <span className="inline-flex items-center gap-2">
+        <span className="block h-4 w-1 rounded-r-sm bg-pos-top" />
+        Green — Qualified
+      </span>
+      <span className="inline-flex items-center gap-2">
+        <span className="block h-4 w-1 rounded-r-sm bg-pos-mid" />
+        Orange — Playoffs
+      </span>
+      <span className="inline-flex items-center gap-2">
+        <span className="block h-4 w-1 rounded-r-sm bg-pos-low" />
+        Red — Disqualified
+      </span>
+    </div>
+  );
+}
+
 export function Season1Knockouts() {
   return (
     <Card title="Knockouts" className="mt-6">
