@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
 import { useSeason } from "@/components/season-context";
-import { Season1Knockouts, Season1Table } from "@/components/season1-views";
+import { PositionLegend, Season1Knockouts, Season1Table } from "@/components/season1-views";
 
 export const Route = createFileRoute("/table")({
   head: () => ({
@@ -29,6 +29,7 @@ function TablePage() {
         <Card>
           <Season1Table />
         </Card>
+        <PositionLegend />
         <Season1Knockouts />
       </AppShell>
     );

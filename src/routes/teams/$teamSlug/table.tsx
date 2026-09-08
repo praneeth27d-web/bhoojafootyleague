@@ -2,7 +2,7 @@ import { createFileRoute, useParams } from "@tanstack/react-router";
 import { Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
 import { useSeason } from "@/components/season-context";
-import { Season1Knockouts, Season1Table } from "@/components/season1-views";
+import { PositionLegend, Season1Knockouts, Season1Table } from "@/components/season1-views";
 
 export const Route = createFileRoute("/teams/$teamSlug/table")({
   component: TeamTable,
@@ -18,6 +18,7 @@ function TeamTable() {
         <Card title="Season 1 table">
           <Season1Table highlight={teamSlug} />
         </Card>
+        <PositionLegend />
         <Season1Knockouts />
       </>
     );
