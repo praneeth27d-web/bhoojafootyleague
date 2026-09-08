@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { MatchRows } from "@/components/league-tables";
-import { matchdays, matches, teams } from "@/lib/league";
+import { teams } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 
 type Search = {
   team?: string | undefined;
@@ -41,6 +42,7 @@ const selectClass =
 function FixturesResults() {
   const { team, status, matchday } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+  const { matches, matchdays } = useLeague();
 
   const filtered = matches.filter(
     (m) =>

@@ -3,7 +3,8 @@ import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerSheet } from "@/components/player-sheet";
 import { TeamBadge } from "@/components/team-badge";
-import { players, teamName } from "@/lib/league";
+import { teamName, type Player } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 
 const metrics = ["goals", "assists", "ga", "potm"] as const;
 type Metric = (typeof metrics)[number];
@@ -45,8 +46,9 @@ function StatsPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const [selected, setSelected] = useState<string | null>(null);
 
-  const value = (p: (typeof players)[number]) =>
-    metric === "ga" ? p.goals + p.assists : p[metric];
+  const { players } = useLeague();
+
+  const value = (p: Player) => (metric === "ga" ? p.goals + p.assists : p[metric]);
 
   const rows = [...players]
     .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
@@ -99,7 +101,7 @@ function StatsPage() {
             </thead>
             <tbody>
               {rows.map((p) => (
-                <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent">
+                <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent active:bg-accent/70">
                   <td className="num px-4 py-3 text-muted-foreground">{p.pos}</td>
                   <td className="px-4 py-3">
                     <button

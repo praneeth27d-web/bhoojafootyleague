@@ -1,5 +1,14 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Menu, Table2, CalendarDays, BarChart3, ArrowLeftRight, Shield, ArrowLeft } from "lucide-react";
+import {
+  Menu,
+  Table2,
+  CalendarDays,
+  BarChart3,
+  ArrowLeftRight,
+  Shield,
+  ArrowLeft,
+  Lock,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -48,6 +57,19 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+function AdminLink({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link
+      to="/admin"
+      onClick={onNavigate}
+      className="flex items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+    >
+      <Lock className="size-3.5" aria-hidden="true" />
+      League admin
+    </Link>
+  );
+}
+
 function Brand({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <Link
@@ -90,6 +112,7 @@ export function AppShell({
         <div className="space-y-2">
           <SeasonSwitcher className="w-full" />
           <ThemeToggle className="w-full justify-center" />
+          <AdminLink />
         </div>
       </aside>
 
@@ -109,6 +132,7 @@ export function AppShell({
             <div className="mt-8 space-y-2">
               <SeasonSwitcher className="w-full" />
               <ThemeToggle className="w-full justify-center" />
+              <AdminLink onNavigate={() => setOpen(false)} />
             </div>
           </SheetContent>
         </Sheet>

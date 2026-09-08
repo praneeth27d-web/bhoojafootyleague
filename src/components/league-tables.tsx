@@ -1,12 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { formatKickoff, standings, type Match, type Player } from "@/lib/league";
+import { formatKickoff, type Match, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { StatusPill } from "@/components/app-shell";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
 
 export function StandingsTable({ highlight }: { highlight?: string }) {
-  const rows = standings();
+  const { standings: rows } = useLeague();
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] text-sm">
@@ -97,7 +98,7 @@ export function MatchRows({ matches }: { matches: Match[] }) {
           <Link
             to="/matches/$matchId"
             params={{ matchId: m.id }}
-            className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
+            className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent active:bg-accent/70"
           >
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
             <span className="min-w-0 flex-1">
@@ -159,7 +160,7 @@ export function PlayerRows({
         </thead>
         <tbody>
           {sorted.map((p) => (
-            <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent">
+            <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent active:bg-accent/70">
               <td className="px-4 py-3">
                 {onSelect ? (
                   <button

@@ -5,6 +5,7 @@ export type Team = {
 };
 
 export type Player = {
+  id: string;
   slug: string;
   name: string;
   teamSlug: string;
@@ -14,11 +15,16 @@ export type Player = {
   potm: number;
 };
 
-export type MatchEvent = {
-  minute: number;
-  type: "goal" | "assist" | "potm";
-  playerSlug: string;
-  label: string;
+export type MatchGoal = {
+  id: string;
+  minute: number | null;
+  scorerId: string;
+  scorerSlug: string;
+  scorerName: string;
+  scorerTeamSlug: string | null;
+  assistId: string | null;
+  assistSlug: string | null;
+  assistName: string | null;
 };
 
 export type Match = {
@@ -27,11 +33,26 @@ export type Match = {
   date: string; // ISO
   homeSlug: string;
   awaySlug: string;
-  venue?: string;
+  venue?: string | null;
   status: "completed" | "upcoming";
-  homeGoals?: number;
-  awayGoals?: number;
-  events?: MatchEvent[];
+  homeGoals?: number | null;
+  awayGoals?: number | null;
+  goals: MatchGoal[];
+  potmId?: string | null;
+  potmSlug?: string | null;
+  potmName?: string | null;
+  potmTeamSlug?: string | null;
+};
+
+export type Transfer = {
+  id: string;
+  playerId: string;
+  playerName: string;
+  playerSlug: string;
+  fromSlug: string | null;
+  toSlug: string;
+  date: string;
+  note: string | null;
 };
 
 export const teams: Team[] = [
@@ -50,84 +71,8 @@ export const slugify = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-// Confirmed squads. Captains marked with `true`. Transfers can change these.
-const rawSquads: Array<[string, Array<[string, boolean]>]> = [
-  [
-    "ac-milan",
-    [
-      ["Reyansh", true],
-      ["Shaurya", false],
-      ["Praneeth", false],
-      ["Rohit", false],
-      ["Adrith", false],
-    ],
-  ],
-  [
-    "real-madrid",
-    [
-      ["Vivek", true],
-      ["Nirvaan", false],
-      ["Areek", false],
-      ["Neil", false],
-      ["Rohan", false],
-    ],
-  ],
-  [
-    "juventus",
-    [
-      ["Swanik", true],
-      ["Rishik", false],
-      ["Jai", false],
-      ["Ruhaan", false],
-      ["Arjun", false],
-    ],
-  ],
-  [
-    "chelsea",
-    [
-      ["Ritwik", true],
-      ["Neerav", false],
-      ["Aadvik", false],
-      ["Suhit", false],
-      ["Advitya", false],
-    ],
-  ],
-  [
-    "arsenal",
-    [
-      ["Ady", true],
-      ["Avyaan", false],
-      ["Dev", false],
-      ["Abheek", false],
-      ["Cherry", false],
-    ],
-  ],
-];
-
-export const players: Player[] = rawSquads.flatMap(([teamSlug, squadList]) =>
-  squadList.map(([name, captain]) => ({
-    slug: slugify(name),
-    name,
-    teamSlug,
-    captain,
-    goals: 0,
-    assists: 0,
-    potm: 0,
-  })),
-);
-
 export const getTeam = (slug: string) => teams.find((t) => t.slug === slug);
-export const getPlayer = (slug: string) => players.find((p) => p.slug === slug);
 export const teamName = (slug: string) => getTeam(slug)?.name ?? slug;
-export const squad = (teamSlug: string) => players.filter((p) => p.teamSlug === teamSlug);
-
-// No matches have been played and no fixtures have been scheduled yet.
-export const matches: Match[] = [];
-
-export const completedMatches = matches.filter((m) => m.status === "completed");
-export const upcomingMatches = matches.filter((m) => m.status === "upcoming");
-export const matchdays = [...new Set(matches.map((m) => m.matchday))].sort((a, b) => a - b);
-export const getMatch = (id: string) => matches.find((m) => m.id === id);
 
 export type StandingRow = {
   pos: number;
@@ -142,14 +87,15 @@ export type StandingRow = {
   points: number;
 };
 
-export function standings(): StandingRow[] {
+export function computeStandings(matches: Match[]): StandingRow[] {
   const base = new Map(
     teams.map((t) => [t.slug, { team: t, played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0 }]),
   );
 
-  for (const m of completedMatches) {
-    const home = base.get(m.homeSlug)!;
-    const away = base.get(m.awaySlug)!;
+  for (const m of matches.filter((m) => m.status === "completed")) {
+    const home = base.get(m.homeSlug);
+    const away = base.get(m.awaySlug);
+    if (!home || !away) continue;
     const hg = m.homeGoals ?? 0;
     const ag = m.awayGoals ?? 0;
     home.played++;
@@ -183,18 +129,6 @@ export function standings(): StandingRow[] {
     .map((r, i) => ({ pos: i + 1, ...r }));
 }
 
-export const teamMatches = (teamSlug: string) =>
-  matches.filter((m) => m.homeSlug === teamSlug || m.awaySlug === teamSlug);
-
-export function playerContributions(playerSlug: string) {
-  return completedMatches
-    .filter((m) => m.events?.some((e) => e.playerSlug === playerSlug))
-    .map((m) => ({
-      match: m,
-      events: m.events!.filter((e) => e.playerSlug === playerSlug),
-    }));
-}
-
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -213,8 +147,3 @@ export function formatShortDate(iso: string) {
   const d = new Date(iso);
   return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
-
-export const topScorers = () =>
-  [...players].sort(
-    (a, b) => b.goals - a.goals || b.assists - a.assists || a.name.localeCompare(b.name),
-  );
