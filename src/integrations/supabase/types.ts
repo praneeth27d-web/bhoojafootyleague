@@ -74,6 +74,8 @@ export type Database = {
           kickoff: string
           matchday: number
           potm_player_id: string | null
+          round: string | null
+          season: number
           status: string
           venue: string | null
         }
@@ -87,6 +89,8 @@ export type Database = {
           kickoff?: string
           matchday?: number
           potm_player_id?: string | null
+          round?: string | null
+          season?: number
           status?: string
           venue?: string | null
         }
@@ -100,6 +104,8 @@ export type Database = {
           kickoff?: string
           matchday?: number
           potm_player_id?: string | null
+          round?: string | null
+          season?: number
           status?: string
           venue?: string | null
         }
