@@ -26,54 +26,28 @@ export const season1Table: Season1Row[] = [
   { pos: 5, slug: "arsenal", played: 4, won: 0, drawn: 1, lost: 3, gd: -30, points: 1 },
 ];
 
-export type Season1Knockout = {
-  id: string;
-  round: string;
-  homeSlug: string;
-  awaySlug: string;
-  homeGoals?: number;
-  awayGoals?: number;
-  scorers?: Array<{ name: string; goals: number }>;
-  note?: string;
-};
-
-export const season1Knockouts: Season1Knockout[] = [
-  {
-    id: "s1-semi-final",
-    round: "Semi-Final",
-    homeSlug: "real-madrid",
-    awaySlug: "juventus",
-    homeGoals: 13,
-    awayGoals: 0,
-    scorers: [
-      { name: "Vivek", goals: 10 },
-      { name: "Nirvaan", goals: 2 },
-      { name: "Areek", goals: 1 },
-    ],
-  },
-  {
-    id: "s1-final",
-    round: "Final",
-    homeSlug: "chelsea",
-    awaySlug: "real-madrid",
-  },
-];
-
-export const getSeason1Knockout = (id: string) => season1Knockouts.find((k) => k.id === id);
-
-/** Playoff outcome for a club in Season 1. */
-export function season1Playoff(slug: string): string {
+/** Playoff outcome for a club in Season 1. `final` comes from the live database. */
+export function season1Playoff(
+  slug: string,
+  final?: { homeSlug: string; awaySlug: string; homeGoals?: number | null; awayGoals?: number | null } | null,
+): string {
   const row = season1Table.find((r) => r.slug === slug);
   if (!row) return "—";
-  if (row.pos >= 4) return `${row.pos}${row.pos === 4 ? "th" : "th"}`;
+  if (row.pos >= 4) return `${row.pos}th`;
   if (slug === "juventus") return "Bronze";
-  const final = season1Knockouts.find((k) => k.round === "Final");
-  if (!final || final.homeGoals === undefined || final.awayGoals === undefined) {
+  if (
+    !final ||
+    final.homeGoals === null ||
+    final.homeGoals === undefined ||
+    final.awayGoals === null ||
+    final.awayGoals === undefined
+  ) {
     return "Final — result pending";
   }
   const winner = final.homeGoals > final.awayGoals ? final.homeSlug : final.awaySlug;
   return slug === winner ? "Champion" : "Silver";
 }
+
 
 export function season1LeagueFinish(slug: string): string {
   const row = season1Table.find((r) => r.slug === slug);

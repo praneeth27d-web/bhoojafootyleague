@@ -19,7 +19,6 @@ import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
-import { Route as Season1KnockoutIdRouteImport } from './routes/season-1/$knockoutId'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as TeamsTeamSlugRouteImport } from './routes/teams/$teamSlug'
 import { Route as TeamsTeamSlugFixturesRouteImport } from './routes/teams/$teamSlug/fixtures'
@@ -78,11 +77,6 @@ const PlayersPlayerSlugRoute = PlayersPlayerSlugRouteImport.update({
   path: '/players/$playerSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Season1KnockoutIdRoute = Season1KnockoutIdRouteImport.update({
-  id: '/season-1/$knockoutId',
-  path: '/season-1/$knockoutId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const TeamsIndexRoute = TeamsIndexRouteImport.update({
   id: '/teams/',
   path: '/teams/',
@@ -134,7 +128,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
-  '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
@@ -154,7 +147,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
-  '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
@@ -176,7 +168,6 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
-  '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
   '/teams/$teamSlug': typeof TeamsTeamSlugRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamSlug/fixtures': typeof TeamsTeamSlugFixturesRoute
@@ -198,7 +189,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
-    | '/season-1/$knockoutId'
     | '/teams/$teamSlug'
     | '/teams/'
     | '/teams/$teamSlug/fixtures'
@@ -218,7 +208,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
-    | '/season-1/$knockoutId'
     | '/teams/$teamSlug'
     | '/teams'
     | '/teams/$teamSlug/fixtures'
@@ -239,7 +228,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
-    | '/season-1/$knockoutId'
     | '/teams/$teamSlug'
     | '/teams/'
     | '/teams/$teamSlug/fixtures'
@@ -260,7 +248,6 @@ export interface RootRouteChildren {
   TransfersRoute: typeof TransfersRoute
   MatchesMatchIdRoute: typeof MatchesMatchIdRoute
   PlayersPlayerSlugRoute: typeof PlayersPlayerSlugRoute
-  Season1KnockoutIdRoute: typeof Season1KnockoutIdRoute
   TeamsTeamSlugRoute: typeof TeamsTeamSlugRouteWithChildren
   TeamsIndexRoute: typeof TeamsIndexRoute
 }
@@ -335,13 +322,6 @@ declare module '@tanstack/react-router' {
       path: '/players/$playerSlug'
       fullPath: '/players/$playerSlug'
       preLoaderRoute: typeof PlayersPlayerSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/season-1/$knockoutId': {
-      id: '/season-1/$knockoutId'
-      path: '/season-1/$knockoutId'
-      fullPath: '/season-1/$knockoutId'
-      preLoaderRoute: typeof Season1KnockoutIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/': {
@@ -446,7 +426,6 @@ const rootRouteChildren: RootRouteChildren = {
   TransfersRoute: TransfersRoute,
   MatchesMatchIdRoute: MatchesMatchIdRoute,
   PlayersPlayerSlugRoute: PlayersPlayerSlugRoute,
-  Season1KnockoutIdRoute: Season1KnockoutIdRoute,
   TeamsTeamSlugRoute: TeamsTeamSlugRouteWithChildren,
   TeamsIndexRoute: TeamsIndexRoute,
 }
