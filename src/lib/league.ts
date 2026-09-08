@@ -29,8 +29,11 @@ export type MatchGoal = {
 
 export type Match = {
   id: string;
+  season: number;
+  round?: string | null;
   matchday: number;
   date: string; // ISO
+
   homeSlug: string;
   awaySlug: string;
   venue?: string | null;
