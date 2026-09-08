@@ -22,6 +22,8 @@ type RawPlayer = {
 
 type RawMatch = {
   id: string;
+  season: number;
+  round: string | null;
   matchday: number;
   kickoff: string;
   venue: string | null;
@@ -32,6 +34,7 @@ type RawMatch = {
   away_goals: number | null;
   potm_player_id: string | null;
 };
+
 
 type RawGoal = {
   id: string;
