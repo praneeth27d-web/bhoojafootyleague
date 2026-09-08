@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
 import { Route as TransfersRouteImport } from './routes/transfers'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as MatchesMatchIdRouteImport } from './routes/matches/$matchId'
 import { Route as PlayersPlayerSlugRouteImport } from './routes/players/$playerSlug'
 import { Route as Season1KnockoutIdRouteImport } from './routes/season-1/$knockoutId'
@@ -29,6 +32,15 @@ import { Route as TeamsTeamSlugTransfersRouteImport } from './routes/teams/$team
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixturesResultsRoute = FixturesResultsRouteImport.update({
@@ -50,6 +62,11 @@ const TransfersRoute = TransfersRouteImport.update({
   id: '/transfers',
   path: '/transfers',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const MatchesMatchIdRoute = MatchesMatchIdRouteImport.update({
   id: '/matches/$matchId',
@@ -109,10 +126,12 @@ const TeamsTeamSlugTransfersRoute = TeamsTeamSlugTransfersRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
@@ -127,10 +146,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
@@ -146,10 +167,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/matches/$matchId': typeof MatchesMatchIdRoute
   '/players/$playerSlug': typeof PlayersPlayerSlugRoute
   '/season-1/$knockoutId': typeof Season1KnockoutIdRoute
@@ -166,10 +190,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/fixtures-results'
     | '/stats'
     | '/table'
     | '/transfers'
+    | '/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/season-1/$knockoutId'
@@ -184,10 +210,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/fixtures-results'
     | '/stats'
     | '/table'
     | '/transfers'
+    | '/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/season-1/$knockoutId'
@@ -202,10 +230,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
     | '/fixtures-results'
     | '/stats'
     | '/table'
     | '/transfers'
+    | '/_authenticated/admin'
     | '/matches/$matchId'
     | '/players/$playerSlug'
     | '/season-1/$knockoutId'
@@ -221,6 +252,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
@@ -239,6 +272,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixtures-results': {
@@ -268,6 +315,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/transfers'
       preLoaderRoute: typeof TransfersRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/matches/$matchId': {
       id: '/matches/$matchId'
@@ -349,6 +403,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface TeamsTeamSlugRouteChildren {
   TeamsTeamSlugFixturesRoute: typeof TeamsTeamSlugFixturesRoute
   TeamsTeamSlugHistoryRoute: typeof TeamsTeamSlugHistoryRoute
@@ -373,6 +438,8 @@ const TeamsTeamSlugRouteWithChildren = TeamsTeamSlugRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   FixturesResultsRoute: FixturesResultsRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,

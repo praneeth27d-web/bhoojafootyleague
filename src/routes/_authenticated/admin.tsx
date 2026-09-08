@@ -71,7 +71,7 @@ function AdminPage() {
   return (
     <AppShell
       title="League admin"
-      subtitle={user?.email ?? undefined}
+      subtitle={user?.email ?? "Update results, squads and transfers"}
       badge={isAdmin === false ? "No access" : "Editing"}
     >
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
