@@ -151,23 +151,27 @@ export function useLeague() {
 
   // Live updates: any change an admin makes shows up without a refresh.
   useEffect(() => {
-    const channel = supabase
-      .channel("league-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "players" }, () =>
-        queryClient.invalidateQueries({ queryKey: leagueQueryKey }),
-      )
-      .on("postgres_changes", { event: "*", schema: "public", table: "matches" }, () =>
-        queryClient.invalidateQueries({ queryKey: leagueQueryKey }),
-      )
-      .on("postgres_changes", { event: "*", schema: "public", table: "match_goals" }, () =>
-        queryClient.invalidateQueries({ queryKey: leagueQueryKey }),
-      )
-      .on("postgres_changes", { event: "*", schema: "public", table: "transfers" }, () =>
-        queryClient.invalidateQueries({ queryKey: leagueQueryKey }),
-      )
-      .subscribe();
+    const invalidate = () => {
+      void queryClient.invalidateQueries({ queryKey: leagueQueryKey });
+    };
+    liveListeners.add(invalidate);
+    if (!liveChannel) {
+      const channel = supabase.channel("league-live");
+      for (const table of ["players", "matches", "match_goals", "transfers"] as const) {
+        channel.on("postgres_changes", { event: "*", schema: "public", table }, () => {
+          liveListeners.forEach((fn) => fn());
+        });
+      }
+      liveChannel = channel;
+      channel.subscribe();
+    }
     return () => {
-      void supabase.removeChannel(channel);
+      liveListeners.delete(invalidate);
+      if (liveListeners.size === 0 && liveChannel) {
+        const channel = liveChannel;
+        liveChannel = null;
+        void supabase.removeChannel(channel);
+      }
     };
   }, [queryClient]);
 
