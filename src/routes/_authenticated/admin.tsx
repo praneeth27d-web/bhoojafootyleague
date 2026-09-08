@@ -122,8 +122,12 @@ function ErrorNote({ error }: { error: string | null }) {
   return <p className="text-sm font-semibold text-destructive">{error}</p>;
 }
 
+const seasonOptions = [2, 1];
+
 function MatchesAdmin({ league, refresh }: AdminProps) {
   const [error, setError] = useState<string | null>(null);
+  const [season, setSeason] = useState(2);
+  const [round, setRound] = useState("");
   const [matchday, setMatchday] = useState(1);
   const [home, setHome] = useState(teams[0]!.slug);
   const [away, setAway] = useState(teams[1]!.slug);
@@ -139,6 +143,8 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
       return;
     }
     const { error: err } = await supabase.from("matches").insert({
+      season,
+      round: round.trim() || null,
       matchday,
       home_slug: home,
       away_slug: away,
@@ -150,6 +156,7 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
     else {
       setVenue("");
       setKickoff("");
+      setRound("");
       refresh();
     }
   }
@@ -164,6 +171,27 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
     <>
       <Card title="Add a fixture">
         <form onSubmit={addMatch} className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Field label="Season">
+            <select
+              className={inputClass}
+              value={season}
+              onChange={(e) => setSeason(Number(e.target.value))}
+            >
+              {seasonOptions.map((s) => (
+                <option key={s} value={s}>
+                  Season {s}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Round (leave empty for league games)">
+            <input
+              className={inputClass}
+              placeholder="e.g. Final, Semi-Final"
+              value={round}
+              onChange={(e) => setRound(e.target.value)}
+            />
+          </Field>
           <Field label="Matchday">
             <input
               type="number"
@@ -218,43 +246,50 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
         </form>
       </Card>
 
-      <Card title={`Matches (${league.matches.length})`}>
-        {league.matches.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-            No matches added yet.
-          </p>
-        ) : (
-          <ul className="divide-y divide-border">
-            {league.matches.map((m) => (
-              <li key={m.id} className="px-4 py-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="text-sm font-semibold">
-                    MD{m.matchday} · {teamName(m.homeSlug)} {m.status === "completed" ? m.homeGoals : ""}
-                    {m.status === "completed" ? "–" : " vs "}
-                    {m.status === "completed" ? m.awayGoals : ""} {teamName(m.awaySlug)}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      className={ghostBtn}
-                      onClick={() => setOpenId(openId === m.id ? null : m.id)}
-                    >
-                      {openId === m.id ? "Close" : "Edit result"}
-                    </button>
-                    <button type="button" className={ghostBtn} onClick={() => removeMatch(m.id)}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                {openId === m.id && <MatchEditor match={m} league={league} refresh={refresh} />}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      {seasonOptions.map((s) => {
+        const list = league.allMatches.filter((m) => m.season === s);
+        return (
+          <Card key={s} title={`Season ${s} matches (${list.length})`}>
+            {list.length === 0 ? (
+              <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                No matches for this season yet.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {list.map((m) => (
+                  <li key={m.id} className="px-4 py-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="text-sm font-semibold">
+                        {m.round ? m.round : `MD${m.matchday}`} · {teamName(m.homeSlug)}{" "}
+                        {m.status === "completed" ? m.homeGoals : ""}
+                        {m.status === "completed" ? "–" : " vs "}
+                        {m.status === "completed" ? m.awayGoals : ""} {teamName(m.awaySlug)}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          className={ghostBtn}
+                          onClick={() => setOpenId(openId === m.id ? null : m.id)}
+                        >
+                          {openId === m.id ? "Close" : "Edit match"}
+                        </button>
+                        <button type="button" className={ghostBtn} onClick={() => removeMatch(m.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    {openId === m.id && <MatchEditor match={m} league={league} refresh={refresh} />}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        );
+      })}
     </>
   );
 }
+
 
 function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) {
   const [error, setError] = useState<string | null>(null);
