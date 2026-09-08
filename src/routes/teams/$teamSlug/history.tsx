@@ -1,5 +1,6 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { Card } from "@/components/app-shell";
+import { useLeague } from "@/lib/league-data";
 import { season1LeagueFinish, season1Playoff, season1Table } from "@/lib/season1";
 
 export const Route = createFileRoute("/teams/$teamSlug/history")({
@@ -8,7 +9,10 @@ export const Route = createFileRoute("/teams/$teamSlug/history")({
 
 function TeamHistory() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
+  const { allMatches } = useLeague("all");
   const inSeason1 = season1Table.some((r) => r.slug === teamSlug);
+  const final = allMatches.find((m) => m.season === 1 && m.round === "Final") ?? null;
+
 
   return (
     <Card title="History">
