@@ -140,6 +140,10 @@ async function fetchLeague(): Promise<LeagueSnapshot> {
 
 const empty: LeagueSnapshot = { players: [], matches: [], transfers: [] };
 
+// One shared realtime channel for the whole app.
+let liveChannel: ReturnType<typeof supabase.channel> | null = null;
+const liveListeners = new Set<() => void>();
+
 export function useLeague() {
   const queryClient = useQueryClient();
   const { data, isLoading, isFetching } = useQuery({
