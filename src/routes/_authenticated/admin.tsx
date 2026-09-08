@@ -44,7 +44,7 @@ function AdminPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const league = useLeague();
+  const league = useLeague("all");
   const [tab, setTab] = useState<Tab>("matches");
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
