@@ -1,70 +1,28 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
-import {
-  formatKickoff,
-  getMatch,
-  getPlayer,
-  players,
-  slugify,
-  teamName,
-  type Match,
-} from "@/lib/league";
+import { formatKickoff, teamName } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 
 export const Route = createFileRoute("/matches/$matchId")({
-  loader: ({ params }) => {
-    if (!getMatch(params.matchId)) throw notFound();
-  },
-  head: ({ params }) => {
-    const m = getMatch(params.matchId);
-    if (!m) return { meta: [{ title: "Match not found" }, { name: "robots", content: "noindex" }] };
-    const title = `${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)} — BFL`;
-    const description =
-      m.status === "completed"
-        ? `Goals, assists and player of the match for ${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}.`
-        : `Date, time and venue for ${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}.`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "article" },
-        { name: "twitter:card", content: "summary" },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Match — Bhooja Football League" },
+      {
+        name: "description",
+        content: "Score, goalscorers, assists and player of the match for this BFL fixture.",
+      },
+      { property: "og:title", content: "BFL Match" },
+      {
+        property: "og:description",
+        content: "Score, goalscorers, assists and player of the match.",
+      },
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: MatchDetail,
 });
-
-const nameFromLabel = (label: string, prefix: string) =>
-  label
-    .replace(prefix, "")
-    .replace(/\(.*\)/, "")
-    .replace(/—/g, "")
-    .trim();
-
-function parseGoals(m: Match) {
-  return (m.events ?? [])
-    .filter((e) => e.type === "goal")
-    .map((e) => {
-      const assistMatch = /assist:\s*([^)]+)\)/.exec(e.label);
-      const scorer = getPlayer(e.playerSlug);
-      const assistName = assistMatch?.[1]?.trim();
-      const assist = assistName
-        ? (players.find((p) => p.slug === slugify(assistName)) ?? null)
-        : null;
-      return {
-        minute: e.minute,
-        scorerName: scorer?.name ?? nameFromLabel(e.label, "Goal"),
-        scorerSlug: scorer?.slug ?? null,
-        teamSlug: scorer?.teamSlug ?? null,
-        assistName: assist?.name ?? assistName ?? null,
-        assistSlug: assist?.slug ?? null,
-      };
-    })
-    .sort((a, b) => a.minute - b.minute);
-}
 
 function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
   if (!slug) return <span className="font-semibold">{name}</span>;
@@ -72,30 +30,96 @@ function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
     <Link
       to="/players/$playerSlug"
       params={{ playerSlug: slug }}
-      className="font-semibold text-primary hover:underline"
+      className="font-semibold hover:underline"
     >
       {name}
     </Link>
   );
 }
 
+function GoalRow({
+  side,
+  minute,
+  scorerName,
+  scorerSlug,
+  assistName,
+  assistSlug,
+}: {
+  side: "home" | "away";
+  minute: number | null;
+  scorerName: string;
+  scorerSlug: string | null;
+  assistName: string | null;
+  assistSlug: string | null;
+}) {
+  const content = (
+    <span className={side === "away" ? "text-right" : ""}>
+      <span className="text-sm">
+        <PlayerLink slug={scorerSlug} name={scorerName} />
+        {minute !== null && <span className="num text-muted-foreground"> {minute}&apos;</span>}
+      </span>
+      {assistName && (
+        <span className="block text-xs text-muted-foreground">
+          Assist: <PlayerLink slug={assistSlug} name={assistName} />
+        </span>
+      )}
+    </span>
+  );
+  const ball = (
+    <span
+      aria-hidden="true"
+      className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-muted text-[11px]"
+    >
+      ⚽
+    </span>
+  );
+  return (
+    <li className="grid grid-cols-2 gap-3 px-4 py-2.5">
+      {side === "home" ? (
+        <span className="flex items-start gap-2">
+          {ball}
+          {content}
+        </span>
+      ) : (
+        <span />
+      )}
+      {side === "away" ? (
+        <span className="flex items-start justify-end gap-2">
+          {content}
+          {ball}
+        </span>
+      ) : (
+        <span />
+      )}
+    </li>
+  );
+}
+
 function MatchDetail() {
   const { matchId } = Route.useParams();
+  const { getMatch, loading } = useLeague();
   const m = getMatch(matchId);
-  if (!m) return null;
+
+  if (!m) {
+    return (
+      <AppShell title="Match" back>
+        <Card>
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+            {loading ? "Loading match…" : "This match could not be found."}
+          </p>
+        </Card>
+      </AppShell>
+    );
+  }
 
   const completed = m.status === "completed";
-  const goals = completed ? parseGoals(m) : [];
-  const potmEvent = (m.events ?? []).find((e) => e.type === "potm");
-  const potm = potmEvent ? getPlayer(potmEvent.playerSlug) : null;
   const d = new Date(m.date);
   const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
     d.getUTCDay()
   ];
-  const [datePart, timePart] = (() => {
-    const parts = formatKickoff(m.date).split(", ");
-    return [parts[1] ?? "", parts[2] ?? ""];
-  })();
+  const parts = formatKickoff(m.date).split(", ");
+  const datePart = parts[1] ?? "";
+  const timePart = parts[2] ?? "";
 
   return (
     <AppShell
@@ -126,29 +150,18 @@ function MatchDetail() {
         {completed ? (
           <>
             <Card title="Goals & assists">
-              {goals.length > 0 ? (
+              {m.goals.length > 0 ? (
                 <ul className="divide-y divide-border">
-                  {goals.map((g, i) => (
-                    <li key={i} className="flex items-baseline gap-3 px-4 py-3 text-sm">
-                      <span className="num w-10 shrink-0 text-muted-foreground">
-                        {g.minute}&apos;
-                      </span>
-                      <span>
-                        <PlayerLink slug={g.scorerSlug} name={g.scorerName} />
-                        {g.teamSlug && (
-                          <span className="text-muted-foreground"> · {teamName(g.teamSlug)}</span>
-                        )}
-                        <span className="block text-xs text-muted-foreground">
-                          {g.assistName ? (
-                            <>
-                              Assist: <PlayerLink slug={g.assistSlug} name={g.assistName} />
-                            </>
-                          ) : (
-                            "No assist"
-                          )}
-                        </span>
-                      </span>
-                    </li>
+                  {m.goals.map((g) => (
+                    <GoalRow
+                      key={g.id}
+                      side={g.scorerTeamSlug === m.awaySlug ? "away" : "home"}
+                      minute={g.minute}
+                      scorerName={g.scorerName}
+                      scorerSlug={g.scorerSlug || null}
+                      assistName={g.assistName}
+                      assistSlug={g.assistSlug}
+                    />
                   ))}
                 </ul>
               ) : (
@@ -159,10 +172,12 @@ function MatchDetail() {
             </Card>
 
             <Card title="Player of the match">
-              {potm ? (
+              {m.potmName ? (
                 <div className="px-4 py-4 text-sm">
-                  <PlayerLink slug={potm.slug} name={potm.name} />
-                  <span className="text-muted-foreground"> · {teamName(potm.teamSlug)}</span>
+                  <PlayerLink slug={m.potmSlug ?? null} name={m.potmName} />
+                  {m.potmTeamSlug && (
+                    <span className="text-muted-foreground"> · {teamName(m.potmTeamSlug)}</span>
+                  )}
                 </div>
               ) : (
                 <p className="px-4 py-6 text-center text-sm text-muted-foreground">

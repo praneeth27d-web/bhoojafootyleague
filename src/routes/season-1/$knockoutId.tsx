@@ -1,7 +1,8 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest, useTeamName } from "@/components/team-badge";
-import { players, slugify } from "@/lib/league";
+import { slugify } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { getSeason1Knockout } from "@/lib/season1";
 
 export const Route = createFileRoute("/season-1/$knockoutId")({
@@ -77,6 +78,7 @@ function GoalRow({ name, goals, side }: { name: string; goals: number; side: "ho
 function Season1KnockoutDetail() {
   const { knockoutId } = Route.useParams();
   const k = getSeason1Knockout(knockoutId);
+  const { players } = useLeague();
   if (!k) return null;
   const played = k.homeGoals !== undefined && k.awayGoals !== undefined;
 

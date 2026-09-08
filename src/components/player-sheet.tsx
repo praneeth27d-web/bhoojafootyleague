@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { formatShortDate, getPlayer, playerContributions } from "@/lib/league";
+import { formatShortDate } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 export function PlayerStatGrid({ slug }: { slug: string }) {
+  const { getPlayer } = useLeague();
   const player = getPlayer(slug);
   if (!player) return null;
   const stats = [
@@ -30,13 +32,14 @@ export function PlayerStatGrid({ slug }: { slug: string }) {
 }
 
 export function PlayerContributions({ slug }: { slug: string }) {
+  const { playerContributions } = useLeague();
   const rows = playerContributions(slug);
   if (rows.length === 0) {
     return <p className="text-sm text-muted-foreground">No recorded contributions yet.</p>;
   }
   return (
     <ul className="divide-y divide-border">
-      {rows.map(({ match, events }) => (
+      {rows.map(({ match, lines }) => (
         <li key={match.id} className="py-3">
           <Link
             to="/matches/$matchId"
@@ -55,9 +58,10 @@ export function PlayerContributions({ slug }: { slug: string }) {
             MD{match.matchday} · {formatShortDate(match.date)}
           </p>
           <ul className="mt-1 space-y-0.5">
-            {events.map((e, i) => (
+            {lines.map((e, i) => (
               <li key={i} className="text-xs text-muted-foreground">
-                {e.minute}&apos; {e.label}
+                {e.minute !== null ? `${e.minute}' ` : ""}
+                {e.label}
               </li>
             ))}
           </ul>
@@ -68,6 +72,7 @@ export function PlayerContributions({ slug }: { slug: string }) {
 }
 
 export function PlayerSheet({ slug, onClose }: { slug: string | null; onClose: () => void }) {
+  const { getPlayer } = useLeague();
   const player = slug ? getPlayer(slug) : undefined;
   return (
     <Sheet open={!!player} onOpenChange={(o) => !o && onClose()}>

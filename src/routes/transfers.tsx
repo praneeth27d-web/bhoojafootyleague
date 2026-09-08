@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
+import { TransferRows } from "@/components/transfer-rows";
+import { useLeague } from "@/lib/league-data";
 
 export const Route = createFileRoute("/transfers")({
   head: () => ({
@@ -23,13 +25,18 @@ export const Route = createFileRoute("/transfers")({
 });
 
 function Transfers() {
+  const { transfers } = useLeague();
   return (
     <AppShell title="Transfers" subtitle="Squads can change through transfers">
       <div className="max-w-2xl space-y-5">
         <Card title="Latest transfers">
-          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-            No transfers completed yet.
-          </p>
+          {transfers.length > 0 ? (
+            <TransferRows transfers={transfers} />
+          ) : (
+            <p className="px-4 py-10 text-center text-sm text-muted-foreground">
+              No transfers completed yet.
+            </p>
+          )}
         </Card>
         <Card title="How this affects squads">
           <p className="px-4 py-4 text-sm text-muted-foreground">

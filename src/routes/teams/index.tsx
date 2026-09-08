@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { AppShell, Card } from "@/components/app-shell";
-import { standings, teamMatches } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { useSeason } from "@/components/season-context";
 import { season1Table } from "@/lib/season1";
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/teams/")({
 });
 
 function TeamsPage() {
-  const rows = standings();
+  const { standings: rows, teamMatches } = useLeague();
   const { season } = useSeason();
 
   if (season === "1") {

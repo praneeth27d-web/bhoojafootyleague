@@ -3,7 +3,8 @@ import { AppShell } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { useSeason } from "@/components/season-context";
 import { season1Name, season1Table } from "@/lib/season1";
-import { getTeam, standings } from "@/lib/league";
+import { getTeam } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { cn } from "@/lib/utils";
 
 import { notFound } from "@tanstack/react-router";
@@ -44,8 +45,9 @@ function TeamLayout() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
   const { season } = useSeason();
   const team = getTeam(teamSlug);
+  const { standings } = useLeague();
   if (!team) return null;
-  const position = standings().find((r) => r.team.slug === teamSlug);
+  const position = standings.find((r) => r.team.slug === teamSlug);
   const s1 = season1Table.find((r) => r.slug === teamSlug);
   const label = (season === "1" ? season1Name(teamSlug) : undefined) ?? team.name;
   const visibleTabs =

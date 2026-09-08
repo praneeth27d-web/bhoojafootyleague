@@ -1,12 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { formatKickoff, standings, type Match, type Player } from "@/lib/league";
+import { formatKickoff, type Match, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 import { StatusPill } from "@/components/app-shell";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
 
 export function StandingsTable({ highlight }: { highlight?: string }) {
-  const rows = standings();
+  const { standings: rows } = useLeague();
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] text-sm">

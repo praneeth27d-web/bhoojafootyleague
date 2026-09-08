@@ -3,7 +3,8 @@ import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerSheet } from "@/components/player-sheet";
 import { TeamBadge } from "@/components/team-badge";
-import { players, teamName } from "@/lib/league";
+import { teamName, type Player } from "@/lib/league";
+import { useLeague } from "@/lib/league-data";
 
 const metrics = ["goals", "assists", "ga", "potm"] as const;
 type Metric = (typeof metrics)[number];
@@ -45,8 +46,9 @@ function StatsPage() {
   const navigate = useNavigate({ from: Route.fullPath });
   const [selected, setSelected] = useState<string | null>(null);
 
-  const value = (p: (typeof players)[number]) =>
-    metric === "ga" ? p.goals + p.assists : p[metric];
+  const { players } = useLeague();
+
+  const value = (p: Player) => (metric === "ga" ? p.goals + p.assists : p[metric]);
 
   const rows = [...players]
     .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
