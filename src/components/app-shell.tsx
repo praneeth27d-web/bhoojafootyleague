@@ -90,6 +90,7 @@ export function AppShell({
         <div className="space-y-2">
           <SeasonSwitcher className="w-full" />
           <ThemeToggle className="w-full justify-center" />
+          <AdminLink />
         </div>
       </aside>
 
