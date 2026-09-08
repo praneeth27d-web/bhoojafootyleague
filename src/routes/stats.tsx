@@ -101,7 +101,7 @@ function StatsPage() {
             </thead>
             <tbody>
               {rows.map((p) => (
-                <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent">
+                <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent active:bg-accent/70">
                   <td className="num px-4 py-3 text-muted-foreground">{p.pos}</td>
                   <td className="px-4 py-3">
                     <button

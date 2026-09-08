@@ -99,7 +99,7 @@ export function Season1Knockouts() {
             <Link
               to="/season-1/$knockoutId"
               params={{ knockoutId: k.id }}
-              className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-accent"
+              className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-accent active:bg-accent/70"
             >
               <span className="min-w-0 flex-1">
                 <span className="block text-xs font-semibold uppercase tracking-wide text-primary">

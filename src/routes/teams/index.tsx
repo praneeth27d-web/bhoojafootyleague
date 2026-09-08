@@ -41,7 +41,7 @@ function TeamsPage() {
                 <Link
                   to="/teams/$teamSlug/squad"
                   params={{ teamSlug: r.slug }}
-                  className="flex items-center gap-4 px-4 py-4 hover:bg-accent"
+                  className="flex items-center gap-4 px-4 py-4 hover:bg-accent active:bg-accent/70"
                 >
                   <span className="num flex size-8 items-center justify-center rounded-md bg-surface-muted text-sm font-bold">
                     {r.pos}
@@ -79,7 +79,7 @@ function TeamsPage() {
                 <Link
                   to="/teams/$teamSlug/table"
                   params={{ teamSlug: r.team.slug }}
-                  className="flex items-center gap-4 px-4 py-4 hover:bg-accent"
+                  className="flex items-center gap-4 px-4 py-4 hover:bg-accent active:bg-accent/70"
                 >
                   <span className="num flex size-8 items-center justify-center rounded-md bg-surface-muted text-sm font-bold">
                     {r.pos}
