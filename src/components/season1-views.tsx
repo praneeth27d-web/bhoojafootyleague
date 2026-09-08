@@ -46,7 +46,13 @@ export function Season1Table({ highlight }: { highlight?: string }) {
                 </span>
               </td>
               <td className="px-4 py-3">
-                <TeamBadge slug={r.slug} showName crestClassName="size-7" />
+                <Link
+                  to="/teams/$teamSlug"
+                  params={{ teamSlug: r.slug }}
+                  className="inline-flex rounded-md transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <TeamBadge slug={r.slug} showName crestClassName="size-7" />
+                </Link>
               </td>
               {[r.played, r.won, r.drawn, r.lost].map((v, i) => (
                 <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
