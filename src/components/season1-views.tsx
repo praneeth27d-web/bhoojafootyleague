@@ -93,14 +93,16 @@ export function PositionLegend() {
 }
 
 export function Season1Knockouts() {
+  const { knockouts } = useLeague();
+  if (knockouts.length === 0) return null;
   return (
     <Card title="Knockouts" className="mt-6">
       <ul className="divide-y divide-border">
-        {season1Knockouts.map((k) => (
+        {knockouts.map((k) => (
           <li key={k.id}>
             <Link
-              to="/season-1/$knockoutId"
-              params={{ knockoutId: k.id }}
+              to="/matches/$matchId"
+              params={{ matchId: k.id }}
               className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-accent active:bg-accent/70"
             >
               <span className="min-w-0 flex-1">
@@ -109,7 +111,7 @@ export function Season1Knockouts() {
                 </span>
                 <span className="mt-2 flex flex-wrap items-center gap-3">
                   <TeamBadge slug={k.homeSlug} showName className="text-sm" />
-                  {k.homeGoals === undefined ? (
+                  {k.status !== "completed" ? (
                     <span className="text-xs font-semibold text-muted-foreground">vs</span>
                   ) : (
                     <span className="num rounded-md bg-surface-muted px-2.5 py-1 text-sm font-bold">
@@ -126,4 +128,5 @@ export function Season1Knockouts() {
       </ul>
     </Card>
   );
+
 }
