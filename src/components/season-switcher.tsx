@@ -1,8 +1,10 @@
 import { Trophy } from "lucide-react";
-import { useSeason, type Season } from "@/components/season-context";
+import { useSeason } from "@/components/season-context";
+import { seasonLabel, useSeasons } from "@/lib/seasons";
 
 export function SeasonSwitcher({ className }: { className?: string }) {
   const { season, setSeason } = useSeason();
+  const { seasons } = useSeasons();
 
   return (
     <label
@@ -15,11 +17,14 @@ export function SeasonSwitcher({ className }: { className?: string }) {
       <span className="sr-only">Season</span>
       <select
         value={season}
-        onChange={(e) => setSeason(e.target.value as Season)}
+        onChange={(e) => setSeason(e.target.value)}
         className="w-full cursor-pointer bg-transparent text-xs font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="2">Season 2</option>
-        <option value="1">Season 1</option>
+        {seasons.map((s) => (
+          <option key={s.id} value={String(s.number)}>
+            {seasonLabel(s)}
+          </option>
+        ))}
       </select>
     </label>
   );

@@ -3,8 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { supabase } from "@/integrations/supabase/client";
+import { useSeason } from "@/components/season-context";
 import { teams, teamName, slugify, type Match } from "@/lib/league";
 import { leagueQueryKey, useLeague } from "@/lib/league-data";
+import { seasonLabel, seasonsQueryKey, useSeasons } from "@/lib/seasons";
 import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -45,10 +47,33 @@ function AdminPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const league = useLeague("all");
+  const { seasons, latest } = useSeasons();
+  const { season: viewingSeason, setSeason: setViewingSeason } = useSeason();
   const [tab, setTab] = useState<Tab>("matches");
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [seasonError, setSeasonError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: leagueQueryKey });
+  const activeSeason = Number(viewingSeason) || latest;
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: leagueQueryKey });
+    void queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+  };
+
+  async function startNewSeason() {
+    setSeasonError(null);
+    setCreating(true);
+    const next = latest + 1;
+    const { error: err } = await supabase.from("seasons").insert({ number: next });
+    setCreating(false);
+    if (err) {
+      setSeasonError(err.message);
+      return;
+    }
+    refresh();
+    setViewingSeason(String(next));
+  }
 
   useEffect(() => {
     if (!user) return;
@@ -74,6 +99,34 @@ function AdminPage() {
       subtitle={user?.email ?? "Update results, squads and transfers"}
       badge={isAdmin === false ? "No access" : "Editing"}
     >
+      <Card className="mb-5">
+        <div className="flex flex-wrap items-end gap-3 px-4 py-4">
+          <Field label="Season you are editing">
+            <select
+              className={inputClass}
+              value={String(activeSeason)}
+              onChange={(e) => setViewingSeason(e.target.value)}
+            >
+              {seasons.map((s) => (
+                <option key={s.id} value={String(s.number)}>
+                  {seasonLabel(s)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <button type="button" className={btnClass} onClick={startNewSeason} disabled={creating}>
+            {creating ? "Starting…" : "Start a new season"}
+          </button>
+          <p className="w-full text-xs text-muted-foreground">
+            Everything below applies to {`Season ${activeSeason}`}. Starting a new season creates
+            Season {latest + 1} with the same clubs and squads, ready for its own fixtures.
+          </p>
+          <div className="w-full">
+            <ErrorNote error={seasonError} />
+          </div>
+        </div>
+      </Card>
+
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1 border-b border-border">
           {tabs.map((t) => (
@@ -106,7 +159,9 @@ function AdminPage() {
       )}
 
       <div className="space-y-5">
-        {tab === "matches" && <MatchesAdmin league={league} refresh={refresh} />}
+        {tab === "matches" && (
+          <MatchesAdmin league={league} refresh={refresh} activeSeason={activeSeason} />
+        )}
         {tab === "squads" && <SquadsAdmin league={league} refresh={refresh} />}
         {tab === "transfers" && <TransfersAdmin league={league} refresh={refresh} />}
       </div>
@@ -122,11 +177,13 @@ function ErrorNote({ error }: { error: string | null }) {
   return <p className="text-sm font-semibold text-destructive">{error}</p>;
 }
 
-const seasonOptions = [2, 1];
-
-function MatchesAdmin({ league, refresh }: AdminProps) {
+function MatchesAdmin({
+  league,
+  refresh,
+  activeSeason,
+}: AdminProps & { activeSeason: number }) {
   const [error, setError] = useState<string | null>(null);
-  const [season, setSeason] = useState(2);
+  const season = activeSeason;
   const [round, setRound] = useState("");
   const [matchday, setMatchday] = useState(1);
   const [home, setHome] = useState(teams[0]!.slug);
@@ -169,21 +226,8 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
 
   return (
     <>
-      <Card title="Add a fixture">
+      <Card title={`Add a fixture to Season ${season}`}>
         <form onSubmit={addMatch} className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Season">
-            <select
-              className={inputClass}
-              value={season}
-              onChange={(e) => setSeason(Number(e.target.value))}
-            >
-              {seasonOptions.map((s) => (
-                <option key={s} value={s}>
-                  Season {s}
-                </option>
-              ))}
-            </select>
-          </Field>
           <Field label="Round (leave empty for league games)">
             <input
               className={inputClass}
@@ -246,7 +290,7 @@ function MatchesAdmin({ league, refresh }: AdminProps) {
         </form>
       </Card>
 
-      {seasonOptions.map((s) => {
+      {[season].map((s) => {
         const list = league.allMatches.filter((m) => m.season === s);
         return (
           <Card key={s} title={`Season ${s} matches (${list.length})`}>
@@ -308,6 +352,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const [away, setAway] = useState(match.awaySlug);
   const [kickoff, setKickoff] = useState(new Date(match.date).toISOString().slice(0, 16));
   const [venue, setVenue] = useState(match.venue ?? "");
+
+  const { seasons } = useSeasons();
 
   const involved = league.players.filter(
     (p) => p.teamSlug === match.homeSlug || p.teamSlug === match.awaySlug,
@@ -380,6 +426,82 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
 
   return (
     <div className="mt-3 space-y-4 rounded-md border border-border bg-surface-muted p-3">
+      <div>
+        <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          Fixture details
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Field label="Season">
+            <select
+              className={inputClass}
+              value={String(season)}
+              onChange={(e) => setSeason(Number(e.target.value))}
+            >
+              {seasons.map((s) => (
+                <option key={s.id} value={String(s.number)}>
+                  {seasonLabel(s)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Round (empty for league games)">
+            <input
+              className={inputClass}
+              placeholder="e.g. Final"
+              value={round}
+              onChange={(e) => setRound(e.target.value)}
+            />
+          </Field>
+          <Field label="Matchday">
+            <input
+              type="number"
+              min={1}
+              className={inputClass}
+              value={matchday}
+              onChange={(e) => setMatchday(Number(e.target.value))}
+            />
+          </Field>
+          <Field label="Kick-off (date & time)">
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={kickoff}
+              onChange={(e) => setKickoff(e.target.value)}
+            />
+          </Field>
+          <Field label="Home team">
+            <select className={inputClass} value={home} onChange={(e) => setHome(e.target.value)}>
+              {teams.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Away team">
+            <select className={inputClass} value={away} onChange={(e) => setAway(e.target.value)}>
+              {teams.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Location">
+            <input
+              className={inputClass}
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
+            />
+          </Field>
+          <div className="flex items-end">
+            <button type="button" className={btnClass} onClick={saveDetails}>
+              Save fixture
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Status">
           <select
