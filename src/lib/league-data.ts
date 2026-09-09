@@ -92,7 +92,8 @@ export function useLeague(scope: "season" | "all" = "season") {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: leagueQueryKey,
     queryFn: fetchLeague,
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchOnMount: "always",
     placeholderData: (prev) => prev,
   });
 
