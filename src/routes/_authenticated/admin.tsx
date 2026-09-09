@@ -159,7 +159,9 @@ function AdminPage() {
       )}
 
       <div className="space-y-5">
-        {tab === "matches" && <MatchesAdmin league={league} refresh={refresh} />}
+        {tab === "matches" && (
+          <MatchesAdmin league={league} refresh={refresh} activeSeason={activeSeason} />
+        )}
         {tab === "squads" && <SquadsAdmin league={league} refresh={refresh} />}
         {tab === "transfers" && <TransfersAdmin league={league} refresh={refresh} />}
       </div>
@@ -175,11 +177,13 @@ function ErrorNote({ error }: { error: string | null }) {
   return <p className="text-sm font-semibold text-destructive">{error}</p>;
 }
 
-const seasonOptions = [2, 1];
-
-function MatchesAdmin({ league, refresh }: AdminProps) {
+function MatchesAdmin({
+  league,
+  refresh,
+  activeSeason,
+}: AdminProps & { activeSeason: number }) {
   const [error, setError] = useState<string | null>(null);
-  const [season, setSeason] = useState(2);
+  const season = activeSeason;
   const [round, setRound] = useState("");
   const [matchday, setMatchday] = useState(1);
   const [home, setHome] = useState(teams[0]!.slug);
