@@ -37,47 +37,40 @@ function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
   );
 }
 
-function GoalRow({
+function EventRow({
   side,
   minute,
-  scorerName,
-  scorerSlug,
-  assistName,
-  assistSlug,
+  name,
+  slug,
+  kind,
 }: {
   side: "home" | "away";
   minute: number | null;
-  scorerName: string;
-  scorerSlug: string | null;
-  assistName: string | null;
-  assistSlug: string | null;
+  name: string;
+  slug: string | null;
+  kind: "goal" | "assist";
 }) {
   const content = (
     <span className={side === "away" ? "text-right" : ""}>
       <span className="text-sm">
-        <PlayerLink slug={scorerSlug} name={scorerName} />
+        <PlayerLink slug={slug} name={name} />
         {minute !== null && <span className="num text-muted-foreground"> {minute}&apos;</span>}
       </span>
-      {assistName && (
-        <span className="block text-xs text-muted-foreground">
-          Assist: <PlayerLink slug={assistSlug} name={assistName} />
-        </span>
-      )}
     </span>
   );
-  const ball = (
+  const icon = (
     <span
       aria-hidden="true"
       className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-muted text-[11px]"
     >
-      ⚽
+      {kind === "goal" ? "⚽" : "🥾"}
     </span>
   );
   return (
     <li className="grid grid-cols-2 gap-3 px-4 py-2.5">
       {side === "home" ? (
         <span className="flex items-start gap-2">
-          {ball}
+          {icon}
           {content}
         </span>
       ) : (
@@ -86,7 +79,7 @@ function GoalRow({
       {side === "away" ? (
         <span className="flex items-start justify-end gap-2">
           {content}
-          {ball}
+          {icon}
         </span>
       ) : (
         <span />
