@@ -226,21 +226,8 @@ function MatchesAdmin({
 
   return (
     <>
-      <Card title="Add a fixture">
+      <Card title={`Add a fixture to Season ${season}`}>
         <form onSubmit={addMatch} className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Season">
-            <select
-              className={inputClass}
-              value={season}
-              onChange={(e) => setSeason(Number(e.target.value))}
-            >
-              {seasonOptions.map((s) => (
-                <option key={s} value={s}>
-                  Season {s}
-                </option>
-              ))}
-            </select>
-          </Field>
           <Field label="Round (leave empty for league games)">
             <input
               className={inputClass}
