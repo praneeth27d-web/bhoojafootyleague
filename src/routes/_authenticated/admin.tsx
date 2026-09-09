@@ -290,7 +290,7 @@ function MatchesAdmin({
         </form>
       </Card>
 
-      {seasonOptions.map((s) => {
+      {[season].map((s) => {
         const list = league.allMatches.filter((m) => m.season === s);
         return (
           <Card key={s} title={`Season ${s} matches (${list.length})`}>
