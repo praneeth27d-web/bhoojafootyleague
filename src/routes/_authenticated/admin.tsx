@@ -424,6 +424,82 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
 
   return (
     <div className="mt-3 space-y-4 rounded-md border border-border bg-surface-muted p-3">
+      <div>
+        <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+          Fixture details
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Field label="Season">
+            <select
+              className={inputClass}
+              value={String(season)}
+              onChange={(e) => setSeason(Number(e.target.value))}
+            >
+              {seasons.map((s) => (
+                <option key={s.id} value={String(s.number)}>
+                  {seasonLabel(s)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Round (empty for league games)">
+            <input
+              className={inputClass}
+              placeholder="e.g. Final"
+              value={round}
+              onChange={(e) => setRound(e.target.value)}
+            />
+          </Field>
+          <Field label="Matchday">
+            <input
+              type="number"
+              min={1}
+              className={inputClass}
+              value={matchday}
+              onChange={(e) => setMatchday(Number(e.target.value))}
+            />
+          </Field>
+          <Field label="Kick-off (date & time)">
+            <input
+              type="datetime-local"
+              className={inputClass}
+              value={kickoff}
+              onChange={(e) => setKickoff(e.target.value)}
+            />
+          </Field>
+          <Field label="Home team">
+            <select className={inputClass} value={home} onChange={(e) => setHome(e.target.value)}>
+              {teams.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Away team">
+            <select className={inputClass} value={away} onChange={(e) => setAway(e.target.value)}>
+              {teams.map((t) => (
+                <option key={t.slug} value={t.slug}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Location">
+            <input
+              className={inputClass}
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
+            />
+          </Field>
+          <div className="flex items-end">
+            <button type="button" className={btnClass} onClick={saveDetails}>
+              Save fixture
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Status">
           <select
