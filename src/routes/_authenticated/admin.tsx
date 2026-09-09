@@ -353,6 +353,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const [kickoff, setKickoff] = useState(new Date(match.date).toISOString().slice(0, 16));
   const [venue, setVenue] = useState(match.venue ?? "");
 
+  const { seasons } = useSeasons();
+
   const involved = league.players.filter(
     (p) => p.teamSlug === match.homeSlug || p.teamSlug === match.awaySlug,
   );
