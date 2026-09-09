@@ -3,8 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { supabase } from "@/integrations/supabase/client";
+import { useSeason } from "@/components/season-context";
 import { teams, teamName, slugify, type Match } from "@/lib/league";
 import { leagueQueryKey, useLeague } from "@/lib/league-data";
+import { seasonLabel, seasonsQueryKey, useSeasons } from "@/lib/seasons";
 import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -45,10 +47,33 @@ function AdminPage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const league = useLeague("all");
+  const { seasons, latest } = useSeasons();
+  const { season: viewingSeason, setSeason: setViewingSeason } = useSeason();
   const [tab, setTab] = useState<Tab>("matches");
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [seasonError, setSeasonError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: leagueQueryKey });
+  const activeSeason = Number(viewingSeason) || latest;
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: leagueQueryKey });
+    void queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+  };
+
+  async function startNewSeason() {
+    setSeasonError(null);
+    setCreating(true);
+    const next = latest + 1;
+    const { error: err } = await supabase.from("seasons").insert({ number: next });
+    setCreating(false);
+    if (err) {
+      setSeasonError(err.message);
+      return;
+    }
+    refresh();
+    setViewingSeason(String(next));
+  }
 
   useEffect(() => {
     if (!user) return;
