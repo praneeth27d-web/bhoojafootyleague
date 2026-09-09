@@ -99,6 +99,34 @@ function AdminPage() {
       subtitle={user?.email ?? "Update results, squads and transfers"}
       badge={isAdmin === false ? "No access" : "Editing"}
     >
+      <Card className="mb-5">
+        <div className="flex flex-wrap items-end gap-3 px-4 py-4">
+          <Field label="Season you are editing">
+            <select
+              className={inputClass}
+              value={String(activeSeason)}
+              onChange={(e) => setViewingSeason(e.target.value)}
+            >
+              {seasons.map((s) => (
+                <option key={s.id} value={String(s.number)}>
+                  {seasonLabel(s)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <button type="button" className={btnClass} onClick={startNewSeason} disabled={creating}>
+            {creating ? "Starting…" : "Start a new season"}
+          </button>
+          <p className="w-full text-xs text-muted-foreground">
+            Everything below applies to {`Season ${activeSeason}`}. Starting a new season creates
+            Season {latest + 1} with the same clubs and squads, ready for its own fixtures.
+          </p>
+          <div className="w-full">
+            <ErrorNote error={seasonError} />
+          </div>
+        </div>
+      </Card>
+
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1 border-b border-border">
           {tabs.map((t) => (
