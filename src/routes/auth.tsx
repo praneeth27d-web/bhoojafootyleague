@@ -26,7 +26,6 @@ const inputClass =
 function AuthPage() {
   const navigate = useNavigate();
   const { session, ready } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,18 +41,8 @@ function AuthPage() {
     setBusy(true);
     setError(null);
     setMessage(null);
-    if (mode === "signup") {
-      const { data, error: err } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      if (err) setError(err.message);
-      else if (!data.session) setMessage("Check your email and confirm the link to finish set-up.");
-    } else {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-      if (err) setError(err.message);
-    }
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    if (err) setError(err.message);
     setBusy(false);
   }
 
