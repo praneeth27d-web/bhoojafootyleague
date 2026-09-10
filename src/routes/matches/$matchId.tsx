@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { formatKickoff, teamName } from "@/lib/league";
@@ -91,7 +92,33 @@ function EventRow({
 function MatchDetail() {
   const { matchId } = Route.useParams();
   const { getMatch, loading } = useLeague();
+  const [view, setView] = useState<"goals" | "assists">("goals");
   const m = getMatch(matchId);
+
+  const events = (m?.goals ?? []).flatMap((g) => {
+    const side = (slug: string | null) => (slug === m?.awaySlug ? "away" : "home") as "home" | "away";
+    if (view === "goals") {
+      return [
+        {
+          key: `g-${g.id}`,
+          side: side(g.scorerTeamSlug),
+          minute: g.minute,
+          name: g.scorerName,
+          slug: g.scorerSlug || null,
+        },
+      ];
+    }
+    if (!g.assistName) return [];
+    return [
+      {
+        key: `a-${g.id}`,
+        side: side(g.scorerTeamSlug),
+        minute: g.minute,
+        name: g.assistName,
+        slug: g.assistSlug,
+      },
+    ];
+  });
 
   if (!m) {
     return (
@@ -143,24 +170,39 @@ function MatchDetail() {
 
         {completed ? (
           <>
-            <Card title="Goals & assists">
-              {m.goals.length > 0 ? (
+            <Card>
+              <div className="flex gap-2 border-b border-border px-4 py-3">
+                {(["goals", "assists"] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setView(v)}
+                    className={
+                      view === v
+                        ? "rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                        : "rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    }
+                  >
+                    {v === "goals" ? "Goals" : "Assists"}
+                  </button>
+                ))}
+              </div>
+              {events.length > 0 ? (
                 <ul className="divide-y divide-border">
-                  {m.goals.map((g) => (
-                    <GoalRow
-                      key={g.id}
-                      side={g.scorerTeamSlug === m.awaySlug ? "away" : "home"}
-                      minute={g.minute}
-                      scorerName={g.scorerName}
-                      scorerSlug={g.scorerSlug || null}
-                      assistName={g.assistName}
-                      assistSlug={g.assistSlug}
+                  {events.map((e) => (
+                    <EventRow
+                      key={e.key}
+                      side={e.side}
+                      minute={e.minute}
+                      name={e.name}
+                      slug={e.slug}
+                      kind={view === "goals" ? "goal" : "assist"}
                     />
                   ))}
                 </ul>
               ) : (
                 <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  No goals in this match.
+                  {view === "goals" ? "No goals in this match." : "No assists in this match."}
                 </p>
               )}
             </Card>

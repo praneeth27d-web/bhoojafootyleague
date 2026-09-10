@@ -26,7 +26,6 @@ const inputClass =
 function AuthPage() {
   const navigate = useNavigate();
   const { session, ready } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -42,25 +41,15 @@ function AuthPage() {
     setBusy(true);
     setError(null);
     setMessage(null);
-    if (mode === "signup") {
-      const { data, error: err } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { emailRedirectTo: window.location.origin },
-      });
-      if (err) setError(err.message);
-      else if (!data.session) setMessage("Check your email and confirm the link to finish set-up.");
-    } else {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-      if (err) setError(err.message);
-    }
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    if (err) setError(err.message);
     setBusy(false);
   }
 
   return (
     <AppShell title="League admin" subtitle="Private area for updating the league">
       <div className="max-w-md">
-        <Card title={mode === "signin" ? "Sign in" : "Create your account"}>
+        <Card title="Sign in">
           <form onSubmit={submit} className="space-y-4 px-4 py-5">
             <label className="block text-xs font-semibold text-muted-foreground">
               Email
@@ -79,7 +68,7 @@ function AuthPage() {
                 type="password"
                 required
                 minLength={6}
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                autoComplete="current-password"
                 className={`mt-1 ${inputClass}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -92,25 +81,12 @@ function AuthPage() {
               disabled={busy}
               className="w-full rounded-md bg-primary px-3 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === "signin" ? "signup" : "signin");
-                setError(null);
-                setMessage(null);
-              }}
-              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground"
-            >
-              {mode === "signin"
-                ? "First time here? Create the admin account"
-                : "Already have an account? Sign in"}
+              {busy ? "Please wait…" : "Sign in"}
             </button>
           </form>
         </Card>
         <p className="mt-3 text-xs text-muted-foreground">
-          The first account created becomes the league admin and can edit every page.
+          Sign in with the league admin account. New accounts cannot be created.
         </p>
       </div>
     </AppShell>
