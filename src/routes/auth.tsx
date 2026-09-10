@@ -49,7 +49,7 @@ function AuthPage() {
   return (
     <AppShell title="League admin" subtitle="Private area for updating the league">
       <div className="max-w-md">
-        <Card title={mode === "signin" ? "Sign in" : "Create your account"}>
+        <Card title="Sign in">
           <form onSubmit={submit} className="space-y-4 px-4 py-5">
             <label className="block text-xs font-semibold text-muted-foreground">
               Email
@@ -68,7 +68,7 @@ function AuthPage() {
                 type="password"
                 required
                 minLength={6}
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                autoComplete="current-password"
                 className={`mt-1 ${inputClass}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -81,25 +81,12 @@ function AuthPage() {
               disabled={busy}
               className="w-full rounded-md bg-primary px-3 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === "signin" ? "signup" : "signin");
-                setError(null);
-                setMessage(null);
-              }}
-              className="w-full text-xs font-semibold text-muted-foreground hover:text-foreground"
-            >
-              {mode === "signin"
-                ? "First time here? Create the admin account"
-                : "Already have an account? Sign in"}
+              {busy ? "Please wait…" : "Sign in"}
             </button>
           </form>
         </Card>
         <p className="mt-3 text-xs text-muted-foreground">
-          The first account created becomes the league admin and can edit every page.
+          Sign in with the league admin account. New accounts cannot be created.
         </p>
       </div>
     </AppShell>
