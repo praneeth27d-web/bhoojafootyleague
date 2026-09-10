@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { formatKickoff, teamName } from "@/lib/league";
@@ -91,7 +92,33 @@ function EventRow({
 function MatchDetail() {
   const { matchId } = Route.useParams();
   const { getMatch, loading } = useLeague();
+  const [view, setView] = useState<"goals" | "assists">("goals");
   const m = getMatch(matchId);
+
+  const events = (m?.goals ?? []).flatMap((g) => {
+    const side = (slug: string | null) => (slug === m?.awaySlug ? "away" : "home") as "home" | "away";
+    if (view === "goals") {
+      return [
+        {
+          key: `g-${g.id}`,
+          side: side(g.scorerTeamSlug),
+          minute: g.minute,
+          name: g.scorerName,
+          slug: g.scorerSlug || null,
+        },
+      ];
+    }
+    if (!g.assistName) return [];
+    return [
+      {
+        key: `a-${g.id}`,
+        side: side(g.scorerTeamSlug),
+        minute: g.minute,
+        name: g.assistName,
+        slug: g.assistSlug,
+      },
+    ];
+  });
 
   if (!m) {
     return (
