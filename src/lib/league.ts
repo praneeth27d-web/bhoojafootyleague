@@ -77,6 +77,46 @@ export const slugify = (name: string) =>
 export const getTeam = (slug: string) => teams.find((t) => t.slug === slug);
 export const teamName = (slug: string) => getTeam(slug)?.name ?? slug;
 
+const IST_TIME_ZONE = "Asia/Kolkata";
+
+const kickoffFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: IST_TIME_ZONE,
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+const shortDateFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: IST_TIME_ZONE,
+  day: "numeric",
+  month: "short",
+});
+
+export function istInputToIso(value: string) {
+  if (!value) return null;
+  const parsed = new Date(`${value}:00+05:30`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+export function isoToIstInput(iso: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: IST_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(iso));
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  return `${value("year")}-${value("month")}-${value("day")}T${value("hour")}:${value("minute")}`;
+}
+
 export type StandingRow = {
   pos: number;
   team: Team;
@@ -136,17 +176,9 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export function formatKickoff(iso: string) {
-  const d = new Date(iso);
-  const wd = weekdays[d.getUTCDay()];
-  const day = d.getUTCDate();
-  const month = months[d.getUTCMonth()];
-  const year = d.getUTCFullYear();
-  const hours = String(d.getUTCHours()).padStart(2, "0");
-  const minutes = String(d.getUTCMinutes()).padStart(2, "0");
-  return `${wd}, ${day} ${month} ${year}, ${hours}:${minutes}`;
+  return kickoffFormatter.format(new Date(iso)).replace(" at ", ", ");
 }
 
 export function formatShortDate(iso: string) {
-  const d = new Date(iso);
-  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
+  return shortDateFormatter.format(new Date(iso));
 }

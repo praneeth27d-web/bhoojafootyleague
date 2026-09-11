@@ -133,11 +133,8 @@ function MatchDetail() {
   }
 
   const completed = m.status === "completed";
-  const d = new Date(m.date);
-  const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][
-    d.getUTCDay()
-  ];
   const parts = formatKickoff(m.date).split(", ");
+  const weekday = parts[0] ?? "";
   const datePart = parts[1] ?? "";
   const timePart = parts[2] ?? "";
 
@@ -235,7 +232,7 @@ function MatchDetail() {
               </div>
               <div className="flex justify-between px-4 py-3">
                 <dt className="text-muted-foreground">Time</dt>
-                <dd className="num font-semibold">{timePart} UTC</dd>
+                <dd className="num font-semibold">{timePart} IST</dd>
               </div>
               <div className="flex justify-between px-4 py-3">
                 <dt className="text-muted-foreground">Location</dt>
