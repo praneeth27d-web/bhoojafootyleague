@@ -4,7 +4,14 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
-import { teams, teamName, slugify, type Match } from "@/lib/league";
+import {
+  isoToIstInput,
+  istInputToIso,
+  teams,
+  teamName,
+  slugify,
+  type Match,
+} from "@/lib/league";
 import { leagueQueryKey, useLeague } from "@/lib/league-data";
 import { seasonLabel, seasonsQueryKey, useSeasons } from "@/lib/seasons";
 import { useAuth } from "@/lib/use-auth";
@@ -29,6 +36,8 @@ const btnClass =
   "rounded-md bg-primary px-3 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60";
 const ghostBtn =
   "rounded-md border border-border px-2.5 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground";
+
+const successClass = "text-sm font-semibold text-primary";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -56,9 +65,11 @@ function AdminPage() {
 
   const activeSeason = Number(viewingSeason) || latest;
 
-  const refresh = () => {
-    void queryClient.invalidateQueries({ queryKey: leagueQueryKey });
-    void queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+  const refresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: leagueQueryKey, refetchType: "all" }),
+      queryClient.invalidateQueries({ queryKey: seasonsQueryKey, refetchType: "all" }),
+    ]);
   };
 
   async function startNewSeason() {
@@ -71,7 +82,7 @@ function AdminPage() {
       setSeasonError(err.message);
       return;
     }
-    refresh();
+    await refresh();
     setViewingSeason(String(next));
   }
 
@@ -170,7 +181,7 @@ function AdminPage() {
 }
 
 type League = ReturnType<typeof useLeague>;
-type AdminProps = { league: League; refresh: () => void };
+type AdminProps = { league: League; refresh: () => Promise<void> };
 
 function ErrorNote({ error }: { error: string | null }) {
   if (!error) return null;
@@ -191,58 +202,74 @@ function MatchesAdmin({
   const [kickoff, setKickoff] = useState("");
   const [venue, setVenue] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function addMatch(e: React.FormEvent) {
     e.preventDefault();
+    if (saving) return;
     setError(null);
+    setSuccess(null);
     if (home === away) {
       setError("Pick two different teams.");
       return;
     }
+    const kickoffIso = istInputToIso(kickoff);
+    if (!kickoffIso) {
+      setError("Choose a valid kick-off date and time in IST.");
+      return;
+    }
+    setSaving(true);
     const { error: err } = await supabase.from("matches").insert({
       season,
       round: round.trim() || null,
-      matchday,
+      matchday: round.trim() ? 1 : matchday,
       home_slug: home,
       away_slug: away,
-      kickoff: kickoff ? new Date(kickoff).toISOString() : new Date().toISOString(),
-      venue: venue || null,
+      kickoff: kickoffIso,
+      venue: venue.trim() || null,
       status: "upcoming",
     });
+    setSaving(false);
     if (err) setError(err.message);
     else {
       setVenue("");
       setKickoff("");
       setRound("");
-      refresh();
+      await refresh();
+      setSuccess("Fixture added and published.");
     }
   }
 
   async function removeMatch(id: string) {
     const { error: err } = await supabase.from("matches").delete().eq("id", id);
     if (err) setError(err.message);
-    else refresh();
+    else await refresh();
   }
 
   return (
     <>
       <Card title={`Add a fixture to Season ${season}`}>
         <form onSubmit={addMatch} className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Field label="Round (leave empty for league games)">
-            <input
+          <Field label="Round (optional — use for Final or Semi-Final)">
+            <select
               className={inputClass}
-              placeholder="e.g. Final, Semi-Final"
               value={round}
               onChange={(e) => setRound(e.target.value)}
-            />
+            >
+              <option value="">League match</option>
+              <option value="Semi-Final">Semi-Final</option>
+              <option value="Final">Final</option>
+            </select>
           </Field>
-          <Field label="Matchday">
+          <Field label={round ? "Matchday (not used for knockouts)" : "Matchday"}>
             <input
               type="number"
               min={1}
               className={inputClass}
               value={matchday}
               onChange={(e) => setMatchday(Number(e.target.value))}
+              disabled={Boolean(round)}
             />
           </Field>
           <Field label="Home team">
@@ -263,9 +290,10 @@ function MatchesAdmin({
               ))}
             </select>
           </Field>
-          <Field label="Kick-off (date & time)">
+          <Field label="Kick-off (Indian Standard Time)">
             <input
               type="datetime-local"
+              required
               className={inputClass}
               value={kickoff}
               onChange={(e) => setKickoff(e.target.value)}
@@ -280,12 +308,13 @@ function MatchesAdmin({
             />
           </Field>
           <div className="flex items-end">
-            <button type="submit" className={btnClass}>
-              Add fixture
+            <button type="submit" className={btnClass} disabled={saving}>
+              {saving ? "Adding…" : "Add fixture"}
             </button>
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <ErrorNote error={error} />
+            {success && <p className={successClass}>{success}</p>}
           </div>
         </form>
       </Card>
@@ -337,6 +366,8 @@ function MatchesAdmin({
 
 function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) {
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
   const [homeGoals, setHomeGoals] = useState(match.homeGoals ?? 0);
   const [awayGoals, setAwayGoals] = useState(match.awayGoals ?? 0);
   const [status, setStatus] = useState(match.status);
@@ -350,40 +381,53 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const [matchday, setMatchday] = useState(match.matchday);
   const [home, setHome] = useState(match.homeSlug);
   const [away, setAway] = useState(match.awaySlug);
-  const [kickoff, setKickoff] = useState(new Date(match.date).toISOString().slice(0, 16));
+  const [kickoff, setKickoff] = useState(isoToIstInput(match.date));
   const [venue, setVenue] = useState(match.venue ?? "");
 
   const { seasons } = useSeasons();
 
-  const involved = league.players.filter(
-    (p) => p.teamSlug === match.homeSlug || p.teamSlug === match.awaySlug,
-  );
+  const involved = league.players.filter((p) => p.teamSlug === home || p.teamSlug === away);
 
   async function saveDetails() {
+    if (saving) return;
     setError(null);
+    setSuccess(null);
     if (home === away) {
       setError("Pick two different teams.");
       return;
     }
+    const kickoffIso = istInputToIso(kickoff);
+    if (!kickoffIso) {
+      setError("Choose a valid kick-off date and time in IST.");
+      return;
+    }
+    setSaving("fixture");
     const { error: err } = await supabase
       .from("matches")
       .update({
         season,
         round: round.trim() || null,
-        matchday,
+        matchday: round.trim() ? 1 : matchday,
         home_slug: home,
         away_slug: away,
-        kickoff: new Date(kickoff).toISOString(),
-        venue: venue || null,
+        kickoff: kickoffIso,
+        venue: venue.trim() || null,
       })
       .eq("id", match.id);
+    setSaving(null);
     if (err) setError(err.message);
-    else refresh();
+    else {
+      await refresh();
+      setSuccess("Fixture changes published.");
+    }
   }
 
 
   async function saveResult() {
+    if (saving) return;
     setError(null);
+    setSuccess(null);
+    setSaving("result");
     const { error: err } = await supabase
       .from("matches")
       .update({
@@ -393,35 +437,44 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
         potm_player_id: potm || null,
       })
       .eq("id", match.id);
+    setSaving(null);
     if (err) setError(err.message);
-    else refresh();
+    else {
+      await refresh();
+      setSuccess("Result and player statistics published.");
+    }
   }
 
   async function addGoal() {
+    if (saving) return;
     setError(null);
+    setSuccess(null);
     if (!scorer) {
       setError("Choose who scored.");
       return;
     }
+    setSaving("goal");
     const { error: err } = await supabase.from("match_goals").insert({
       match_id: match.id,
       scorer_id: scorer,
       assist_id: assist || null,
       minute: minute ? Number(minute) : null,
     });
+    setSaving(null);
     if (err) setError(err.message);
     else {
       setScorer("");
       setAssist("");
       setMinute("");
-      refresh();
+      await refresh();
+      setSuccess("Goal and assist published.");
     }
   }
 
   async function removeGoal(id: string) {
     const { error: err } = await supabase.from("match_goals").delete().eq("id", id);
     if (err) setError(err.message);
-    else refresh();
+    else await refresh();
   }
 
   return (
@@ -444,24 +497,28 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
               ))}
             </select>
           </Field>
-          <Field label="Round (empty for league games)">
-            <input
+          <Field label="Round (optional)">
+            <select
               className={inputClass}
-              placeholder="e.g. Final"
               value={round}
               onChange={(e) => setRound(e.target.value)}
-            />
+            >
+              <option value="">League match</option>
+              <option value="Semi-Final">Semi-Final</option>
+              <option value="Final">Final</option>
+            </select>
           </Field>
-          <Field label="Matchday">
+          <Field label={round ? "Matchday (not used for knockouts)" : "Matchday"}>
             <input
               type="number"
               min={1}
               className={inputClass}
               value={matchday}
               onChange={(e) => setMatchday(Number(e.target.value))}
+              disabled={Boolean(round)}
             />
           </Field>
-          <Field label="Kick-off (date & time)">
+          <Field label="Kick-off (Indian Standard Time)">
             <input
               type="datetime-local"
               className={inputClass}
@@ -495,8 +552,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
             />
           </Field>
           <div className="flex items-end">
-            <button type="button" className={btnClass} onClick={saveDetails}>
-              Save fixture
+            <button type="button" className={btnClass} onClick={saveDetails} disabled={Boolean(saving)}>
+              {saving === "fixture" ? "Saving…" : "Save fixture"}
             </button>
           </div>
         </div>
@@ -542,8 +599,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
           </select>
         </Field>
       </div>
-      <button type="button" className={btnClass} onClick={saveResult}>
-        Save result
+      <button type="button" className={btnClass} onClick={saveResult} disabled={Boolean(saving)}>
+        {saving === "result" ? "Saving…" : "Save result"}
       </button>
 
       <div>
@@ -599,13 +656,14 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
             />
           </Field>
           <div className="flex items-end">
-            <button type="button" className={btnClass} onClick={addGoal}>
-              Add goal
+            <button type="button" className={btnClass} onClick={addGoal} disabled={Boolean(saving)}>
+              {saving === "goal" ? "Adding…" : "Add goal"}
             </button>
           </div>
         </div>
       </div>
       <ErrorNote error={error} />
+      {success && <p className={successClass}>{success}</p>}
     </div>
   );
 }
