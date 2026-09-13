@@ -19,8 +19,6 @@ export type Database = {
           assist_id: string | null
           created_at: string
           id: string
-          is_own_goal: boolean
-          is_penalty: boolean
           match_id: string
           minute: number | null
           scorer_id: string
@@ -29,8 +27,6 @@ export type Database = {
           assist_id?: string | null
           created_at?: string
           id?: string
-          is_own_goal?: boolean
-          is_penalty?: boolean
           match_id: string
           minute?: number | null
           scorer_id: string
@@ -39,8 +35,6 @@ export type Database = {
           assist_id?: string | null
           created_at?: string
           id?: string
-          is_own_goal?: boolean
-          is_penalty?: boolean
           match_id?: string
           minute?: number | null
           scorer_id?: string
@@ -131,7 +125,6 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          preferred_foot: string
           slug: string
           team_slug: string
         }
@@ -140,7 +133,6 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          preferred_foot?: string
           slug: string
           team_slug: string
         }
@@ -149,49 +141,10 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
-          preferred_foot?: string
           slug?: string
           team_slug?: string
         }
         Relationships: []
-      }
-      season_rosters: {
-        Row: {
-          captain: boolean
-          created_at: string
-          id: string
-          player_id: string
-          season: number
-          team_slug: string
-          updated_at: string
-        }
-        Insert: {
-          captain?: boolean
-          created_at?: string
-          id?: string
-          player_id: string
-          season: number
-          team_slug: string
-          updated_at?: string
-        }
-        Update: {
-          captain?: boolean
-          created_at?: string
-          id?: string
-          player_id?: string
-          season?: number
-          team_slug?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "season_rosters_player_id_fkey"
-            columns: ["player_id"]
-            isOneToOne: false
-            referencedRelation: "players"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       seasons: {
         Row: {
@@ -225,7 +178,6 @@ export type Database = {
           id: string
           note: string | null
           player_id: string
-          season: number
           to_slug: string
         }
         Insert: {
@@ -235,7 +187,6 @@ export type Database = {
           id?: string
           note?: string | null
           player_id: string
-          season?: number
           to_slug: string
         }
         Update: {
@@ -245,7 +196,6 @@ export type Database = {
           id?: string
           note?: string | null
           player_id?: string
-          season?: number
           to_slug?: string
         }
         Relationships: [
