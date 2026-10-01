@@ -98,26 +98,23 @@ export function MatchRows({ matches }: { matches: Match[] }) {
           <Link
             to="/matches/$matchId"
             params={{ matchId: m.id }}
-            className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent active:bg-accent/70"
+            className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-3 transition-colors hover:bg-accent active:bg-accent/70"
           >
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
-            <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-2 text-sm font-semibold">
+            {m.status === "completed" ? (
+              <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
+                <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
+                <span className="num rounded-md bg-surface-muted px-2.5 py-1 font-bold">
+                  {m.homeGoals}–{m.awayGoals}
+                </span>
+                <TeamBadge slug={m.awaySlug} className="min-w-0" />
+              </span>
+            ) : (
+              <span className="flex min-w-0 items-center gap-2 text-sm font-semibold">
                 <TeamBadge slug={m.homeSlug} />
                 <span className="text-muted-foreground">vs</span>
                 <TeamBadge slug={m.awaySlug} />
               </span>
-              <span className="block truncate text-xs text-muted-foreground">
-                {formatKickoff(m.date)}
-                {m.venue ? ` · ${m.venue}` : ""}
-              </span>
-            </span>
-            {m.status === "completed" ? (
-              <span className="num rounded-md bg-surface-muted px-2.5 py-1 text-sm font-bold">
-                {m.homeGoals}–{m.awayGoals}
-              </span>
-            ) : (
-              <StatusPill status="upcoming" />
             )}
           </Link>
         </li>

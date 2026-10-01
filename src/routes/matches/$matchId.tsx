@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
+import { Button } from "@/components/ui/button";
+import assistBootLight from "@/assets/assist-boot-light.png";
+import assistBootDark from "@/assets/assist-boot-dark.png";
 import { formatKickoff, teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
@@ -39,54 +42,70 @@ function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
 }
 
 function EventRow({
-  side,
-  minute,
-  name,
-  slug,
+  home,
+  away,
   kind,
 }: {
-  side: "home" | "away";
-  minute: number | null;
-  name: string;
-  slug: string | null;
+  home?: MatchEvent | undefined;
+  away?: MatchEvent | undefined;
   kind: "goal" | "assist";
 }) {
-  const content = (
-    <span className={side === "away" ? "text-right" : ""}>
-      <span className="text-sm">
-        <PlayerLink slug={slug} name={name} />
-        {minute !== null && <span className="num text-muted-foreground"> {minute}&apos;</span>}
+  const icon = (side: "home" | "away") =>
+    kind === "goal" ? (
+      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center text-xs">
+        ⚽
       </span>
+    ) : (
+      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center">
+        <img
+          src={assistBootLight}
+          alt=""
+          className="size-5 object-contain dark:hidden"
+        />
+        <img
+          src={assistBootDark}
+          alt=""
+          className="hidden size-5 object-contain dark:block"
+        />
+      </span>
+    );
+
+  const event = (item: MatchEvent, side: "home" | "away") => (
+    <span className={side === "away" ? "flex items-center justify-end gap-2 text-right" : "flex items-center gap-2"}>
+      {side === "home" && icon(side)}
+      <span className="min-w-0 truncate text-sm">
+        {item.count > 1 && <span className="num mr-1 font-bold text-muted-foreground">{item.count}×</span>}
+        <PlayerLink slug={item.slug} name={item.name} />
+      </span>
+      {side === "away" && icon(side)}
     </span>
   );
-  const icon = (
-    <span
-      aria-hidden="true"
-      className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-surface-muted text-[11px]"
-    >
-      {kind === "goal" ? "⚽" : "🥾"}
-    </span>
-  );
+
   return (
-    <li className="grid grid-cols-2 gap-3 px-4 py-2.5">
-      {side === "home" ? (
-        <span className="flex items-start gap-2">
-          {icon}
-          {content}
-        </span>
-      ) : (
-        <span />
-      )}
-      {side === "away" ? (
-        <span className="flex items-start justify-end gap-2">
-          {content}
-          {icon}
-        </span>
-      ) : (
-        <span />
-      )}
+    <li className="grid min-h-11 grid-cols-2 items-center gap-4 px-4 py-2.5">
+      <span>{home ? event(home, "home") : null}</span>
+      <span>{away ? event(away, "away") : null}</span>
     </li>
   );
+}
+
+type MatchEvent = {
+  key: string;
+  side: "home" | "away";
+  name: string;
+  slug: string | null;
+  count: number;
+};
+
+function groupEvents(events: Omit<MatchEvent, "key" | "count">[]) {
+  const grouped = new Map<string, MatchEvent>();
+  for (const event of events) {
+    const key = `${event.side}-${event.slug ?? event.name}`;
+    const existing = grouped.get(key);
+    if (existing) existing.count += 1;
+    else grouped.set(key, { ...event, key, count: 1 });
+  }
+  return [...grouped.values()];
 }
 
 function MatchDetail() {
@@ -95,14 +114,12 @@ function MatchDetail() {
   const [view, setView] = useState<"goals" | "assists">("goals");
   const m = getMatch(matchId);
 
-  const events = (m?.goals ?? []).flatMap((g) => {
+  const events = groupEvents((m?.goals ?? []).flatMap((g) => {
     const side = (slug: string | null) => (slug === m?.awaySlug ? "away" : "home") as "home" | "away";
     if (view === "goals") {
       return [
         {
-          key: `g-${g.id}`,
           side: side(g.scorerTeamSlug),
-          minute: g.minute,
           name: g.scorerName,
           slug: g.scorerSlug || null,
         },
@@ -111,14 +128,18 @@ function MatchDetail() {
     if (!g.assistName) return [];
     return [
       {
-        key: `a-${g.id}`,
         side: side(g.scorerTeamSlug),
-        minute: g.minute,
         name: g.assistName,
         slug: g.assistSlug,
       },
     ];
-  });
+  }));
+  const homeEvents = events.filter((event) => event.side === "home");
+  const awayEvents = events.filter((event) => event.side === "away");
+  const eventRows = Array.from({ length: Math.max(homeEvents.length, awayEvents.length) }, (_, index) => ({
+    home: homeEvents[index],
+    away: awayEvents[index],
+  }));
 
   if (!m) {
     return (
@@ -170,29 +191,24 @@ function MatchDetail() {
             <Card>
               <div className="flex gap-2 border-b border-border px-4 py-3">
                 {(["goals", "assists"] as const).map((v) => (
-                  <button
+                  <Button
                     key={v}
                     type="button"
                     onClick={() => setView(v)}
-                    className={
-                      view === v
-                        ? "rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground"
-                        : "rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    }
+                    size="sm"
+                    variant={view === v ? "default" : "outline"}
                   >
                     {v === "goals" ? "Goals" : "Assists"}
-                  </button>
+                  </Button>
                 ))}
               </div>
-              {events.length > 0 ? (
+              {eventRows.length > 0 ? (
                 <ul className="divide-y divide-border">
-                  {events.map((e) => (
+                  {eventRows.map((row, index) => (
                     <EventRow
-                      key={e.key}
-                      side={e.side}
-                      minute={e.minute}
-                      name={e.name}
-                      slug={e.slug}
+                      key={`${row.home?.key ?? "empty"}-${row.away?.key ?? "empty"}-${index}`}
+                      home={row.home}
+                      away={row.away}
                       kind={view === "goals" ? "goal" : "assist"}
                     />
                   ))}
