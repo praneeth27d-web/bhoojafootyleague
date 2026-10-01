@@ -50,7 +50,7 @@ function EventRow({
   away?: MatchEvent | undefined;
   kind: "goal" | "assist";
 }) {
-  const icon = (side: "home" | "away") =>
+  const icon = () =>
     kind === "goal" ? (
       <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center text-xs">
         ⚽
@@ -72,12 +72,12 @@ function EventRow({
 
   const event = (item: MatchEvent, side: "home" | "away") => (
     <span className={side === "away" ? "flex items-center justify-end gap-2 text-right" : "flex items-center gap-2"}>
-      {side === "home" && icon(side)}
+      {side === "home" && icon()}
       <span className="min-w-0 truncate text-sm">
         {item.count > 1 && <span className="num mr-1 font-bold text-muted-foreground">{item.count}×</span>}
         <PlayerLink slug={item.slug} name={item.name} />
       </span>
-      {side === "away" && icon(side)}
+      {side === "away" && icon()}
     </span>
   );
 

@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { formatKickoff, type Match, type Player } from "@/lib/league";
+import { type Match, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
-import { StatusPill } from "@/components/app-shell";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
 
