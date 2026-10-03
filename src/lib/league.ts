@@ -10,6 +10,8 @@ export type Player = {
   name: string;
   teamSlug: string;
   captain: boolean;
+  jerseyNumber: number | null;
+  appearances: number;
   goals: number;
   assists: number;
   potm: number;
@@ -25,6 +27,40 @@ export type MatchGoal = {
   assistId: string | null;
   assistSlug: string | null;
   assistName: string | null;
+  isPenalty: boolean;
+  isOwnGoal: boolean;
+};
+
+export type MatchLineup = {
+  id: string;
+  playerId: string;
+  playerSlug: string;
+  playerName: string;
+  playerTeamSlug: string | null;
+  jerseyNumber: number | null;
+  side: "home" | "away";
+  role: "starter" | "substitute";
+  positionIndex: number;
+  played: boolean;
+  isReplacement: boolean;
+};
+
+export type MatchCard = {
+  id: string;
+  playerId: string;
+  playerName: string;
+  side: "home" | "away";
+  minute: number | null;
+  cardType: "yellow" | "red" | "second_yellow_red";
+};
+
+export type MatchPenaltyEvent = {
+  id: string;
+  playerId: string;
+  playerName: string;
+  side: "home" | "away";
+  minute: number | null;
+  eventType: "earned" | "missed";
 };
 
 export type Match = {
@@ -41,6 +77,11 @@ export type Match = {
   homeGoals?: number | null;
   awayGoals?: number | null;
   goals: MatchGoal[];
+  lineups: MatchLineup[];
+  cards: MatchCard[];
+  penaltyEvents: MatchPenaltyEvent[];
+  homeFormation: string;
+  awayFormation: string;
   potmId?: string | null;
   potmSlug?: string | null;
   potmName?: string | null;

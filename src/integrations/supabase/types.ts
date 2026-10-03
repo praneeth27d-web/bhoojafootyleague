@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      match_cards: {
+        Row: {
+          card_type: string
+          created_at: string
+          id: string
+          match_id: string
+          minute: number | null
+          player_id: string
+        }
+        Insert: {
+          card_type: string
+          created_at?: string
+          id?: string
+          match_id: string
+          minute?: number | null
+          player_id: string
+        }
+        Update: {
+          card_type?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          minute?: number | null
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_cards_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_cards_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       match_goals: {
         Row: {
           assist_id: string | null
@@ -69,11 +111,109 @@ export type Database = {
           },
         ]
       }
+      match_lineups: {
+        Row: {
+          created_at: string
+          id: string
+          is_replacement: boolean
+          match_id: string
+          played: boolean
+          player_id: string
+          position_index: number
+          role: string
+          side: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_replacement?: boolean
+          match_id: string
+          played?: boolean
+          player_id: string
+          position_index?: number
+          role: string
+          side: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_replacement?: boolean
+          match_id?: string
+          played?: boolean
+          player_id?: string
+          position_index?: number
+          role?: string
+          side?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_lineups_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_lineups_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_penalty_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          match_id: string
+          minute: number | null
+          player_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          match_id: string
+          minute?: number | null
+          player_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          match_id?: string
+          minute?: number | null
+          player_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_penalty_events_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_penalty_events_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
+          away_formation: string
           away_goals: number | null
           away_slug: string
           created_at: string
+          home_formation: string
           home_goals: number | null
           home_slug: string
           id: string
@@ -86,9 +226,11 @@ export type Database = {
           venue: string | null
         }
         Insert: {
+          away_formation?: string
           away_goals?: number | null
           away_slug: string
           created_at?: string
+          home_formation?: string
           home_goals?: number | null
           home_slug: string
           id?: string
@@ -101,9 +243,11 @@ export type Database = {
           venue?: string | null
         }
         Update: {
+          away_formation?: string
           away_goals?: number | null
           away_slug?: string
           created_at?: string
+          home_formation?: string
           home_goals?: number | null
           home_slug?: string
           id?: string
@@ -130,6 +274,7 @@ export type Database = {
           captain: boolean
           created_at: string
           id: string
+          jersey_number: number | null
           name: string
           preferred_foot: string
           slug: string
@@ -139,6 +284,7 @@ export type Database = {
           captain?: boolean
           created_at?: string
           id?: string
+          jersey_number?: number | null
           name: string
           preferred_foot?: string
           slug: string
@@ -148,6 +294,7 @@ export type Database = {
           captain?: boolean
           created_at?: string
           id?: string
+          jersey_number?: number | null
           name?: string
           preferred_foot?: string
           slug?: string

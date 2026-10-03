@@ -6,10 +6,10 @@ import { useLeague } from "@/lib/league-data";
 import { season1Table } from "@/lib/season1";
 
 
-export function Season1Table({ highlight }: { highlight?: string }) {
+export function Season1Table({ highlight, compact = false }: { highlight?: string; compact?: boolean }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[480px] text-sm">
+      <table className={compact ? "w-full min-w-[360px] text-sm" : "w-full min-w-[480px] text-sm"}>
         <caption className="sr-only">Season 1 final standings</caption>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -19,7 +19,7 @@ export function Season1Table({ highlight }: { highlight?: string }) {
             <th scope="col" className="px-4 py-2 font-semibold">
               Team
             </th>
-            {["MP", "W", "D", "L", "GD", "Pts"].map((h) => (
+            {(compact ? ["GD", "Pts"] : ["MP", "W", "D", "L", "GD", "Pts"]).map((h) => (
               <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
                 {h}
               </th>
@@ -56,7 +56,7 @@ export function Season1Table({ highlight }: { highlight?: string }) {
                   <TeamBadge slug={r.slug} showName crestClassName="size-7" />
                 </Link>
               </td>
-              {[r.played, r.won, r.drawn, r.lost].map((v, i) => (
+              {!compact && [r.played, r.won, r.drawn, r.lost].map((v, i) => (
                 <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
                   {v}
                 </td>
