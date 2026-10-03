@@ -3,6 +3,8 @@ import { AppShell, Card } from "@/components/app-shell";
 import { StandingsTable } from "@/components/league-tables";
 import { useSeason } from "@/components/season-context";
 import { PositionLegend, Season1Knockouts, Season1Table } from "@/components/season1-views";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export const Route = createFileRoute("/table")({
   head: () => ({
@@ -22,12 +24,21 @@ export const Route = createFileRoute("/table")({
 
 function TablePage() {
   const { season } = useSeason();
+  const [compact, setCompact] = useState(false);
+
+  const tableControls = (
+    <div className="mb-3 flex justify-end gap-2">
+      <Button size="sm" variant={!compact ? "default" : "outline"} onClick={() => setCompact(false)}>Full</Button>
+      <Button size="sm" variant={compact ? "default" : "outline"} onClick={() => setCompact(true)}>Compact</Button>
+    </div>
+  );
 
   if (season === "1") {
     return (
       <AppShell title="League Table" subtitle="Season 1 — final positions and points">
+        {tableControls}
         <Card>
-          <Season1Table />
+          <Season1Table compact={compact} />
         </Card>
         <PositionLegend />
         <Season1Knockouts />
@@ -37,8 +48,9 @@ function TablePage() {
 
   return (
     <AppShell title="League Table" subtitle="Sorted by Pts, GD, GF">
+      {tableControls}
       <Card>
-        <StandingsTable />
+        <StandingsTable compact={compact} />
       </Card>
       <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-2">

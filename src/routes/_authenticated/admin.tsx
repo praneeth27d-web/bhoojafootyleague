@@ -375,6 +375,10 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const [scorer, setScorer] = useState("");
   const [assist, setAssist] = useState("");
   const [minute, setMinute] = useState("");
+  const [isPenalty, setIsPenalty] = useState(false);
+  const [isOwnGoal, setIsOwnGoal] = useState(false);
+  const [homeFormation, setHomeFormation] = useState(match.homeFormation);
+  const [awayFormation, setAwayFormation] = useState(match.awayFormation);
   // Fixture details
   const [season, setSeason] = useState(match.season);
   const [round, setRound] = useState(match.round ?? "");
@@ -387,6 +391,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   const { seasons } = useSeasons();
 
   const involved = league.players.filter((p) => p.teamSlug === home || p.teamSlug === away);
+  const allPlayers = league.players;
 
   async function saveDetails() {
     if (saving) return;
@@ -412,6 +417,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
         away_slug: away,
         kickoff: kickoffIso,
         venue: venue.trim() || null,
+        home_formation: homeFormation,
+        away_formation: awayFormation,
       })
       .eq("id", match.id);
     setSaving(null);
@@ -459,6 +466,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
       scorer_id: scorer,
       assist_id: assist || null,
       minute: minute ? Number(minute) : null,
+      is_penalty: isPenalty,
+      is_own_goal: isOwnGoal,
     });
     setSaving(null);
     if (err) setError(err.message);
@@ -466,6 +475,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
       setScorer("");
       setAssist("");
       setMinute("");
+      setIsPenalty(false);
+      setIsOwnGoal(false);
       await refresh();
       setSuccess("Goal and assist published.");
     }
@@ -551,6 +562,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
               onChange={(e) => setVenue(e.target.value)}
             />
           </Field>
+          <Field label="Home formation"><select className={inputClass} value={homeFormation} onChange={(e) => setHomeFormation(e.target.value)}>{["1-2-1","2-2","3-1","1-3","2-1-1","1-1-2","4-0","0-4","1-2-1 diamond","2-2 box"].map((f) => <option key={f}>{f}</option>)}</select></Field>
+          <Field label="Away formation"><select className={inputClass} value={awayFormation} onChange={(e) => setAwayFormation(e.target.value)}>{["1-2-1","2-2","3-1","1-3","2-1-1","1-1-2","4-0","0-4","1-2-1 diamond","2-2 box"].map((f) => <option key={f}>{f}</option>)}</select></Field>
           <div className="flex items-end">
             <button type="button" className={btnClass} onClick={saveDetails} disabled={Boolean(saving)}>
               {saving === "fixture" ? "Saving…" : "Save fixture"}
@@ -591,7 +604,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
         <Field label="Player of the match">
           <select className={inputClass} value={potm} onChange={(e) => setPotm(e.target.value)}>
             <option value="">Not awarded</option>
-            {involved.map((p) => (
+            {allPlayers.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -629,7 +642,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
           <Field label="Scorer">
             <select className={inputClass} value={scorer} onChange={(e) => setScorer(e.target.value)}>
               <option value="">Choose player</option>
-              {involved.map((p) => (
+              {allPlayers.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} · {teamName(p.teamSlug)}
                 </option>
@@ -639,7 +652,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
           <Field label="Assist (optional)">
             <select className={inputClass} value={assist} onChange={(e) => setAssist(e.target.value)}>
               <option value="">No assist</option>
-              {involved.map((p) => (
+              {allPlayers.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
@@ -655,6 +668,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
               onChange={(e) => setMinute(e.target.value)}
             />
           </Field>
+          <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><input type="checkbox" checked={isPenalty} onChange={(e) => setIsPenalty(e.target.checked)} />Penalty goal</label>
+          <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"><input type="checkbox" checked={isOwnGoal} onChange={(e) => setIsOwnGoal(e.target.checked)} />Own goal</label>
           <div className="flex items-end">
             <button type="button" className={btnClass} onClick={addGoal} disabled={Boolean(saving)}>
               {saving === "goal" ? "Adding…" : "Add goal"}
@@ -698,6 +713,12 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
     const { error: err } = await supabase.from("players").delete().eq("id", id);
     if (err) setError(err.message);
     else refresh();
+  }
+
+  async function updateJersey(id: string, jerseyNumber: number | null) {
+    const { error: err } = await supabase.from("players").update({ jersey_number: jerseyNumber }).eq("id", id);
+    if (err) setError(err.message);
+    else await refresh();
   }
 
   return (
@@ -750,7 +771,8 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
                   {p.name}
                   {p.captain && <span className="ml-2 text-xs text-primary">Captain</span>}
                 </span>
-                <span className="flex gap-2">
+                <span className="flex items-center gap-2">
+                  <label className="flex items-center gap-1 text-xs text-muted-foreground">No.<input aria-label={`Jersey number for ${p.name}`} type="number" min={0} max={99} defaultValue={p.jerseyNumber ?? ""} onBlur={(e) => void updateJersey(p.id, e.target.value ? Number(e.target.value) : null)} className="w-16 rounded-md border border-border bg-surface px-2 py-1" /></label>
                   <button
                     type="button"
                     className={ghostBtn}
