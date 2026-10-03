@@ -5,11 +5,11 @@ import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
 
-export function StandingsTable({ highlight }: { highlight?: string }) {
+export function StandingsTable({ highlight, compact = false }: { highlight?: string; compact?: boolean }) {
   const { standings: rows } = useLeague();
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[560px] text-sm">
+      <table className={cn("w-full text-sm", compact ? "min-w-[360px]" : "min-w-[560px]")}>
         <caption className="sr-only">League standings</caption>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -19,7 +19,7 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
             <th scope="col" className="px-4 py-2 font-semibold">
               Team
             </th>
-            {["PL", "W", "D", "L", "+/-", "GD", "Pts"].map((h) => (
+            {(compact ? ["GD", "Pts"] : ["PL", "W", "D", "L", "+/-", "GD", "Pts"]).map((h) => (
               <th key={h} scope="col" className="px-3 py-2 text-right font-semibold">
                 {h}
               </th>
@@ -62,14 +62,12 @@ export function StandingsTable({ highlight }: { highlight?: string }) {
                 </Link>
               </td>
 
-              {[r.played, r.won, r.drawn, r.lost].map((v, i) => (
+              {!compact && [r.played, r.won, r.drawn, r.lost].map((v, i) => (
                 <td key={i} className="num px-3 py-3 text-right text-muted-foreground">
                   {v}
                 </td>
               ))}
-              <td className="num px-3 py-3 text-right text-muted-foreground">
-                {r.gf}-{r.ga}
-              </td>
+              {!compact && <td className="num px-3 py-3 text-right text-muted-foreground">{r.gf}-{r.ga}</td>}
               <td className="num px-3 py-3 text-right text-muted-foreground">
                 {r.gd > 0 ? `+${r.gd}` : r.gd}
               </td>
@@ -109,10 +107,10 @@ export function MatchRows({ matches }: { matches: Match[] }) {
                 <TeamBadge slug={m.awaySlug} className="min-w-0" />
               </span>
             ) : (
-              <span className="flex min-w-0 items-center gap-2 text-sm font-semibold">
-                <TeamBadge slug={m.homeSlug} />
+              <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm font-semibold">
+                <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
                 <span className="text-muted-foreground">vs</span>
-                <TeamBadge slug={m.awaySlug} />
+                <TeamBadge slug={m.awaySlug} className="min-w-0" />
               </span>
             )}
           </Link>

@@ -19,6 +19,7 @@ type RawPlayer = {
   name: string;
   team_slug: string;
   captain: boolean;
+  jersey_number: number | null;
 };
 
 type RawMatch = {
@@ -34,6 +35,8 @@ type RawMatch = {
   home_goals: number | null;
   away_goals: number | null;
   potm_player_id: string | null;
+  home_formation: string;
+  away_formation: string;
 };
 
 type RawGoal = {
@@ -42,7 +45,13 @@ type RawGoal = {
   minute: number | null;
   scorer_id: string;
   assist_id: string | null;
+  is_penalty: boolean;
+  is_own_goal: boolean;
 };
+
+type RawLineup = { id: string; match_id: string; player_id: string; side: "home" | "away"; role: "starter" | "substitute"; position_index: number; played: boolean; is_replacement: boolean };
+type RawCard = { id: string; match_id: string; player_id: string; minute: number | null; card_type: "yellow" | "red" | "second_yellow_red" };
+type RawPenaltyEvent = { id: string; match_id: string; player_id: string; minute: number | null; event_type: "earned" | "missed" };
 
 type RawTransfer = {
   id: string;
@@ -58,14 +67,20 @@ export type RawSnapshot = {
   matches: RawMatch[];
   goals: RawGoal[];
   transfers: RawTransfer[];
+  lineups: RawLineup[];
+  cards: RawCard[];
+  penaltyEvents: RawPenaltyEvent[];
 };
 
 async function fetchLeague(): Promise<RawSnapshot> {
-  const [playersRes, matchesRes, goalsRes, transfersRes] = await Promise.all([
+  const [playersRes, matchesRes, goalsRes, transfersRes, lineupsRes, cardsRes, penaltyEventsRes] = await Promise.all([
     supabase.from("players").select("*").order("name"),
     supabase.from("matches").select("*").order("kickoff"),
     supabase.from("match_goals").select("*").order("minute", { nullsFirst: true }),
     supabase.from("transfers").select("*").order("happened_on", { ascending: false }),
+    supabase.from("match_lineups").select("*").order("position_index"),
+    supabase.from("match_cards").select("*").order("minute", { nullsFirst: true }),
+    supabase.from("match_penalty_events").select("*").order("minute", { nullsFirst: true }),
   ]);
 
   return {
@@ -73,10 +88,13 @@ async function fetchLeague(): Promise<RawSnapshot> {
     matches: (matchesRes.data ?? []) as RawMatch[],
     goals: (goalsRes.data ?? []) as RawGoal[],
     transfers: (transfersRes.data ?? []) as RawTransfer[],
+    lineups: (lineupsRes.data ?? []) as RawLineup[],
+    cards: (cardsRes.data ?? []) as RawCard[],
+    penaltyEvents: (penaltyEventsRes.data ?? []) as RawPenaltyEvent[],
   };
 }
 
-const empty: RawSnapshot = { players: [], matches: [], goals: [], transfers: [] };
+const empty: RawSnapshot = { players: [], matches: [], goals: [], transfers: [], lineups: [], cards: [], penaltyEvents: [] };
 
 // One shared realtime channel for the whole app.
 let liveChannel: ReturnType<typeof supabase.channel> | null = null;
@@ -105,7 +123,7 @@ export function useLeague(scope: "season" | "all" = "season") {
     liveListeners.add(invalidate);
     if (!liveChannel) {
       const channel = supabase.channel("league-live");
-      for (const table of ["players", "matches", "match_goals", "transfers"] as const) {
+      for (const table of ["players", "matches", "match_goals", "transfers", "match_lineups", "match_cards", "match_penalty_events"] as const) {
         channel.on("postgres_changes", { event: "*", schema: "public", table }, () => {
           liveListeners.forEach((fn) => fn());
         });
@@ -145,6 +163,8 @@ export function useLeague(scope: "season" | "all" = "season") {
             assistId: g.assist_id,
             assistSlug: assist?.slug ?? null,
             assistName: assist?.name ?? null,
+            isPenalty: g.is_penalty,
+            isOwnGoal: g.is_own_goal,
           };
         })
         .sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
@@ -164,6 +184,22 @@ export function useLeague(scope: "season" | "all" = "season") {
         homeGoals: m.home_goals,
         awayGoals: m.away_goals,
         goals: buildGoals(m.id),
+        lineups: raw.lineups.filter((entry) => entry.match_id === m.id).map((entry) => {
+          const player = byId.get(entry.player_id);
+          return { id: entry.id, playerId: entry.player_id, playerSlug: player?.slug ?? "", playerName: player?.name ?? "Unknown", playerTeamSlug: player?.team_slug ?? null, jerseyNumber: player?.jersey_number ?? null, side: entry.side, role: entry.role, positionIndex: entry.position_index, played: entry.played, isReplacement: entry.is_replacement };
+        }),
+        cards: raw.cards.filter((entry) => entry.match_id === m.id).map((entry) => {
+          const player = byId.get(entry.player_id);
+          const side = raw.lineups.find((lineup) => lineup.match_id === m.id && lineup.player_id === entry.player_id)?.side ?? (player?.team_slug === m.away_slug ? "away" : "home");
+          return { id: entry.id, playerId: entry.player_id, playerName: player?.name ?? "Unknown", side, minute: entry.minute, cardType: entry.card_type };
+        }),
+        penaltyEvents: raw.penaltyEvents.filter((entry) => entry.match_id === m.id).map((entry) => {
+          const player = byId.get(entry.player_id);
+          const side = raw.lineups.find((lineup) => lineup.match_id === m.id && lineup.player_id === entry.player_id)?.side ?? (player?.team_slug === m.away_slug ? "away" : "home");
+          return { id: entry.id, playerId: entry.player_id, playerName: player?.name ?? "Unknown", side, minute: entry.minute, eventType: entry.event_type };
+        }),
+        homeFormation: m.home_formation,
+        awayFormation: m.away_formation,
         potmId: m.potm_player_id,
         potmSlug: potm?.slug ?? null,
         potmName: potm?.name ?? null,
@@ -177,6 +213,7 @@ export function useLeague(scope: "season" | "all" = "season") {
 
     // Player stats only count the matches in scope.
     const scopedMatchIds = new Set(matches.map((m) => m.id));
+    const replacements = new Set(raw.lineups.filter((entry) => entry.is_replacement).map((entry) => `${entry.match_id}:${entry.player_id}`));
     const scopedGoals = raw.goals.filter((g) => scopedMatchIds.has(g.match_id));
     const scopedPotm = matches.map((m) => m.potmId).filter(Boolean);
 
@@ -186,8 +223,10 @@ export function useLeague(scope: "season" | "all" = "season") {
       name: p.name,
       teamSlug: p.team_slug,
       captain: p.captain,
-      goals: scopedGoals.filter((g) => g.scorer_id === p.id).length,
-      assists: scopedGoals.filter((g) => g.assist_id === p.id).length,
+      jerseyNumber: p.jersey_number,
+      appearances: raw.lineups.filter((entry) => scopedMatchIds.has(entry.match_id) && entry.player_id === p.id && entry.played && !entry.is_replacement).length,
+      goals: scopedGoals.filter((g) => g.scorer_id === p.id && !replacements.has(`${g.match_id}:${p.id}`)).length,
+      assists: scopedGoals.filter((g) => g.assist_id === p.id && !replacements.has(`${g.match_id}:${p.id}`)).length,
       potm: scopedPotm.filter((id) => id === p.id).length,
     }));
 
