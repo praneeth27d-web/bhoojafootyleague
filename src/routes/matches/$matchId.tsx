@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
+import { MatchLineupView } from "@/components/match-lineup";
 import assistBootLight from "@/assets/assist-boot-light.png";
 import assistBootDark from "@/assets/assist-boot-dark.png";
 import { formatKickoff, teamName } from "@/lib/league";
@@ -233,6 +234,12 @@ function MatchDetail() {
                   Not awarded for this match.
                 </p>
               )}
+            </Card>
+
+            <Card title="Lineup">
+              <div className="px-4 py-4">
+                <MatchLineupView match={m} />
+              </div>
             </Card>
           </>
         ) : (
