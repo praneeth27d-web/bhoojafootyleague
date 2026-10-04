@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
+import { AdminLineupEditor } from "@/components/admin-lineup-editor";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
 import {
@@ -677,6 +678,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
           </div>
         </div>
       </div>
+      <AdminLineupEditor match={match} players={allPlayers} refresh={refresh} />
       <ErrorNote error={error} />
       {success && <p className={successClass}>{success}</p>}
     </div>
