@@ -96,12 +96,13 @@ type MatchEvent = {
   name: string;
   slug: string | null;
   count: number;
+  isPenalty?: boolean;
 };
 
 function groupEvents(events: Omit<MatchEvent, "key" | "count">[]) {
   const grouped = new Map<string, MatchEvent>();
   for (const event of events) {
-    const key = `${event.side}-${event.slug ?? event.name}`;
+    const key = `${event.side}-${event.slug ?? event.name}-${event.isPenalty ? "penalty" : "open"}`;
     const existing = grouped.get(key);
     if (existing) existing.count += 1;
     else grouped.set(key, { ...event, key, count: 1 });
@@ -112,7 +113,7 @@ function groupEvents(events: Omit<MatchEvent, "key" | "count">[]) {
 function MatchDetail() {
   const { matchId } = Route.useParams();
   const { getMatch, loading } = useLeague();
-  const [view, setView] = useState<"goals" | "assists">("goals");
+  const [view, setView] = useState<"goals" | "assists" | "lineup">("goals");
   const m = getMatch(matchId);
 
   const events = groupEvents((m?.goals ?? []).flatMap((g) => {
@@ -121,11 +122,13 @@ function MatchDetail() {
       return [
         {
           side: side(g.scorerTeamSlug),
-          name: g.scorerName,
+          name: `${g.scorerName}${g.isPenalty ? " (P)" : ""}`,
           slug: g.scorerSlug || null,
+          isPenalty: g.isPenalty,
         },
       ];
     }
+    if (view === "lineup") return [];
     if (!g.assistName) return [];
     return [
       {
@@ -190,20 +193,24 @@ function MatchDetail() {
         {completed ? (
           <>
             <Card>
-              <div className="flex gap-2 border-b border-border px-4 py-3">
-                {(["goals", "assists"] as const).map((v) => (
+              <div role="tablist" aria-label="Match views" className="flex gap-1 overflow-x-auto border-b border-border px-4 pt-2">
+                {(["goals", "assists", "lineup"] as const).map((v) => (
                   <Button
                     key={v}
                     type="button"
+                    role="tab"
+                    aria-selected={view === v}
                     onClick={() => setView(v)}
-                    size="sm"
-                    variant={view === v ? "default" : "outline"}
+                    variant="ghost"
+                    className={view === v ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}
                   >
-                    {v === "goals" ? "Goals" : "Assists"}
+                    {v === "goals" ? "Goals" : v === "assists" ? "Assists" : "Lineup"}
                   </Button>
                 ))}
               </div>
-              {eventRows.length > 0 ? (
+              {view === "lineup" ? (
+                <div className="px-4 py-4"><MatchLineupView match={m} /></div>
+              ) : eventRows.length > 0 ? (
                 <ul className="divide-y divide-border">
                   {eventRows.map((row, index) => (
                     <EventRow
@@ -236,15 +243,14 @@ function MatchDetail() {
               )}
             </Card>
 
-            <Card title="Lineup">
-              <div className="px-4 py-4">
-                <MatchLineupView match={m} />
-              </div>
-            </Card>
           </>
         ) : (
-          <Card title="Kick-off details">
-            <dl className="divide-y divide-border text-sm">
+          <Card>
+            <div role="tablist" aria-label="Match views" className="flex gap-1 border-b border-border px-4 pt-2">
+              <Button type="button" role="tab" aria-selected={view !== "lineup"} onClick={() => setView("goals")} variant="ghost" className={view !== "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Details</Button>
+              <Button type="button" role="tab" aria-selected={view === "lineup"} onClick={() => setView("lineup")} variant="ghost" className={view === "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Lineup</Button>
+            </div>
+            {view === "lineup" ? <div className="px-4 py-4"><MatchLineupView match={m} /></div> : <dl className="divide-y divide-border text-sm">
               <div className="flex justify-between px-4 py-3">
                 <dt className="text-muted-foreground">Day</dt>
                 <dd className="font-semibold">{weekday}</dd>
@@ -261,7 +267,7 @@ function MatchDetail() {
                 <dt className="text-muted-foreground">Location</dt>
                 <dd className="font-semibold">{m.venue ?? "To be confirmed"}</dd>
               </div>
-            </dl>
+            </dl>}
           </Card>
         )}
       </div>
