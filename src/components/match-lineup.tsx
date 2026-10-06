@@ -9,22 +9,45 @@ import { teamName, type Match, type MatchLineup } from "@/lib/league";
 function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
   const goals = match.goals.filter((goal) => goal.scorerId === entry.playerId).length;
   const assists = match.goals.filter((goal) => goal.assistId === entry.playerId).length;
+  const cards = match.cards.filter((card) => card.playerId === entry.playerId);
+  const yellowCards = cards.filter((card) => card.cardType === "yellow").length;
+  const redCards = cards.filter((card) => card.cardType === "red").length;
+  const secondYellowReds = cards.filter((card) => card.cardType === "second_yellow_red").length;
   return (
     <div className="flex min-w-0 flex-col items-center text-center">
-      <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
-        {entry.jerseyNumber ?? "–"}
+      <span className="relative">
+        <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
+          {entry.jerseyNumber ?? "–"}
+        </span>
+        {goals > 0 && (
+          <span
+            className="num absolute -bottom-1.5 -left-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
+            aria-label={`${goals} ${goals === 1 ? "goal" : "goals"}`}
+          >
+            <span aria-hidden="true">⚽</span>{goals > 1 && <span>{goals}</span>}
+          </span>
+        )}
+        {(yellowCards > 0 || redCards > 0 || secondYellowReds > 0) && (
+          <span className="absolute -right-2 -top-1 flex items-start gap-0.5" aria-label={`${yellowCards} yellow, ${redCards} red, ${secondYellowReds} second-yellow red cards`}>
+            {Array.from({ length: yellowCards }).map((_, index) => <span key={`yellow-${index}`} className="block h-4 w-2.5 rounded-[2px] border border-border bg-pos-mid shadow-sm" />)}
+            {Array.from({ length: redCards }).map((_, index) => <span key={`red-${index}`} className="block h-4 w-2.5 rounded-[2px] border border-border bg-pos-low shadow-sm" />)}
+            {Array.from({ length: secondYellowReds }).map((_, index) => (
+              <span key={`second-yellow-${index}`} className="relative block h-4 w-4" title="Second yellow card, red card">
+                <span className="absolute left-0 top-0 block h-4 w-2.5 -rotate-6 rounded-[2px] border border-border bg-pos-mid shadow-sm" />
+                <span className="absolute right-0 top-0 block h-4 w-2.5 rotate-6 rounded-[2px] border border-border bg-pos-low shadow-sm" />
+              </span>
+            ))}
+          </span>
+        )}
       </span>
       <span className="mt-1 max-w-24 truncate text-xs font-semibold">{entry.playerName}</span>
-      {(goals > 0 || assists > 0) && (
+      {assists > 0 && (
         <span className="num mt-0.5 flex min-h-4 items-center justify-center gap-1.5 text-[10px] font-semibold text-muted-foreground">
-          {goals > 0 && <span aria-label={`${goals} goals`}>⚽ {goals}</span>}
-          {assists > 0 && (
-            <span className="flex items-center gap-0.5" aria-label={`${assists} assists`}>
-              <img src={assistBootLight} alt="" className="size-3.5 object-contain dark:hidden" />
-              <img src={assistBootDark} alt="" className="hidden size-3.5 object-contain dark:block" />
-              {assists}
-            </span>
-          )}
+          <span className="flex items-center gap-0.5" aria-label={`${assists} assists`}>
+            <img src={assistBootLight} alt="" className="size-3.5 object-contain dark:hidden" />
+            <img src={assistBootDark} alt="" className="hidden size-3.5 object-contain dark:block" />
+            {assists}
+          </span>
         </span>
       )}
     </div>
