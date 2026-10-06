@@ -10,3 +10,4 @@
 - [x] Compact match events into paired home/away rows and combine repeat scorers.
 - [x] Use transparent light/dark assist boot icons.
 - [x] Simplify fixture rows and place completed scores between the two teams.
+- [x] Show goal and card badges on lineup players, including second-yellow reds.
