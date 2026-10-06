@@ -27,6 +27,16 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
             <span aria-hidden="true">⚽</span>{goals > 1 && <span>{goals}</span>}
           </span>
         )}
+        {assists > 0 && (
+          <span
+            className="num absolute -bottom-1.5 -right-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
+            aria-label={`${assists} ${assists === 1 ? "assist" : "assists"}`}
+          >
+            <img src={assistBootLight} alt="" className="size-3.5 object-contain dark:hidden" />
+            <img src={assistBootDark} alt="" className="hidden size-3.5 object-contain dark:block" />
+            {assists > 1 && <span>{assists}</span>}
+          </span>
+        )}
         {(yellowCards > 0 || redCards > 0 || secondYellowReds > 0) && (
           <span className="absolute -right-2 -top-1 flex items-start gap-0.5" aria-label={`${yellowCards} yellow, ${redCards} red, ${secondYellowReds} second-yellow red cards`}>
             {Array.from({ length: yellowCards }).map((_, index) => <span key={`yellow-${index}`} className="block h-4 w-2.5 rounded-[2px] border border-border bg-pos-mid shadow-sm" />)}
@@ -40,16 +50,11 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
           </span>
         )}
       </span>
-      <span className="mt-1 max-w-24 truncate text-xs font-semibold">{entry.playerName}</span>
-      {assists > 0 && (
-        <span className="num mt-0.5 flex min-h-4 items-center justify-center gap-1.5 text-[10px] font-semibold text-muted-foreground">
-          <span className="flex items-center gap-0.5" aria-label={`${assists} assists`}>
-            <img src={assistBootLight} alt="" className="size-3.5 object-contain dark:hidden" />
-            <img src={assistBootDark} alt="" className="hidden size-3.5 object-contain dark:block" />
-            {assists}
-          </span>
-        </span>
-      )}
+      <span className="mt-1 flex max-w-28 items-center justify-center gap-1 text-xs font-semibold">
+        {entry.captain && <span className="num flex size-3.5 shrink-0 items-center justify-center rounded-full bg-foreground text-[8px] font-black text-background" aria-label="Captain">C</span>}
+        <span className="truncate">{entry.playerName}</span>
+        {match.potmId === entry.playerId && <span className="shrink-0 text-primary" aria-label="Player of the match" title="Player of the match">★</span>}
+      </span>
     </div>
   );
 }
@@ -75,8 +80,12 @@ function PitchHalf({ side, match }: { side: "home" | "away"; match: Match }) {
   const rows = formationRows(formation, starters.slice(1));
 
   const goalkeeperRow = (
-    <div className="flex min-h-20 items-center justify-center">
-      {goalkeeper && <Marker entry={goalkeeper} match={match} />}
+    <div className="relative flex min-h-24 items-center justify-center">
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute left-1/2 h-16 w-32 -translate-x-1/2 border-x-2 border-primary/25 ${side === "home" ? "top-0 rounded-b-md border-b-2" : "bottom-0 rounded-t-md border-t-2"}`}
+      />
+      {goalkeeper && <div className="relative z-10"><Marker entry={goalkeeper} match={match} /></div>}
     </div>
   );
   const outfieldRows = rows.map((row, index) => (

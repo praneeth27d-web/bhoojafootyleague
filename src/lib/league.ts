@@ -38,6 +38,7 @@ export type MatchLineup = {
   playerName: string;
   playerTeamSlug: string | null;
   jerseyNumber: number | null;
+  captain: boolean;
   side: "home" | "away";
   role: "starter" | "substitute";
   positionIndex: number;

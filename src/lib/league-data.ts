@@ -186,7 +186,7 @@ export function useLeague(scope: "season" | "all" = "season") {
         goals: buildGoals(m.id),
         lineups: raw.lineups.filter((entry) => entry.match_id === m.id).map((entry) => {
           const player = byId.get(entry.player_id);
-          return { id: entry.id, playerId: entry.player_id, playerSlug: player?.slug ?? "", playerName: player?.name ?? "Unknown", playerTeamSlug: player?.team_slug ?? null, jerseyNumber: player?.jersey_number ?? null, side: entry.side, role: entry.role, positionIndex: entry.position_index, played: entry.played, isReplacement: entry.is_replacement };
+          return { id: entry.id, playerId: entry.player_id, playerSlug: player?.slug ?? "", playerName: player?.name ?? "Unknown", playerTeamSlug: player?.team_slug ?? null, jerseyNumber: player?.jersey_number ?? null, captain: player?.captain ?? false, side: entry.side, role: entry.role, positionIndex: entry.position_index, played: entry.played, isReplacement: entry.is_replacement };
         }),
         cards: raw.cards.filter((entry) => entry.match_id === m.id).map((entry) => {
           const player = byId.get(entry.player_id);
