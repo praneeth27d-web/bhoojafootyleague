@@ -7,7 +7,7 @@ import { TeamBadge } from "@/components/team-badge";
 import { teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
-const metrics = ["goals", "assists", "ga", "potm", "appearances", "jerseyNumber", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "jerseyNumber", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
 type Metric = (typeof metrics)[number];
 type Search = { metric: Metric };
 
@@ -17,6 +17,7 @@ const metricLabel: Record<Metric, string> = {
   ga: "Total G/A",
   potm: "Total POTM",
   appearances: "Appearances",
+  marketValue: "Market Value",
   jerseyNumber: "Jersey Number",
   penaltyGoals: "Penalty Goals",
   penaltiesMissed: "Penalties Missed",
@@ -59,7 +60,7 @@ function StatsPage() {
 
   const { players } = useLeague();
 
-  const value = (p: Player) => (metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
+  const value = (p: Player) => (metric === "marketValue" ? 0 : metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
   const displayValue = (p: Player) => metric === "penaltyConversion" ? (p.penaltyConversion === null ? "—" : `${Number(p.penaltyConversion.toFixed(1))}%`) : metric === "ga" ? p.goals + p.assists : p[metric] ?? "—";
 
   const rows = [...players]
@@ -107,7 +108,7 @@ function StatsPage() {
                   Team
                 </th>
                 <th scope="col" className="px-4 py-2 font-semibold">Position</th>
-                <th scope="col" className="px-4 py-2 font-semibold">Market Value</th>
+                {metric !== "marketValue" && <th scope="col" className="px-4 py-2 font-semibold">Market Value</th>}
                 <th scope="col" className="px-4 py-2 font-semibold">Preferred Foot</th>
                 <th scope="col" className="px-3 py-2 text-right font-semibold">
                   {metricLabel[metric]}
@@ -145,7 +146,7 @@ function StatsPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-3">{p.position || "Not set"}</td>
-                  <td className="px-4 py-3">{p.marketValue || "Not set"}</td>
+                  {metric !== "marketValue" && <td className="px-4 py-3">{p.marketValue || "Not set"}</td>}
                   <td className="px-4 py-3 capitalize">{p.preferredFoot || "Not set"}</td>
                   <td className="num px-3 py-3 text-right font-bold">
                     {displayValue(p)}
