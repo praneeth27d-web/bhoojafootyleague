@@ -4,8 +4,6 @@ import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
 import { MatchLineupView } from "@/components/match-lineup";
-import assistBootLight from "@/assets/assist-boot-light.png";
-import assistBootDark from "@/assets/assist-boot-dark.png";
 import { formatKickoff, teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
@@ -15,12 +13,12 @@ export const Route = createFileRoute("/matches/$matchId")({
       { title: "Match — Bhooja Football League" },
       {
         name: "description",
-        content: "Score, goalscorers, assists and player of the match for this BFL fixture.",
+        content: "Score, five-a-side lineups, match events and player of the match for this BFL fixture.",
       },
       { property: "og:title", content: "BFL Match" },
       {
         property: "og:description",
-        content: "Score, goalscorers, assists and player of the match.",
+        content: "Score, lineups and every match event.",
       },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
@@ -42,108 +40,11 @@ function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
   );
 }
 
-function EventRow({
-  home,
-  away,
-  kind,
-}: {
-  home?: MatchEvent | undefined;
-  away?: MatchEvent | undefined;
-  kind: "goal" | "assist";
-}) {
-  const icon = () =>
-    kind === "goal" ? (
-      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center text-xs">
-        ⚽
-      </span>
-    ) : (
-      <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center">
-        <img
-          src={assistBootLight}
-          alt=""
-          className="size-5 object-contain dark:hidden"
-        />
-        <img
-          src={assistBootDark}
-          alt=""
-          className="hidden size-5 object-contain dark:block"
-        />
-      </span>
-    );
-
-  const event = (item: MatchEvent, side: "home" | "away") => (
-    <span className={side === "away" ? "flex items-center justify-end gap-2 text-right" : "flex items-center gap-2"}>
-      {side === "home" && icon()}
-      <span className="min-w-0 truncate text-sm">
-        {item.count > 1 && <span className="num mr-1 font-bold text-muted-foreground">{item.count}×</span>}
-        <PlayerLink slug={item.slug} name={item.name} />
-      </span>
-      {side === "away" && icon()}
-    </span>
-  );
-
-  return (
-    <li className="grid min-h-11 grid-cols-2 items-center gap-4 px-4 py-2.5">
-      <span>{home ? event(home, "home") : null}</span>
-      <span>{away ? event(away, "away") : null}</span>
-    </li>
-  );
-}
-
-type MatchEvent = {
-  key: string;
-  side: "home" | "away";
-  name: string;
-  slug: string | null;
-  count: number;
-  isPenalty?: boolean;
-};
-
-function groupEvents(events: Omit<MatchEvent, "key" | "count">[]) {
-  const grouped = new Map<string, MatchEvent>();
-  for (const event of events) {
-    const key = `${event.side}-${event.slug ?? event.name}-${event.isPenalty ? "penalty" : "open"}`;
-    const existing = grouped.get(key);
-    if (existing) existing.count += 1;
-    else grouped.set(key, { ...event, key, count: 1 });
-  }
-  return [...grouped.values()];
-}
-
 function MatchDetail() {
   const { matchId } = Route.useParams();
   const { getMatch, loading } = useLeague();
-  const [view, setView] = useState<"goals" | "assists" | "lineup">("goals");
+  const [view, setView] = useState<"details" | "lineup">("details");
   const m = getMatch(matchId);
-
-  const events = groupEvents((m?.goals ?? []).flatMap((g) => {
-    const side = (slug: string | null) => (slug === m?.awaySlug ? "away" : "home") as "home" | "away";
-    if (view === "goals") {
-      return [
-        {
-          side: side(g.scorerTeamSlug),
-          name: `${g.scorerName}${g.isPenalty ? " (P)" : ""}`,
-          slug: g.scorerSlug || null,
-          isPenalty: g.isPenalty,
-        },
-      ];
-    }
-    if (view === "lineup") return [];
-    if (!g.assistName) return [];
-    return [
-      {
-        side: side(g.scorerTeamSlug),
-        name: g.assistName,
-        slug: g.assistSlug,
-      },
-    ];
-  }));
-  const homeEvents = events.filter((event) => event.side === "home");
-  const awayEvents = events.filter((event) => event.side === "away");
-  const eventRows = Array.from({ length: Math.max(homeEvents.length, awayEvents.length) }, (_, index) => ({
-    home: homeEvents[index],
-    away: awayEvents[index],
-  }));
 
   if (!m) {
     return (
@@ -192,40 +93,8 @@ function MatchDetail() {
 
         {completed ? (
           <>
-            <Card>
-              <div role="tablist" aria-label="Match views" className="flex gap-1 overflow-x-auto border-b border-border px-4 pt-2">
-                {(["goals", "assists", "lineup"] as const).map((v) => (
-                  <Button
-                    key={v}
-                    type="button"
-                    role="tab"
-                    aria-selected={view === v}
-                    onClick={() => setView(v)}
-                    variant="ghost"
-                    className={view === v ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}
-                  >
-                    {v === "goals" ? "Goals" : v === "assists" ? "Assists" : "Lineup"}
-                  </Button>
-                ))}
-              </div>
-              {view === "lineup" ? (
-                <div className="px-4 py-4"><MatchLineupView match={m} /></div>
-              ) : eventRows.length > 0 ? (
-                <ul className="divide-y divide-border">
-                  {eventRows.map((row, index) => (
-                    <EventRow
-                      key={`${row.home?.key ?? "empty"}-${row.away?.key ?? "empty"}-${index}`}
-                      home={row.home}
-                      away={row.away}
-                      kind={view === "goals" ? "goal" : "assist"}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  {view === "goals" ? "No goals in this match." : "No assists in this match."}
-                </p>
-              )}
+            <Card title="Lineup">
+              <div className="px-4 py-4"><MatchLineupView match={m} /></div>
             </Card>
 
             <Card title="Player of the match">
@@ -247,7 +116,7 @@ function MatchDetail() {
         ) : (
           <Card>
             <div role="tablist" aria-label="Match views" className="flex gap-1 border-b border-border px-4 pt-2">
-              <Button type="button" role="tab" aria-selected={view !== "lineup"} onClick={() => setView("goals")} variant="ghost" className={view !== "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Details</Button>
+              <Button type="button" role="tab" aria-selected={view !== "lineup"} onClick={() => setView("details")} variant="ghost" className={view !== "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Details</Button>
               <Button type="button" role="tab" aria-selected={view === "lineup"} onClick={() => setView("lineup")} variant="ghost" className={view === "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Lineup</Button>
             </div>
             {view === "lineup" ? <div className="px-4 py-4"><MatchLineupView match={m} /></div> : <dl className="divide-y divide-border text-sm">
