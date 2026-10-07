@@ -1,4 +1,6 @@
 import { TeamCrest } from "@/components/team-badge";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import assistBootLight from "@/assets/assist-boot-light.png";
 import assistBootDark from "@/assets/assist-boot-dark.png";
 import ownGoalIcon from "@/assets/own-goal.png";
@@ -9,8 +11,10 @@ import { teamName, type Match, type MatchLineup } from "@/lib/league";
 function SpecialBadge({ count, label, icon, tone }: { count: number; label: string; icon: string; tone: "earned" | "missed" | "own" }) {
   if (!count) return null;
   const color = tone === "earned" ? "bg-event-earned" : tone === "missed" ? "bg-event-missed" : "bg-event-own";
-  return <span title={`${label}${count > 1 ? ` ×${count}` : ""}`} aria-label={`${count} ${label}`} className={`num flex h-6 shrink-0 items-center gap-0.5 rounded-sm border border-event-ink/20 px-0.5 text-[10px] font-black text-event-ink ${color}`}>
-    <span className="flex size-4 items-center justify-center rounded-sm bg-event-icon-surface"><img src={icon} alt="" className="size-3.5 object-contain" /></span>
+  const earned = tone === "earned";
+  return <span title={`${label}${count > 1 ? ` ×${count}` : ""}`} aria-label={`${count} ${label}`} className={`num flex shrink-0 items-center gap-1 rounded-sm border border-event-ink/30 text-[10px] font-black text-event-ink ${earned ? "min-h-8 px-1 py-0.5 shadow-sm" : "h-6 px-0.5"} ${color}`}>
+    <span className={`flex items-center justify-center rounded-sm bg-event-icon-surface ${earned ? "size-6" : "size-4"}`}><img src={icon} alt="" className={`${earned ? "size-5" : "size-3.5"} object-contain`} /></span>
+    {earned && <span className="w-9 whitespace-normal text-[9px] leading-tight">Penalty earned</span>}
     {count > 1 && <span>{count}</span>}
   </span>;
 }
@@ -26,7 +30,8 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
   const redCards = cards.filter((card) => card.cardType === "red").length;
   const secondYellowReds = cards.filter((card) => card.cardType === "second_yellow_red").length;
   return (
-    <div className="flex min-w-0 max-w-28 flex-1 flex-col items-center px-1 py-2 text-center">
+    <Button asChild variant="ghost" className="h-auto min-w-0 max-w-28 flex-1 flex-col gap-0 whitespace-normal px-1 py-2 text-center text-foreground">
+    <Link to="/players/$playerSlug" params={{ playerSlug: entry.playerSlug }} aria-label={`View stats for ${entry.playerName}`}>
       <span className="relative">
         <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
           {entry.jerseyNumber ?? "–"}
@@ -72,7 +77,8 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />
         <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />
       </span>}
-    </div>
+    </Link>
+    </Button>
   );
 }
 
