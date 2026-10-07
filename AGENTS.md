@@ -12,3 +12,5 @@
 <!-- LOVABLE:END -->
 
 - Public match events are presented through the shared lineup view; keep event entry in league admin independent so display changes do not alter editing workflows.
+- Derive individual totals from completed matches through a shared statistics helper, excluding replacement events and own goals from scoring; profiles and leaderboards share the same values to prevent discrepancies.
+- Store market value as nullable admin-entered display text so currency and units are not invented; unknown profile details display as not set.

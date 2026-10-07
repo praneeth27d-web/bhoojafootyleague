@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
+import { calculatePlayerStatistics } from "@/lib/player-statistics";
 import {
   computeStandings,
   slugify,
@@ -20,6 +21,9 @@ type RawPlayer = {
   team_slug: string;
   captain: boolean;
   jersey_number: number | null;
+  position: string | null;
+  market_value: string | null;
+  preferred_foot: string | null;
 };
 
 type RawMatch = {
@@ -212,10 +216,7 @@ export function useLeague(scope: "season" | "all" = "season") {
       scope === "all" ? allMatches : allMatches.filter((m) => m.season === seasonNumber);
 
     // Player stats only count the matches in scope.
-    const scopedMatchIds = new Set(matches.map((m) => m.id));
-    const replacements = new Set(raw.lineups.filter((entry) => entry.is_replacement).map((entry) => `${entry.match_id}:${entry.player_id}`));
-    const scopedGoals = raw.goals.filter((g) => scopedMatchIds.has(g.match_id));
-    const scopedPotm = matches.map((m) => m.potmId).filter(Boolean);
+    const statData = { ...raw, matches: raw.matches.filter((m) => scope === "all" || m.season === seasonNumber) };
 
     const players: Player[] = raw.players.map((p) => ({
       id: p.id,
@@ -224,10 +225,10 @@ export function useLeague(scope: "season" | "all" = "season") {
       teamSlug: p.team_slug,
       captain: p.captain,
       jerseyNumber: p.jersey_number,
-      appearances: raw.lineups.filter((entry) => scopedMatchIds.has(entry.match_id) && entry.player_id === p.id && entry.played && !entry.is_replacement).length,
-      goals: scopedGoals.filter((g) => g.scorer_id === p.id && !replacements.has(`${g.match_id}:${p.id}`)).length,
-      assists: scopedGoals.filter((g) => g.assist_id === p.id && !replacements.has(`${g.match_id}:${p.id}`)).length,
-      potm: scopedPotm.filter((id) => id === p.id).length,
+      position: p.position ?? null,
+      marketValue: p.market_value ?? null,
+      preferredFoot: p.preferred_foot ?? null,
+      ...calculatePlayerStatistics(p.id, statData),
     }));
 
     const transfers: Transfer[] = raw.transfers.map((t) => {
