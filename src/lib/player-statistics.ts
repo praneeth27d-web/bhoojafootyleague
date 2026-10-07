@@ -24,7 +24,7 @@ export function calculatePlayerStatistics(playerId: string, data: { matches: Sta
     penaltiesMissed,
     penaltiesEarned: penalties.filter((e) => e.event_type === "earned").length,
     penaltyConversion: attempts ? penaltyGoals / attempts * 100 : null,
-    yellowCards: cards.filter((c) => c.card_type === "yellow" || c.card_type === "second_yellow_red").length,
+    yellowCards: cards.reduce((total, card) => total + (card.card_type === "second_yellow_red" ? 2 : card.card_type === "yellow" ? 1 : 0), 0),
     redCards: cards.filter((c) => c.card_type === "red" || c.card_type === "second_yellow_red").length,
   };
 }
