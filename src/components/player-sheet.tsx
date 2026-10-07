@@ -3,6 +3,8 @@ import { formatShortDate } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { PlayerDetails } from "@/components/player-details";
+import { Button } from "@/components/ui/button";
 
 export function PlayerStatGrid({ slug }: { slug: string }) {
   const { getPlayer } = useLeague();
@@ -88,18 +90,13 @@ export function PlayerSheet({ slug, onClose }: { slug: string | null; onClose: (
               />
             </SheetHeader>
             <div className="mt-4 space-y-5">
-              <PlayerStatGrid slug={player.slug} />
-              <div>
-                <h3 className="mb-1 text-sm font-bold">Recent contributions</h3>
-                <PlayerContributions slug={player.slug} />
-              </div>
-              <Link
+              <PlayerDetails key={player.slug} player={player} />
+              <Button asChild variant="ghost"><Link
                 to="/players/$playerSlug"
                 params={{ playerSlug: player.slug }}
-                className="inline-flex rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
               >
                 Open full profile
-              </Link>
+              </Link></Button>
             </div>
           </>
         )}

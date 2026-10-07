@@ -2,11 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerSheet } from "@/components/player-sheet";
+import { Button } from "@/components/ui/button";
 import { TeamBadge } from "@/components/team-badge";
 import { teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
-const metrics = ["goals", "assists", "ga", "potm"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "jerseyNumber", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
 type Metric = (typeof metrics)[number];
 type Search = { metric: Metric };
 
@@ -14,7 +15,15 @@ const metricLabel: Record<Metric, string> = {
   goals: "Goals",
   assists: "Assists",
   ga: "Total G/A",
-  potm: "POTM",
+  potm: "Total POTM",
+  appearances: "Appearances",
+  jerseyNumber: "Jersey Number",
+  penaltyGoals: "Penalty Goals",
+  penaltiesMissed: "Penalties Missed",
+  penaltiesEarned: "Penalties Earned",
+  penaltyConversion: "Penalty Conversion",
+  yellowCards: "Yellow Cards",
+  redCards: "Red Cards",
 };
 
 export const Route = createFileRoute("/stats")({
@@ -26,9 +35,11 @@ export const Route = createFileRoute("/stats")({
       { title: "Player Stats — Bhooja Football League" },
       {
         name: "description",
-        content: "BFL player statistics: goals, assists, total G/A and Player of the Match awards.",
+        content: "BFL player profiles, appearances, goals, assists, penalties, cards and Player of the Match awards.",
       },
       { property: "og:title", content: "BFL Player Stats" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content: "Goals, assists, total G/A and POTM awards for every BFL player.",
@@ -48,14 +59,15 @@ function StatsPage() {
 
   const { players } = useLeague();
 
-  const value = (p: Player) => (metric === "ga" ? p.goals + p.assists : p[metric]);
+  const value = (p: Player) => (metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
+  const displayValue = (p: Player) => metric === "penaltyConversion" ? (p.penaltyConversion === null ? "—" : `${Number(p.penaltyConversion.toFixed(1))}%`) : metric === "ga" ? p.goals + p.assists : p[metric] ?? "—";
 
   const rows = [...players]
     .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
     .map((p, i) => ({ ...p, pos: i + 1 }));
 
   return (
-    <AppShell title="Player Stats" subtitle="Tap a player for their profile">
+    <AppShell title="Player Stats">
       <Card
         title={metricLabel[metric]}
         action={
@@ -94,6 +106,9 @@ function StatsPage() {
                 <th scope="col" className="px-4 py-2 font-semibold">
                   Team
                 </th>
+                <th scope="col" className="px-4 py-2 font-semibold">Position</th>
+                <th scope="col" className="px-4 py-2 font-semibold">Market Value</th>
+                <th scope="col" className="px-4 py-2 font-semibold">Preferred Foot</th>
                 <th scope="col" className="px-3 py-2 text-right font-semibold">
                   {metricLabel[metric]}
                 </th>
@@ -104,10 +119,11 @@ function StatsPage() {
                 <tr key={p.slug} className="border-b border-border last:border-0 hover:bg-accent active:bg-accent/70">
                   <td className="num px-4 py-3 text-muted-foreground">{p.pos}</td>
                   <td className="px-4 py-3">
-                    <button
+                    <Button
+                      variant="ghost"
                       type="button"
                       onClick={() => setSelected(p.slug)}
-                      className="inline-flex items-center gap-2 font-semibold hover:text-primary"
+                      className="h-auto justify-start px-0 font-semibold hover:bg-transparent hover:text-primary"
                       aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : ""}`}
                     >
                       {p.name}
@@ -116,7 +132,7 @@ function StatsPage() {
                           C
                         </span>
                       )}
-                    </button>
+                    </Button>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     <Link
@@ -128,8 +144,11 @@ function StatsPage() {
                       <TeamBadge slug={p.teamSlug} />
                     </Link>
                   </td>
+                  <td className="px-4 py-3">{p.position || "Not set"}</td>
+                  <td className="px-4 py-3">{p.marketValue || "Not set"}</td>
+                  <td className="px-4 py-3 capitalize">{p.preferredFoot || "Not set"}</td>
                   <td className="num px-3 py-3 text-right font-bold">
-                    {metric === "ga" ? p.goals + p.assists : p[metric]}
+                    {displayValue(p)}
                   </td>
                 </tr>
               ))}

@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
+import { AdminPlayerDetails } from "@/components/admin-player-details";
 import { AdminLineupEditor } from "@/components/admin-lineup-editor";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
@@ -26,6 +27,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       { property: "og:title", content: "BFL League Admin" },
       { property: "og:description", content: "Private league management area." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AdminPage,
@@ -717,12 +720,6 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
     else refresh();
   }
 
-  async function updateJersey(id: string, jerseyNumber: number | null) {
-    const { error: err } = await supabase.from("players").update({ jersey_number: jerseyNumber }).eq("id", id);
-    if (err) setError(err.message);
-    else await refresh();
-  }
-
   return (
     <>
       <Card title="Add a player">
@@ -768,13 +765,14 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
         <Card key={t.slug} title={t.name}>
           <ul className="divide-y divide-border">
             {league.squad(t.slug).map((p) => (
-              <li key={p.id} className="flex items-center justify-between gap-2 px-4 py-2.5 text-sm">
+              <li key={p.id} className="px-4 py-3 text-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-semibold">
                   {p.name}
                   {p.captain && <span className="ml-2 text-xs text-primary">Captain</span>}
                 </span>
                 <span className="flex items-center gap-2">
-                  <label className="flex items-center gap-1 text-xs text-muted-foreground">No.<input aria-label={`Jersey number for ${p.name}`} type="number" min={0} max={99} defaultValue={p.jerseyNumber ?? ""} onBlur={(e) => void updateJersey(p.id, e.target.value ? Number(e.target.value) : null)} className="w-16 rounded-md border border-border bg-surface px-2 py-1" /></label>
+
                   <button
                     type="button"
                     className={ghostBtn}
@@ -786,6 +784,8 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
                     Delete
                   </button>
                 </span>
+                </div>
+                <AdminPlayerDetails player={p} refresh={refresh} />
               </li>
             ))}
             {league.squad(t.slug).length === 0 && (

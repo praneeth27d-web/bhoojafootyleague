@@ -275,7 +275,9 @@ export type Database = {
           created_at: string
           id: string
           jersey_number: number | null
+          market_value: string | null
           name: string
+          position: string | null
           preferred_foot: string
           slug: string
           team_slug: string
@@ -285,7 +287,9 @@ export type Database = {
           created_at?: string
           id?: string
           jersey_number?: number | null
+          market_value?: string | null
           name: string
+          position?: string | null
           preferred_foot?: string
           slug: string
           team_slug: string
@@ -295,7 +299,9 @@ export type Database = {
           created_at?: string
           id?: string
           jersey_number?: number | null
+          market_value?: string | null
           name?: string
+          position?: string | null
           preferred_foot?: string
           slug?: string
           team_slug?: string

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
-import { PlayerContributions, PlayerStatGrid } from "@/components/player-sheet";
+import { PlayerContributions } from "@/components/player-sheet";
+import { PlayerDetails } from "@/components/player-details";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
@@ -22,6 +23,8 @@ export const Route = createFileRoute("/players/$playerSlug")({
         },
         { property: "og:title", content: `${name} — BFL` },
         { property: "og:description", content: `Goals, assists, G/A and POTM for ${name}.` },
+        { property: "og:type", content: "profile" },
+        { name: "twitter:card", content: "summary" },
       ],
     };
   },
@@ -48,9 +51,9 @@ function PlayerProfile() {
   return (
     <AppShell title={player.name} subtitle={teamName(player.teamSlug)} back>
       <div className="max-w-2xl space-y-5">
-        <Card title="Season stats">
+        <Card title="Player details">
           <div className="px-4 py-4">
-            <PlayerStatGrid slug={player.slug} />
+            <PlayerDetails key={player.slug} player={player} />
           </div>
         </Card>
         <Card title="Recent contributions">

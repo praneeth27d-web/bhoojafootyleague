@@ -11,10 +11,19 @@ export type Player = {
   teamSlug: string;
   captain: boolean;
   jerseyNumber: number | null;
+  position: string | null;
+  marketValue: string | null;
+  preferredFoot: string | null;
   appearances: number;
   goals: number;
   assists: number;
   potm: number;
+  penaltyGoals: number;
+  penaltiesMissed: number;
+  penaltiesEarned: number;
+  penaltyConversion: number | null;
+  yellowCards: number;
+  redCards: number;
 };
 
 export type MatchGoal = {
