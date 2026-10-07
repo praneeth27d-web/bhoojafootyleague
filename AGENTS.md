@@ -10,3 +10,5 @@
 > the editor, so keep the branch in a working state.
 
 <!-- LOVABLE:END -->
+
+- Public match events are presented through the shared lineup view; keep event entry in league admin independent so display changes do not alter editing workflows.
