@@ -109,7 +109,7 @@ function PitchHalf({ side, match }: { side: "home" | "away"; match: Match }) {
         aria-hidden="true"
         className={`pointer-events-none absolute left-1/2 h-16 w-32 -translate-x-1/2 border-x-2 border-primary/25 ${side === "home" ? "top-0 rounded-b-md border-b-2" : "bottom-0 rounded-t-md border-t-2"}`}
       />
-      {goalkeeper && <div className="relative z-10 w-28"><Marker entry={goalkeeper} match={match} /></div>}
+      {goalkeeper && <div className="relative z-10 flex w-28 justify-center"><Marker entry={goalkeeper} match={match} /></div>}
     </div>
   );
   const outfieldRows = rows.map((row, index) => (

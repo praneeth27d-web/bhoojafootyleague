@@ -1,13 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
-import { PlayerSheet } from "@/components/player-sheet";
 import { Button } from "@/components/ui/button";
 import { TeamBadge } from "@/components/team-badge";
 import { teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
+import { marketValueAmount } from "@/lib/market-value";
 
-const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "jerseyNumber", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
 type Metric = (typeof metrics)[number];
 type Search = { metric: Metric };
 
@@ -18,7 +17,6 @@ const metricLabel: Record<Metric, string> = {
   potm: "Total POTM",
   appearances: "Appearances",
   marketValue: "Market Value",
-  jerseyNumber: "Jersey Number",
   penaltyGoals: "Penalty Goals",
   penaltiesMissed: "Penalties Missed",
   penaltiesEarned: "Penalties Earned",
@@ -56,11 +54,10 @@ const selectClass =
 function StatsPage() {
   const { metric } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
-  const [selected, setSelected] = useState<string | null>(null);
 
   const { players } = useLeague();
 
-  const value = (p: Player) => (metric === "marketValue" ? 0 : metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
+  const value = (p: Player) => (metric === "marketValue" ? marketValueAmount(p.marketValue) : metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
   const displayValue = (p: Player) => metric === "penaltyConversion" ? (p.penaltyConversion === null ? "—" : `${Number(p.penaltyConversion.toFixed(1))}%`) : metric === "ga" ? p.goals + p.assists : p[metric] ?? "—";
 
   const rows = [...players]
@@ -119,17 +116,17 @@ function StatsPage() {
                   <td className="px-4 py-3">
                     <Button
                       variant="ghost"
-                      type="button"
-                      onClick={() => setSelected(p.slug)}
+                      asChild
                       className="h-auto justify-start px-0 font-semibold hover:bg-transparent hover:text-primary"
-                      aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : ""}`}
                     >
+                      <Link to="/players/$playerSlug" params={{ playerSlug: p.slug }} aria-label={`View stats for ${p.name}`}>
                       {p.name}
                       {p.captain && (
                         <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                           C
                         </span>
                       )}
+                      </Link>
                     </Button>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
@@ -151,7 +148,6 @@ function StatsPage() {
           </table>
         </div>
       </Card>
-      <PlayerSheet slug={selected} onClose={() => setSelected(null)} />
     </AppShell>
   );
 }
