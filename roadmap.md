@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Open player stats from all public player mentions and remove Recent contributions from profiles.
+- [x] Open player stats from all public player mentions and remove Recent contributions from profiles.
 
 - [x] Make lineup players open individual profiles and improve penalty-earned marker clarity.
 
