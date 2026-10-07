@@ -16,3 +16,5 @@
 - Store market value as nullable admin-entered display text so currency and units are not invented; unknown profile details display as not set.
 - Use the shared PlayerDetails display for both full profiles and player sheets; keep editable profile fields in AdminPlayerDetails so basic and expanded views stay consistent.
 - Preserve existing team slugs when rebranding; update shared names and crest mappings so historical fixtures, squads and links remain connected.
+- Parse market-value display text through a shared numeric helper for ranking without rewriting stored text or inventing currency conversions.
+- Public player names navigate directly to the full player stats route so Stats, squads, transfers and lineups share the same click behavior.
