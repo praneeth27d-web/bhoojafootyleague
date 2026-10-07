@@ -15,3 +15,4 @@
 - Derive individual totals from completed matches through a shared statistics helper, excluding replacement events and own goals from scoring; profiles and leaderboards share the same values to prevent discrepancies.
 - Store market value as nullable admin-entered display text so currency and units are not invented; unknown profile details display as not set.
 - Use the shared PlayerDetails display for both full profiles and player sheets; keep editable profile fields in AdminPlayerDetails so basic and expanded views stay consistent.
+- Preserve existing team slugs when rebranding; update shared names and crest mappings so historical fixtures, squads and links remain connected.
