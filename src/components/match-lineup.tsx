@@ -172,6 +172,16 @@ export function MatchLineupView({ match }: { match: Match }) {
 }
 
 export function MatchExtraEvents({ match }: { match: Match }) {
-  if (!match.cards.length && !match.penaltyEvents.length && !match.goals.some((goal) => goal.isOwnGoal)) return null;
-  return <div className="border-t border-border pt-4"><h3 className="mb-3 text-xs font-bold uppercase text-muted-foreground">Other events</h3><ul className="space-y-2 text-sm">{match.goals.filter((goal) => goal.isOwnGoal).map((goal) => <li key={goal.id} className="flex items-center gap-2"><img src={ownGoalIcon} alt="Own goal" className="size-5 object-contain" />{goal.scorerName} · own goal</li>)}{match.cards.map((event) => <li key={event.id} className="flex items-center gap-2"><span className={event.cardType === "yellow" ? "size-4 rounded-sm bg-pos-mid" : "size-4 rounded-sm bg-pos-low"} />{event.playerName} · {event.cardType === "second_yellow_red" ? "second yellow, red" : event.cardType === "red" ? "straight red" : "yellow card"}</li>)}{match.penaltyEvents.map((event) => <li key={event.id} className="flex items-center gap-2"><img src={event.eventType === "earned" ? penaltyEarnedIcon : penaltyMissedIcon} alt="" className="size-5 object-contain" />{event.playerName} · penalty {event.eventType}</li>)}</ul></div>;
+  const displayedPlayers = new Set(match.lineups.map((entry) => entry.playerId));
+  const goals = match.goals.filter((goal) => !displayedPlayers.has(goal.scorerId));
+  const cards = match.cards.filter((event) => !displayedPlayers.has(event.playerId));
+  const penalties = match.penaltyEvents.filter((event) => !displayedPlayers.has(event.playerId));
+  const assists = match.goals.filter((goal) => goal.assistId && !displayedPlayers.has(goal.assistId) && !goal.isOwnGoal);
+  if (!goals.length && !cards.length && !penalties.length && !assists.length) return null;
+  return <div className="border-t border-border pt-4"><h3 className="mb-3 text-xs font-bold uppercase text-muted-foreground">Additional match events</h3><ul className="space-y-2 text-sm">
+    {goals.map((goal) => <li key={goal.id} className="flex items-center gap-2">{goal.isOwnGoal ? <SpecialBadge count={1} label="Own goal" icon={ownGoalIcon} tone="own" /> : <span aria-label="Goal">⚽</span>}{goal.scorerName} · {goal.isOwnGoal ? "own goal" : "goal"}</li>)}
+    {assists.map((goal) => <li key={`assist-${goal.id}`} className="flex items-center gap-2"><img src={assistBootLight} alt="Assist" className="size-5 object-contain dark:hidden" /><img src={assistBootDark} alt="Assist" className="hidden size-5 object-contain dark:block" />{goal.assistName} · assist</li>)}
+    {cards.map((event) => <li key={event.id} className="flex items-center gap-2"><span className="relative block h-5 w-5">{event.cardType === "second_yellow_red" && <span className="absolute left-0 top-0 h-5 w-3 -rotate-6 rounded-sm bg-pos-mid" />}<span className={`absolute right-0 top-0 h-5 w-3 rounded-sm ${event.cardType === "yellow" ? "bg-pos-mid" : "bg-pos-low"} ${event.cardType === "second_yellow_red" ? "rotate-6" : ""}`} /></span>{event.playerName} · {event.cardType === "second_yellow_red" ? "second yellow, red" : event.cardType === "red" ? "straight red" : "yellow card"}</li>)}
+    {penalties.map((event) => <li key={event.id} className="flex items-center gap-2"><SpecialBadge count={1} label={`Penalty ${event.eventType}`} icon={event.eventType === "earned" ? penaltyEarnedIcon : penaltyMissedIcon} tone={event.eventType} />{event.playerName} · penalty {event.eventType}</li>)}
+  </ul></div>;
 }
