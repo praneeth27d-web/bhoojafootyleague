@@ -273,19 +273,24 @@ export function useLeague(scope: "season" | "all" = "season") {
           .filter(
             (m) =>
               m.status === "completed" &&
+              !m.lineups.some((entry) => entry.playerSlug === slug && entry.isReplacement) &&
               (m.goals.some((g) => g.scorerSlug === slug || g.assistSlug === slug) ||
-                m.potmSlug === slug),
+                m.potmSlug === slug ||
+                m.cards.some((event) => event.playerId === players.find((p) => p.slug === slug)?.id) ||
+                m.penaltyEvents.some((event) => event.playerId === players.find((p) => p.slug === slug)?.id)),
           )
           .map((m) => ({
             match: m,
             lines: [
               ...m.goals
                 .filter((g) => g.scorerSlug === slug)
-                .map((g) => ({ minute: g.minute, label: "Goal" })),
+                .map((g) => ({ minute: g.minute, label: g.isOwnGoal ? "Own goal" : g.isPenalty ? "Penalty goal" : "Goal" })),
               ...m.goals
-                .filter((g) => g.assistSlug === slug)
+                .filter((g) => g.assistSlug === slug && !g.isOwnGoal)
                 .map((g) => ({ minute: g.minute, label: `Assist · ${g.scorerName}` })),
               ...(m.potmSlug === slug ? [{ minute: null, label: "Player of the match" }] : []),
+              ...m.cards.filter((event) => event.playerId === players.find((p) => p.slug === slug)?.id).map((event) => ({ minute: event.minute, label: event.cardType === "second_yellow_red" ? "Second yellow, red card" : event.cardType === "red" ? "Red card" : "Yellow card" })),
+              ...m.penaltyEvents.filter((event) => event.playerId === players.find((p) => p.slug === slug)?.id).map((event) => ({ minute: event.minute, label: `Penalty ${event.eventType}` })),
             ],
           })),
     };
