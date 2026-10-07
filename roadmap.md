@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Make lineup players open individual profiles and improve penalty-earned marker clarity.
+- [x] Make lineup players open individual profiles and improve penalty-earned marker clarity.
 
 - [x] Simplify Stats tables to the selected metric and rebrand AC Milan to Manchester City while preserving records.
 
