@@ -6,15 +6,27 @@ import penaltyEarnedIcon from "@/assets/penalty-earned.png";
 import penaltyMissedIcon from "@/assets/penalty-missed.png";
 import { teamName, type Match, type MatchLineup } from "@/lib/league";
 
+function SpecialBadge({ count, label, icon, tone }: { count: number; label: string; icon: string; tone: "earned" | "missed" | "own" }) {
+  if (!count) return null;
+  const color = tone === "earned" ? "bg-event-earned" : tone === "missed" ? "bg-event-missed" : "bg-event-own";
+  return <span title={`${label}${count > 1 ? ` ×${count}` : ""}`} aria-label={`${count} ${label}`} className={`num flex h-6 shrink-0 items-center gap-0.5 rounded-sm border border-event-ink/20 px-0.5 text-[10px] font-black text-event-ink ${color}`}>
+    <span className="flex size-4 items-center justify-center rounded-sm bg-event-icon-surface"><img src={icon} alt="" className="size-3.5 object-contain" /></span>
+    {count > 1 && <span>{count}</span>}
+  </span>;
+}
+
 function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
-  const goals = match.goals.filter((goal) => goal.scorerId === entry.playerId).length;
-  const assists = match.goals.filter((goal) => goal.assistId === entry.playerId).length;
+  const goals = match.goals.filter((goal) => goal.scorerId === entry.playerId && !goal.isOwnGoal).length;
+  const assists = match.goals.filter((goal) => goal.assistId === entry.playerId && !goal.isOwnGoal).length;
+  const ownGoals = match.goals.filter((goal) => goal.scorerId === entry.playerId && goal.isOwnGoal).length;
+  const penaltiesEarned = match.penaltyEvents.filter((event) => event.playerId === entry.playerId && event.eventType === "earned").length;
+  const penaltiesMissed = match.penaltyEvents.filter((event) => event.playerId === entry.playerId && event.eventType === "missed").length;
   const cards = match.cards.filter((card) => card.playerId === entry.playerId);
   const yellowCards = cards.filter((card) => card.cardType === "yellow").length;
   const redCards = cards.filter((card) => card.cardType === "red").length;
   const secondYellowReds = cards.filter((card) => card.cardType === "second_yellow_red").length;
   return (
-    <div className="flex min-w-0 flex-col items-center text-center">
+    <div className="flex min-w-0 max-w-28 flex-1 flex-col items-center px-1 py-2 text-center">
       <span className="relative">
         <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
           {entry.jerseyNumber ?? "–"}
@@ -50,11 +62,16 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
           </span>
         )}
       </span>
-      <span className="mt-1 flex max-w-28 items-center justify-center gap-1 text-xs font-semibold">
+      <span className="mt-3 flex w-full min-w-0 items-center justify-center gap-1 text-xs font-semibold">
         {entry.captain && <span className="num flex size-3.5 shrink-0 items-center justify-center rounded-full bg-foreground text-[8px] font-black text-background" aria-label="Captain">C</span>}
         <span className="truncate">{entry.playerName}</span>
         {match.potmId === entry.playerId && <span className="shrink-0 text-primary" aria-label="Player of the match" title="Player of the match">★</span>}
       </span>
+      {(ownGoals > 0 || penaltiesEarned > 0 || penaltiesMissed > 0) && <span className="mt-1 flex max-w-full flex-wrap justify-center gap-1">
+        <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalIcon} tone="own" />
+        <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />
+        <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />
+      </span>}
     </div>
   );
 }
@@ -80,16 +97,16 @@ function PitchHalf({ side, match }: { side: "home" | "away"; match: Match }) {
   const rows = formationRows(formation, starters.slice(1));
 
   const goalkeeperRow = (
-    <div className="relative flex min-h-24 items-center justify-center">
+    <div className="relative flex min-h-32 items-center justify-center">
       <span
         aria-hidden="true"
         className={`pointer-events-none absolute left-1/2 h-16 w-32 -translate-x-1/2 border-x-2 border-primary/25 ${side === "home" ? "top-0 rounded-b-md border-b-2" : "bottom-0 rounded-t-md border-t-2"}`}
       />
-      {goalkeeper && <div className="relative z-10"><Marker entry={goalkeeper} match={match} /></div>}
+      {goalkeeper && <div className="relative z-10 w-28"><Marker entry={goalkeeper} match={match} /></div>}
     </div>
   );
   const outfieldRows = rows.map((row, index) => (
-    <div key={`${side}-${index}`} className="flex min-h-20 items-center justify-evenly gap-2">
+    <div key={`${side}-${index}`} className="flex min-h-28 items-center justify-evenly gap-1">
       {row.map((entry) => <Marker key={entry.id} entry={entry} match={match} />)}
     </div>
   ));
@@ -155,6 +172,16 @@ export function MatchLineupView({ match }: { match: Match }) {
 }
 
 export function MatchExtraEvents({ match }: { match: Match }) {
-  if (!match.cards.length && !match.penaltyEvents.length && !match.goals.some((goal) => goal.isOwnGoal)) return null;
-  return <div className="border-t border-border pt-4"><h3 className="mb-3 text-xs font-bold uppercase text-muted-foreground">Other events</h3><ul className="space-y-2 text-sm">{match.goals.filter((goal) => goal.isOwnGoal).map((goal) => <li key={goal.id} className="flex items-center gap-2"><img src={ownGoalIcon} alt="Own goal" className="size-5 object-contain" />{goal.scorerName} · own goal</li>)}{match.cards.map((event) => <li key={event.id} className="flex items-center gap-2"><span className={event.cardType === "yellow" ? "size-4 rounded-sm bg-pos-mid" : "size-4 rounded-sm bg-pos-low"} />{event.playerName} · {event.cardType === "second_yellow_red" ? "second yellow, red" : event.cardType === "red" ? "straight red" : "yellow card"}</li>)}{match.penaltyEvents.map((event) => <li key={event.id} className="flex items-center gap-2"><img src={event.eventType === "earned" ? penaltyEarnedIcon : penaltyMissedIcon} alt="" className="size-5 object-contain" />{event.playerName} · penalty {event.eventType}</li>)}</ul></div>;
+  const displayedPlayers = new Set(match.lineups.map((entry) => entry.playerId));
+  const goals = match.goals.filter((goal) => !displayedPlayers.has(goal.scorerId));
+  const cards = match.cards.filter((event) => !displayedPlayers.has(event.playerId));
+  const penalties = match.penaltyEvents.filter((event) => !displayedPlayers.has(event.playerId));
+  const assists = match.goals.filter((goal) => goal.assistId && !displayedPlayers.has(goal.assistId) && !goal.isOwnGoal);
+  if (!goals.length && !cards.length && !penalties.length && !assists.length) return null;
+  return <div className="border-t border-border pt-4"><h3 className="mb-3 text-xs font-bold uppercase text-muted-foreground">Additional match events</h3><ul className="space-y-2 text-sm">
+    {goals.map((goal) => <li key={goal.id} className="flex items-center gap-2">{goal.isOwnGoal ? <SpecialBadge count={1} label="Own goal" icon={ownGoalIcon} tone="own" /> : <span aria-label="Goal">⚽</span>}{goal.scorerName} · {goal.isOwnGoal ? "own goal" : "goal"}</li>)}
+    {assists.map((goal) => <li key={`assist-${goal.id}`} className="flex items-center gap-2"><img src={assistBootLight} alt="Assist" className="size-5 object-contain dark:hidden" /><img src={assistBootDark} alt="Assist" className="hidden size-5 object-contain dark:block" />{goal.assistName} · assist</li>)}
+    {cards.map((event) => <li key={event.id} className="flex items-center gap-2"><span className="relative block h-5 w-5">{event.cardType === "second_yellow_red" && <span className="absolute left-0 top-0 h-5 w-3 -rotate-6 rounded-sm bg-pos-mid" />}<span className={`absolute right-0 top-0 h-5 w-3 rounded-sm ${event.cardType === "yellow" ? "bg-pos-mid" : "bg-pos-low"} ${event.cardType === "second_yellow_red" ? "rotate-6" : ""}`} /></span>{event.playerName} · {event.cardType === "second_yellow_red" ? "second yellow, red" : event.cardType === "red" ? "straight red" : "yellow card"}</li>)}
+    {penalties.map((event) => <li key={event.id} className="flex items-center gap-2"><SpecialBadge count={1} label={`Penalty ${event.eventType}`} icon={event.eventType === "earned" ? penaltyEarnedIcon : penaltyMissedIcon} tone={event.eventType} />{event.playerName} · penalty {event.eventType}</li>)}
+  </ul></div>;
 }
