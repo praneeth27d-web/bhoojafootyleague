@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Simplify Stats tables to the selected metric and rebrand AC Milan to Manchester City while preserving records.
+
 - [x] Add editable player profile details, full event-derived stats, basic/expanded player views and all metrics in Stats; verify admin saves and public readback.
 
 - [x] Remove public Goals/Assists views without changing league admin; show distinct own-goal and penalty badges on lineup players and verify both themes.

@@ -110,7 +110,7 @@ export type Transfer = {
 };
 
 export const teams: Team[] = [
-  { slug: "ac-milan", name: "AC Milan", short: "MIL" },
+  { slug: "ac-milan", name: "Manchester City", short: "MCI" },
   { slug: "real-madrid", name: "Real Madrid", short: "RMA" },
   { slug: "juventus", name: "Juventus", short: "JUV" },
   { slug: "chelsea", name: "Chelsea", short: "CHE" },

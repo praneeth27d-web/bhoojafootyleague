@@ -1,4 +1,3 @@
-import acMilan from "@/assets/ac-milan.png.asset.json";
 import realMadrid from "@/assets/real-madrid.png.asset.json";
 import juventus from "@/assets/juventus.png.asset.json";
 import chelsea from "@/assets/chelsea.png.asset.json";
@@ -10,7 +9,7 @@ import { teamName } from "@/lib/league";
 import { cn } from "@/lib/utils";
 
 const crests: Record<string, string> = {
-  "ac-milan": acMilan.url,
+  "ac-milan": manCity.url,
   "real-madrid": realMadrid.url,
   juventus: juventus.url,
   chelsea: chelsea.url,

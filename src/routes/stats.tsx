@@ -107,9 +107,6 @@ function StatsPage() {
                 <th scope="col" className="px-4 py-2 font-semibold">
                   Team
                 </th>
-                <th scope="col" className="px-4 py-2 font-semibold">Position</th>
-                {metric !== "marketValue" && <th scope="col" className="px-4 py-2 font-semibold">Market Value</th>}
-                <th scope="col" className="px-4 py-2 font-semibold">Preferred Foot</th>
                 <th scope="col" className="px-3 py-2 text-right font-semibold">
                   {metricLabel[metric]}
                 </th>
@@ -145,9 +142,6 @@ function StatsPage() {
                       <TeamBadge slug={p.teamSlug} />
                     </Link>
                   </td>
-                  <td className="px-4 py-3">{p.position || "Not set"}</td>
-                  {metric !== "marketValue" && <td className="px-4 py-3">{p.marketValue || "Not set"}</td>}
-                  <td className="px-4 py-3 capitalize">{p.preferredFoot || "Not set"}</td>
                   <td className="num px-3 py-3 text-right font-bold">
                     {displayValue(p)}
                   </td>
