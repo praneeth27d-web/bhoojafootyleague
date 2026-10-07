@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Remove public Goals/Assists views without changing league admin; show distinct own-goal and penalty badges on lineup players and verify both themes.
+- [x] Remove public Goals/Assists views without changing league admin; show distinct own-goal and penalty badges on lineup players and verify both themes.
 
 - [ ] Make every admin save action reliable, single-submit, and visibly confirm success.
 - [ ] Let admins edit fixture dates and times in Indian Standard Time.
