@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Default tables to Compact and add recent-result badges at the right of full tables; verify league and team views.
+- [x] Default tables to Compact and add recent-result badges at the right of full tables; verify league and team views.
 
 - [x] Show score-and-opponent-crest form above team tables only; colour Results score rectangles by team outcome and verify both views.
 
