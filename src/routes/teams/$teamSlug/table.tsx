@@ -21,7 +21,7 @@ export const Route = createFileRoute("/teams/$teamSlug/table")({
 function TeamTable() {
   const { teamSlug } = useParams({ from: "/teams/$teamSlug" });
   const { season } = useSeason();
-  const [compact, setCompact] = useState(false);
+  const [compact, setCompact] = useState(true);
   const controls = <div className="mb-3 flex justify-end gap-2"><Button size="sm" variant={!compact ? "default" : "outline"} onClick={() => setCompact(false)}>Full</Button><Button size="sm" variant={compact ? "default" : "outline"} onClick={() => setCompact(true)}>Compact</Button></div>;
 
   if (season === "1") {

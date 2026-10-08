@@ -17,6 +17,8 @@ export const Route = createFileRoute("/table")({
       },
       { property: "og:title", content: "BFL League Table" },
       { property: "og:description", content: "Live BFL standings for all five teams." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: TablePage,
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/table")({
 
 function TablePage() {
   const { season } = useSeason();
-  const [compact, setCompact] = useState(false);
+  const [compact, setCompact] = useState(true);
 
   const tableControls = (
     <div className="mb-3 flex justify-end gap-2">

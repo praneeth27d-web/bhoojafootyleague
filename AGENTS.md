@@ -19,3 +19,4 @@
 - Parse market-value display text through a shared numeric helper for ranking without rewriting stored text or inventing currency conversions.
 - Public player names navigate directly to the full player stats route so Stats, squads, transfers and lineups share the same click behavior.
 - Team form and team results share completed-match sorting and outcome helpers, including selected-season league and knockout games, to keep the displayed form consistent with results.
+- Full standings tables share TableForm badges derived from selected-season match records so league and team table forms stay consistent.
