@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add recent form above team tables and on team Results pages; verify outcomes and match links.
+- [x] Add recent form above team tables and on team Results pages; verify outcomes and match links.
 
 - [x] Remove Jersey Number from Stats filters, sort market values numerically, open full player stats on clicks, and center both goalkeepers.
 
