@@ -5,8 +5,16 @@ import { useSeason } from "@/components/season-context";
 import { PositionLegend, Season1Knockouts, Season1Table } from "@/components/season1-views";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { TeamForm } from "@/components/team-form";
+import { getTeam } from "@/lib/league";
 
 export const Route = createFileRoute("/teams/$teamSlug/table")({
+  head: ({ params }) => {
+    const name = getTeam(params.teamSlug)?.name ?? "Team";
+    const title = `${name} Table & Form — Bhooja Football League`;
+    const description = `${name}'s recent form and league standings in the Bhooja Football League.`;
+    return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] };
+  },
   component: TeamTable,
 });
 
@@ -19,6 +27,7 @@ function TeamTable() {
   if (season === "1") {
     return (
       <>
+        <TeamForm teamSlug={teamSlug} />
         {controls}
         <Card title="Season 1 table">
           <Season1Table highlight={teamSlug} compact={compact} />
@@ -29,5 +38,5 @@ function TeamTable() {
     );
   }
 
-  return <>{controls}<Card title={compact ? "Compact table" : "Full table"}><StandingsTable highlight={teamSlug} compact={compact} /></Card></>;
+  return <><TeamForm teamSlug={teamSlug} />{controls}<Card title={compact ? "Compact table" : "Full table"}><StandingsTable highlight={teamSlug} compact={compact} /></Card></>;
 }
