@@ -18,7 +18,7 @@ export function TeamForm({ teamSlug }: { teamSlug: string }) {
       {recent.length === 0 ? (
         <p className="text-sm text-muted-foreground">{loading ? "Loading…" : "No completed matches"}</p>
       ) : (
-        <div className="flex items-start justify-between gap-3 overflow-x-auto">
+        <div className="flex flex-nowrap items-start justify-start gap-3 overflow-x-auto">
           {recent.map((match) => {
             const result = teamResult(match, teamSlug);
             const opponentSlug = match.homeSlug === teamSlug ? match.awaySlug : match.homeSlug;
