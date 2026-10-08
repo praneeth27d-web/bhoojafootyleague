@@ -66,6 +66,8 @@
   --color-pos-top: var(--pos-top);
   --color-pos-mid: var(--pos-mid);
   --color-pos-low: var(--pos-low);
+  --color-form-draw: var(--form-draw);
+  --color-form-draw-foreground: var(--form-draw-foreground);
   --color-event-earned: var(--event-earned);
   --color-event-missed: var(--event-missed);
   --color-event-own: var(--event-own);
@@ -105,6 +107,8 @@
   --pos-top: oklch(0.78 0.16 145);
   --pos-mid: oklch(0.82 0.14 75);
   --pos-low: oklch(0.62 0.2 27);
+  --form-draw: oklch(0.53 0 0);
+  --form-draw-foreground: oklch(1 0 0);
   --event-earned: oklch(0.8 0.13 220);
   --event-missed: oklch(0.86 0.15 85);
   --event-own: oklch(0.82 0.11 15);
@@ -135,6 +139,8 @@
   --pos-top: oklch(0.8 0.17 145);
   --pos-mid: oklch(0.84 0.15 75);
   --pos-low: oklch(0.66 0.21 27);
+  --form-draw: oklch(0.62 0 0);
+  --form-draw-foreground: oklch(0.15 0 0);
   --event-earned: oklch(0.8 0.13 220);
   --event-missed: oklch(0.86 0.15 85);
   --event-own: oklch(0.82 0.11 15);
