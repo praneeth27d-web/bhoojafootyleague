@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Default tables to Compact and add recent-result badges at the right of full tables; verify league and team views.
+
 - [x] Show score-and-opponent-crest form above team tables only; colour Results score rectangles by team outcome and verify both views.
 
 - [x] Remove Jersey Number from Stats filters, sort market values numerically, open full player stats on clicks, and center both goalkeepers.

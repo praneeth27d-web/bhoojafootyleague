@@ -5,12 +5,13 @@ import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
 import { teamResult, teamResultStyles } from "@/lib/team-form";
+import { TableForm } from "@/components/table-form";
 
-export function StandingsTable({ highlight, compact = false }: { highlight?: string; compact?: boolean }) {
-  const { standings: rows } = useLeague();
+export function StandingsTable({ highlight, compact = true }: { highlight?: string; compact?: boolean }) {
+  const { standings: rows, matches, knockouts } = useLeague();
   return (
     <div className="overflow-x-auto">
-      <table className={cn("w-full text-sm", compact ? "min-w-[360px]" : "min-w-[560px]")}>
+      <table className={cn("w-full text-sm", compact ? "min-w-[360px]" : "min-w-[760px]")}>
         <caption className="sr-only">League standings</caption>
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
@@ -25,6 +26,7 @@ export function StandingsTable({ highlight, compact = false }: { highlight?: str
                 {h}
               </th>
             ))}
+            {!compact && <th scope="col" className="px-4 py-2 text-right font-semibold">Last matches</th>}
           </tr>
         </thead>
         <tbody>
@@ -73,6 +75,7 @@ export function StandingsTable({ highlight, compact = false }: { highlight?: str
                 {r.gd > 0 ? `+${r.gd}` : r.gd}
               </td>
               <td className="num px-3 py-3 text-right font-bold">{r.points}</td>
+              {!compact && <td className="px-4 py-3"><TableForm matches={[...matches, ...knockouts]} teamSlug={r.team.slug} /></td>}
             </tr>
           ))}
         </tbody>
