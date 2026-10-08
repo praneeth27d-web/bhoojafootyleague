@@ -1,6 +1,6 @@
 # Roadmap
 
-- [x] Add recent form above team tables and on team Results pages; verify outcomes and match links.
+- [x] Show score-and-opponent-crest form above team tables only; colour Results score rectangles by team outcome and verify both views.
 
 - [x] Remove Jersey Number from Stats filters, sort market values numerically, open full player stats on clicks, and center both goalkeepers.
 

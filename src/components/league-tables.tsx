@@ -4,6 +4,7 @@ import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
 import { cn } from "@/lib/utils";
+import { teamResult, teamResultStyles } from "@/lib/team-form";
 
 export function StandingsTable({ highlight, compact = false }: { highlight?: string; compact?: boolean }) {
   const { standings: rows } = useLeague();
@@ -80,7 +81,7 @@ export function StandingsTable({ highlight, compact = false }: { highlight?: str
   );
 }
 
-export function MatchRows({ matches }: { matches: Match[] }) {
+export function MatchRows({ matches, resultTeamSlug }: { matches: Match[]; resultTeamSlug?: string }) {
   if (matches.length === 0) {
     return (
       <p className="px-4 py-8 text-center text-sm text-muted-foreground">
@@ -101,7 +102,9 @@ export function MatchRows({ matches }: { matches: Match[] }) {
             {m.status === "completed" ? (
               <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
                 <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
-                <span className="num rounded-md bg-surface-muted px-2.5 py-1 font-bold">
+                <span
+                  aria-label={resultTeamSlug ? `${teamResultStyles[teamResult(m, resultTeamSlug)].label}: ${m.homeGoals}–${m.awayGoals}` : undefined}
+                  className={cn("num rounded-md px-2.5 py-1 font-bold", resultTeamSlug ? teamResultStyles[teamResult(m, resultTeamSlug)].classes : "bg-surface-muted")}>
                   {m.homeGoals}–{m.awayGoals}
                 </span>
                 <TeamBadge slug={m.awaySlug} className="min-w-0" />

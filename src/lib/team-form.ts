@@ -1,5 +1,11 @@
 import type { Match } from "@/lib/league";
 
+export const teamResultStyles = {
+  W: { label: "Win", classes: "bg-pos-top text-event-ink" },
+  D: { label: "Draw", classes: "bg-form-draw text-form-draw-foreground" },
+  L: { label: "Loss", classes: "bg-destructive text-destructive-foreground" },
+};
+
 export function completedTeamMatches(matches: Match[], teamSlug: string) {
   return matches
     .filter((match) =>
