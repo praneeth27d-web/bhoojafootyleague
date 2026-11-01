@@ -13,3 +13,19 @@ export function marketValueAmount(value: string | null): number {
     : /^(k|thousand)/.test(unit) ? 1_000 : 1;
   return amount * multiplier;
 }
+
+/** Squad value totals treat an unset market value as zero. */
+export function squadValueStats(players: { marketValue: string | null }[]) {
+  const total = players.reduce((sum, p) => sum + Math.max(0, marketValueAmount(p.marketValue)), 0);
+  return {
+    total,
+    average: players.length > 0 ? total / players.length : 0,
+    superAverage: total / 5,
+  };
+}
+
+/** Rupee amount to the administrator's crores display format, e.g. ₹35.83cr */
+export function formatCr(amount: number): string {
+  const cr = Math.round((amount / 10_000_000) * 100) / 100;
+  return `₹${Number.isInteger(cr) ? cr : cr.toFixed(2)}cr`;
+}

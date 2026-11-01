@@ -24,6 +24,10 @@ type RawPlayer = {
   position: string | null;
   market_value: string | null;
   preferred_foot: string | null;
+  phone: string | null;
+  contact_preference: string | null;
+  warnings: number | null;
+  matches_banned: number | null;
 };
 
 type RawMatch = {
@@ -228,6 +232,10 @@ export function useLeague(scope: "season" | "all" = "season") {
       position: p.position ?? null,
       marketValue: p.market_value ?? null,
       preferredFoot: p.preferred_foot ?? null,
+      phone: p.phone ?? null,
+      contactPreference: p.contact_preference === "call" || p.contact_preference === "whatsapp" || p.contact_preference === "both" ? p.contact_preference : null,
+      warnings: p.warnings ?? 0,
+      matchesBanned: p.matches_banned ?? 0,
       ...calculatePlayerStatistics(p.id, statData),
     }));
 

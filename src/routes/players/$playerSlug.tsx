@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerDetails } from "@/components/player-details";
+import { PlayerContact } from "@/components/player-contact";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
@@ -50,6 +51,7 @@ function PlayerProfile() {
   return (
     <AppShell title={player.name} subtitle={teamName(player.teamSlug)} back>
       <div className="max-w-2xl space-y-5">
+        <PlayerContact player={player} />
         <Card title="Player details">
           <div className="px-4 py-4">
             <PlayerDetails key={player.slug} player={player} />

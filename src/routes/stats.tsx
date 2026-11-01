@@ -2,13 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { TeamBadge } from "@/components/team-badge";
-import { teamName, type Player } from "@/lib/league";
+import { teams, teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { marketValueAmount } from "@/lib/market-value";
 
-const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards", "warnings", "matchesBanned"] as const;
 type Metric = (typeof metrics)[number];
-type Search = { metric: Metric };
+type Search = { metric: Metric; club: string };
+
+const clubSlugs = teams.map((t) => t.slug);
 
 const metricLabel: Record<Metric, string> = {
   goals: "Goals",
@@ -23,11 +25,14 @@ const metricLabel: Record<Metric, string> = {
   penaltyConversion: "Penalty Conversion",
   yellowCards: "Yellow Cards",
   redCards: "Red Cards",
+  warnings: "Warnings",
+  matchesBanned: "Matches Banned",
 };
 
 export const Route = createFileRoute("/stats")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     metric: metrics.includes(search["metric"] as Metric) ? (search["metric"] as Metric) : "goals",
+    club: typeof search["club"] === "string" && clubSlugs.includes(search["club"]) ? search["club"] : "all",
   }),
   head: () => ({
     meta: [
