@@ -14,6 +14,10 @@ export type Player = {
   position: string | null;
   marketValue: string | null;
   preferredFoot: string | null;
+  phone: string | null;
+  contactPreference: "call" | "whatsapp" | "both" | null;
+  warnings: number;
+  matchesBanned: number;
   appearances: number;
   goals: number;
   assists: number;
