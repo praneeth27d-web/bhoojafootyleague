@@ -28,6 +28,7 @@ const metricLabel: Record<Metric, string> = {
 export const Route = createFileRoute("/stats")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     metric: metrics.includes(search["metric"] as Metric) ? (search["metric"] as Metric) : "goals",
+    club: typeof search["club"] === "string" && clubSlugs.includes(search["club"]) ? search["club"] : "all",
   }),
   head: () => ({
     meta: [
