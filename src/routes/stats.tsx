@@ -6,7 +6,7 @@ import { teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { marketValueAmount } from "@/lib/market-value";
 
-const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards", "warnings", "matchesBanned"] as const;
 type Metric = (typeof metrics)[number];
 type Search = { metric: Metric };
 
