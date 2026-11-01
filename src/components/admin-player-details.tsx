@@ -10,6 +10,10 @@ export function AdminPlayerDetails({ player, refresh }: { player: Player; refres
   const [marketValue, setMarketValue] = useState(player.marketValue ?? "");
   const [foot, setFoot] = useState(player.preferredFoot ?? "");
   const [jersey, setJersey] = useState(player.jerseyNumber?.toString() ?? "");
+  const [phone, setPhone] = useState(player.phone ?? "");
+  const [contactPreference, setContactPreference] = useState(player.contactPreference ?? "");
+  const [warnings, setWarnings] = useState(player.warnings.toString());
+  const [matchesBanned, setMatchesBanned] = useState(player.matchesBanned.toString());
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -17,9 +21,24 @@ export function AdminPlayerDetails({ player, refresh }: { player: Player; refres
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (saving) return;
+    const trimmedPhone = phone.replace(/\D/g, "");
+    if (trimmedPhone.length > 0 && trimmedPhone.length !== 10) {
+      setFailed(true);
+      setMessage("Mobile number must be exactly 10 digits.");
+      return;
+    }
     setSaving(true); setMessage(null); setFailed(false);
     try {
-      const { data, error } = await supabase.from("players").update({ position: position.trim() || null, market_value: marketValue.trim() || null, preferred_foot: foot || "right", jersey_number: jersey === "" ? null : Number(jersey) }).eq("id", player.id).select("id").single();
+      const { data, error } = await supabase.from("players").update({
+        position: position.trim() || null,
+        market_value: marketValue.trim() || null,
+        preferred_foot: foot || "right",
+        jersey_number: jersey === "" ? null : Number(jersey),
+        phone: trimmedPhone || null,
+        contact_preference: contactPreference === "" ? null : contactPreference,
+        warnings: warnings === "" ? 0 : Math.max(0, Math.floor(Number(warnings) || 0)),
+        matches_banned: matchesBanned === "" ? 0 : Math.max(0, Math.floor(Number(matchesBanned) || 0)),
+      }).eq("id", player.id).select("id").single();
       if (error) throw error;
       if (!data) throw new Error("Player details were not saved.");
       await refresh();
@@ -29,12 +48,16 @@ export function AdminPlayerDetails({ player, refresh }: { player: Player; refres
     } finally { setSaving(false); }
   }
 
-  return <form onSubmit={save} aria-label={`Details for ${player.name}`} className="mt-3 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-5">
+  return <form onSubmit={save} aria-label={`Details for ${player.name}`} className="mt-3 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-4">
     <label className="text-xs font-semibold text-muted-foreground">Position<input aria-label={`Position for ${player.name}`} className={inputClass} value={position} onChange={(e) => setPosition(e.target.value)} maxLength={80} /></label>
     <label className="text-xs font-semibold text-muted-foreground">Market Value<input aria-label={`Market value for ${player.name}`} className={inputClass} value={marketValue} onChange={(e) => setMarketValue(e.target.value)} maxLength={80} /></label>
     <label className="text-xs font-semibold text-muted-foreground">Preferred Foot<select required aria-label={`Preferred foot for ${player.name}`} className={inputClass} value={foot} onChange={(e) => setFoot(e.target.value)}><option value="" disabled>Not set</option><option value="right">Right</option><option value="left">Left</option><option value="both">Both</option></select></label>
     <label className="text-xs font-semibold text-muted-foreground">Jersey Number<input aria-label={`Jersey number for ${player.name}`} className={inputClass} type="number" min={0} max={99} step={1} value={jersey} onChange={(e) => setJersey(e.target.value)} /></label>
-    <div className="flex items-end"><Button type="submit" disabled={saving} aria-label={`Save details for ${player.name}`}>{saving ? "Saving…" : "Save details"}</Button></div>
-    {message && <p role="status" className={`text-sm sm:col-span-2 lg:col-span-5 ${failed ? "text-destructive" : "text-primary"}`}>{message}</p>}
+    <label className="text-xs font-semibold text-muted-foreground">Mobile Number<input aria-label={`Mobile number for ${player.name}`} className={inputClass} type="text" inputMode="numeric" maxLength={10} placeholder="10 digits" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} /></label>
+    <label className="text-xs font-semibold text-muted-foreground">Contact Preference<select aria-label={`Contact preference for ${player.name}`} className={inputClass} value={contactPreference} onChange={(e) => setContactPreference(e.target.value)}><option value="">Not set</option><option value="call">Call only</option><option value="whatsapp">WhatsApp only</option><option value="both">Both</option></select></label>
+    <label className="text-xs font-semibold text-muted-foreground">Warnings<input aria-label={`Warnings for ${player.name}`} className={inputClass} type="number" min={0} step={1} value={warnings} onChange={(e) => setWarnings(e.target.value)} /></label>
+    <label className="text-xs font-semibold text-muted-foreground">Matches Banned<input aria-label={`Matches banned for ${player.name}`} className={inputClass} type="number" min={0} step={1} value={matchesBanned} onChange={(e) => setMatchesBanned(e.target.value)} /></label>
+    <div className="flex items-end lg:col-span-4"><Button type="submit" disabled={saving} aria-label={`Save details for ${player.name}`}>{saving ? "Saving…" : "Save details"}</Button></div>
+    {message && <p role="status" className={`text-sm lg:col-span-4 ${failed ? "text-destructive" : "text-primary"}`}>{message}</p>}
   </form>;
 }

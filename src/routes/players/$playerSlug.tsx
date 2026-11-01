@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { PlayerDetails } from "@/components/player-details";
+import { PlayerContact } from "@/components/player-contact";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
