@@ -75,28 +75,58 @@ function StatsPage() {
       <Card
         title={metricLabel[metric]}
         action={
-          <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            Filter
-            <select
-              className={selectClass}
-              value={metric}
-              onChange={(e) =>
-                navigate({
-                  to: ".",
-                  search: (prev) => ({ ...prev, metric: e.target.value as Metric }),
-                  replace: true,
-                })
-              }
-            >
-              {metrics.map((m) => (
-                <option key={m} value={m}>
-                  {metricLabel[m]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+            <label className="flex items-center gap-2">
+              Club
+              <select
+                className={selectClass}
+                value={club}
+                aria-label="Filter by club"
+                onChange={(e) =>
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({ ...prev, club: e.target.value }),
+                    replace: true,
+                  })
+                }
+              >
+                <option value="all">All Clubs</option>
+                {teams.map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {teamName(t.slug)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2">
+              Filter
+              <select
+                className={selectClass}
+                value={metric}
+                aria-label="Filter by statistic"
+                onChange={(e) =>
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({ ...prev, metric: e.target.value as Metric }),
+                    replace: true,
+                  })
+                }
+              >
+                {metrics.map((m) => (
+                  <option key={m} value={m}>
+                    {metricLabel[m]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         }
       >
+        <div className="flex justify-end px-4 pt-3">
+          <Button asChild size="sm" variant="outline">
+            <Link to="/compare">Compare players</Link>
+          </Button>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[420px] text-sm">
             <thead>

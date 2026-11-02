@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
@@ -40,6 +41,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixturesResultsRoute = FixturesResultsRouteImport.update({
@@ -121,6 +127,7 @@ const TeamsTeamSlugTransfersRoute = TeamsTeamSlugTransfersRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/compare'
     | '/fixtures-results'
     | '/stats'
     | '/table'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/compare'
     | '/fixtures-results'
     | '/stats'
     | '/table'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/compare'
     | '/fixtures-results'
     | '/stats'
     | '/table'
@@ -242,6 +254,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CompareRoute: typeof CompareRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixtures-results': {
@@ -420,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CompareRoute: CompareRoute,
   FixturesResultsRoute: FixturesResultsRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
