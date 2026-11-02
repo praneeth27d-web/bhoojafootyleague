@@ -246,6 +246,7 @@ function MatchesAdmin({
   }
 
   async function removeMatch(id: string) {
+    if (!window.confirm("Delete this fixture? All of its goals, lineups, cards and penalty events are removed with it. This cannot be undone.")) return;
     const { error: err } = await supabase.from("matches").delete().eq("id", id);
     if (err) setError(err.message);
     else await refresh();
@@ -487,6 +488,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
   }
 
   async function removeGoal(id: string) {
+    if (!window.confirm("Delete this goal record? This cannot be undone.")) return;
     const { error: err } = await supabase.from("match_goals").delete().eq("id", id);
     if (err) setError(err.message);
     else await refresh();
@@ -715,6 +717,7 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
   }
 
   async function removePlayer(id: string) {
+    if (!window.confirm("Delete this player? Their profile and squad listing are removed. This cannot be undone.")) return;
     const { error: err } = await supabase.from("players").delete().eq("id", id);
     if (err) setError(err.message);
     else refresh();
@@ -841,6 +844,7 @@ function TransfersAdmin({ league, refresh }: AdminProps) {
   }
 
   async function removeTransfer(id: string) {
+    if (!window.confirm("Delete this transfer record? This cannot be undone.")) return;
     const { error: err } = await supabase.from("transfers").delete().eq("id", id);
     if (err) setError(err.message);
     else refresh();
