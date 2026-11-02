@@ -57,7 +57,7 @@ const selectClass =
   "appearance-none rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors hover:bg-accent focus:border-primary focus-visible:outline-none";
 
 function StatsPage() {
-  const { metric } = Route.useSearch();
+  const { metric, club } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
   const { players } = useLeague();
@@ -66,6 +66,7 @@ function StatsPage() {
   const displayValue = (p: Player) => metric === "penaltyConversion" ? (p.penaltyConversion === null ? "—" : `${Number(p.penaltyConversion.toFixed(1))}%`) : metric === "ga" ? p.goals + p.assists : p[metric] ?? "—";
 
   const rows = [...players]
+    .filter((p) => club === "all" || p.teamSlug === club)
     .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
     .map((p, i) => ({ ...p, pos: i + 1 }));
 
