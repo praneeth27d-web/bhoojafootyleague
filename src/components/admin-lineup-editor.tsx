@@ -27,6 +27,7 @@ export function AdminLineupEditor({ match, players, refresh }: { match: Match; p
   }
 
   async function removeLineup(id: string) {
+    if (!window.confirm("Remove this lineup entry? This cannot be undone.")) return;
     const { error } = await supabase.from("match_lineups").delete().eq("id", id);
     if (error) setMessage(error.message); else await refresh();
   }
@@ -43,6 +44,7 @@ export function AdminLineupEditor({ match, players, refresh }: { match: Match; p
   }
 
   async function removeEvent(table: "match_cards" | "match_penalty_events", id: string) {
+    if (!window.confirm("Remove this match event? This cannot be undone.")) return;
     const { error } = await supabase.from(table).delete().eq("id", id);
     if (error) setMessage(error.message); else await refresh();
   }
