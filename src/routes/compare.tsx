@@ -109,7 +109,7 @@ function ComparePage() {
 
   const chosen = picked.filter((p): p is Player => p !== null);
   const ready = chosen.length === count && count >= 2;
-  const taken = new Set(picked.filter((p, i) => p !== null && i !== undefined).filter(Boolean).map((p) => (p as Player).id));
+  const taken = new Set(picked.filter(Boolean).map((p) => (p as Player).id));
 
   function bestValues() {
     const best = new Map<string, number | null>();
@@ -193,8 +193,8 @@ function ComparePage() {
               </thead>
               <tbody>
                 {statGroups.map((group) => (
-                  <>
-                    <tr key={group.title}>
+                  <Fragment key={group.title}>
+                    <tr>
                       <th
                         colSpan={chosen.length + 1}
                         scope="colgroup"
