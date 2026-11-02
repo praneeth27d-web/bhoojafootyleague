@@ -236,14 +236,14 @@ function ComparePage() {
                                   {value}
                                 </span>
                               ) : (
-                                <span className="num">{value ?? "—"}</span>
+                                <span className="num">{stat.display ? stat.display(p) : value ?? "—"}</span>
                               )}
                             </td>
                           );
                         })}
                       </tr>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
