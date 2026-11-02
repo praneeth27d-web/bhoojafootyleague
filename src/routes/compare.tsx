@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
@@ -32,6 +32,7 @@ const selectClass =
 type StatDef = {
   label: string;
   value: (p: Player) => number | null;
+  display?: (p: Player) => ReactNode;
   better: "higher" | "lower";
 };
 
@@ -41,9 +42,16 @@ const statGroups: { title: string; info?: { label: string; render: (p: Player) =
     info: [
       { label: "Team", render: (p) => teamName(p.teamSlug) },
       { label: "Position", render: (p) => p.position ?? "Not set" },
-      { label: "Market Value", render: (p) => p.marketValue ?? "Not set" },
       { label: "Preferred Foot", render: (p) => p.preferredFoot ?? "Not set" },
       { label: "Jersey Number", render: (p) => (p.jerseyNumber === null ? "Not set" : p.jerseyNumber) },
+    ],
+    stats: [
+      {
+        label: "Market Value",
+        value: (p) => (p.marketValue ? marketValueAmount(p.marketValue) : null),
+        display: (p) => p.marketValue ?? "Not set",
+        better: "higher",
+      },
     ],
   },
   {
