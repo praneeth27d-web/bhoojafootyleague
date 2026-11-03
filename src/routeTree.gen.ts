@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ClubStatsRouteImport } from './routes/club-stats'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
 import { Route as StatsRouteImport } from './routes/stats'
@@ -41,6 +42,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClubStatsRoute = ClubStatsRouteImport.update({
+  id: '/club-stats',
+  path: '/club-stats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -127,6 +133,7 @@ const TeamsTeamSlugTransfersRoute = TeamsTeamSlugTransfersRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
   '/stats': typeof StatsRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/club-stats'
     | '/compare'
     | '/fixtures-results'
     | '/stats'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/club-stats'
     | '/compare'
     | '/fixtures-results'
     | '/stats'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/club-stats'
     | '/compare'
     | '/fixtures-results'
     | '/stats'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ClubStatsRoute: typeof ClubStatsRoute
   CompareRoute: typeof CompareRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
   StatsRoute: typeof StatsRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/club-stats': {
+      id: '/club-stats'
+      path: '/club-stats'
+      fullPath: '/club-stats'
+      preLoaderRoute: typeof ClubStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -440,6 +460,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ClubStatsRoute: ClubStatsRoute,
   CompareRoute: CompareRoute,
   FixturesResultsRoute: FixturesResultsRoute,
   StatsRoute: StatsRoute,
