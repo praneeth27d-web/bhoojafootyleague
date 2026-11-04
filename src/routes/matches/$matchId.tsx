@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
+import { HeadToHead } from "@/components/head-to-head";
 import { MatchLineupView } from "@/components/match-lineup";
 import { formatKickoff, teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
@@ -138,6 +139,7 @@ function MatchDetail() {
               </div>
             </dl>}
           </Card>
+          <HeadToHead match={m} />
         )}
       </div>
     </AppShell>

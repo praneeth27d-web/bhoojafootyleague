@@ -4,6 +4,8 @@ import {
   Table2,
   CalendarDays,
   BarChart3,
+  Trophy,
+  GitCompare,
   ArrowLeftRight,
   Shield,
   ArrowLeft,
@@ -28,7 +30,9 @@ const nav: NavItem[] = [
   { to: "/table", label: "Table", icon: Table2 },
   { to: "/teams", label: "Teams", icon: Shield },
   { to: "/fixtures-results", label: "Fixtures & Results", icon: CalendarDays },
-  { to: "/stats", label: "Stats", icon: BarChart3 },
+  { to: "/stats", label: "Player Stats", icon: BarChart3 },
+  { to: "/club-stats", label: "Club Stats", icon: Trophy },
+  { to: "/compare", label: "Player Comparison", icon: GitCompare },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
 ];
 

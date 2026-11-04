@@ -6,6 +6,7 @@ import type { Player } from "@/lib/league";
 const inputClass = "mt-1 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground";
 
 export function AdminPlayerDetails({ player, refresh }: { player: Player; refresh: () => Promise<void> }) {
+  const [name, setName] = useState(player.name);
   const [position, setPosition] = useState(player.position ?? "");
   const [marketValue, setMarketValue] = useState(player.marketValue ?? "");
   const [foot, setFoot] = useState(player.preferredFoot ?? "");
@@ -28,8 +29,15 @@ export function AdminPlayerDetails({ player, refresh }: { player: Player; refres
       return;
     }
     setSaving(true); setMessage(null); setFailed(false);
+    if (name.trim().length === 0) {
+      setFailed(true);
+      setMessage("Player name cannot be empty.");
+      setSaving(false);
+      return;
+    }
     try {
       const { data, error } = await supabase.from("players").update({
+        name: name.trim(),
         position: position.trim() || null,
         market_value: marketValue.trim() || null,
         preferred_foot: foot || "right",
@@ -49,6 +57,7 @@ export function AdminPlayerDetails({ player, refresh }: { player: Player; refres
   }
 
   return <form onSubmit={save} aria-label={`Details for ${player.name}`} className="mt-3 grid w-full gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <label className="text-xs font-semibold text-muted-foreground">Name<input required aria-label={`Name for ${player.name}`} className={inputClass} value={name} onChange={(e) => setName(e.target.value)} maxLength={60} /></label>
     <label className="text-xs font-semibold text-muted-foreground">Position<input aria-label={`Position for ${player.name}`} className={inputClass} value={position} onChange={(e) => setPosition(e.target.value)} maxLength={80} /></label>
     <label className="text-xs font-semibold text-muted-foreground">Market Value<input aria-label={`Market value for ${player.name}`} className={inputClass} value={marketValue} onChange={(e) => setMarketValue(e.target.value)} maxLength={80} /></label>
     <label className="text-xs font-semibold text-muted-foreground">Preferred Foot<select required aria-label={`Preferred foot for ${player.name}`} className={inputClass} value={foot} onChange={(e) => setFoot(e.target.value)}><option value="" disabled>Not set</option><option value="right">Right</option><option value="left">Left</option><option value="both">Both</option></select></label>

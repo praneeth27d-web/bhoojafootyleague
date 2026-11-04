@@ -233,7 +233,7 @@ function ComparePage() {
                                       : "border-pos-low/30 bg-pos-low/10 text-pos-low"
                                   }`}
                                 >
-                                  {value}
+                                  {stat.display ? stat.display(p) : value}
                                 </span>
                               ) : (
                                 <span className="num">{stat.display ? stat.display(p) : value ?? "—"}</span>
