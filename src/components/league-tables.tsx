@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { type Match, type Player } from "@/lib/league";
+import { type Match, type MatchCard, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
