@@ -115,6 +115,7 @@ function MatchDetail() {
 
           </>
         ) : (
+          <>
           <Card>
             <div role="tablist" aria-label="Match views" className="flex gap-1 border-b border-border px-4 pt-2">
               <Button type="button" role="tab" aria-selected={view !== "lineup"} onClick={() => setView("details")} variant="ghost" className={view !== "lineup" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Details</Button>
@@ -140,6 +141,7 @@ function MatchDetail() {
             </dl>}
           </Card>
           <HeadToHead match={m} />
+          </>
         )}
       </div>
     </AppShell>
