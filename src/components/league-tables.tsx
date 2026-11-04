@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { type Match, type Player } from "@/lib/league";
+import { type Match, type MatchCard, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { TeamBadge } from "@/components/team-badge";
@@ -84,6 +84,21 @@ export function StandingsTable({ highlight, compact = true }: { highlight?: stri
   );
 }
 
+function RedCardBlocks({ cards }: { cards: MatchCard[] }) {
+  if (cards.length === 0) return null;
+  return (
+    <span className="flex shrink-0 items-center gap-0.5" aria-label={`${cards.length} red card${cards.length === 1 ? "" : "s"}`}>
+      {cards.map((card) => (
+        <span
+          key={card.id}
+          title={`${card.playerName} — ${card.cardType === "second_yellow_red" ? "second yellow, red card" : "red card"}${card.minute ? ` · ${card.minute}'` : ""}`}
+          className="block h-3.5 w-2.5 rounded-[2px] border border-border bg-pos-low shadow-sm"
+        />
+      ))}
+    </span>
+  );
+}
+
 export function MatchRows({ matches, resultTeamSlug }: { matches: Match[]; resultTeamSlug?: string }) {
   if (matches.length === 0) {
     return (
@@ -104,13 +119,19 @@ export function MatchRows({ matches, resultTeamSlug }: { matches: Match[]; resul
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
             {m.status === "completed" ? (
               <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
-                <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
+                <span className="flex min-w-0 items-center justify-end gap-1.5">
+                  <RedCardBlocks cards={m.cards.filter((c) => c.side === "home" && c.cardType !== "yellow")} />
+                  <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
+                </span>
                 <span
                   aria-label={resultTeamSlug ? `${teamResultStyles[teamResult(m, resultTeamSlug)].label}: ${m.homeGoals}–${m.awayGoals}` : undefined}
                   className={cn("num rounded-md px-2.5 py-1 font-bold", resultTeamSlug ? teamResultStyles[teamResult(m, resultTeamSlug)].classes : "bg-surface-muted")}>
                   {m.homeGoals}–{m.awayGoals}
                 </span>
-                <TeamBadge slug={m.awaySlug} className="min-w-0" />
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <TeamBadge slug={m.awaySlug} className="min-w-0" />
+                  <RedCardBlocks cards={m.cards.filter((c) => c.side === "away" && c.cardType !== "yellow")} />
+                </span>
               </span>
             ) : (
               <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm font-semibold">
