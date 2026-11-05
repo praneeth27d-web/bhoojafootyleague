@@ -5,6 +5,7 @@ import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
 import { HeadToHead } from "@/components/head-to-head";
 import { MatchLineupView } from "@/components/match-lineup";
+import { RedCardBlocks } from "@/components/league-tables";
 import { formatKickoff, teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
@@ -76,7 +77,8 @@ function MatchDetail() {
       <div className="max-w-2xl space-y-5">
         <Card>
           <div className="px-4 py-6 text-center">
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-3">
+              {completed && <RedCardBlocks cards={m.cards.filter((c) => c.side === "home" && c.cardType !== "yellow")} />}
               <span className="flex flex-1 flex-col items-center gap-2">
                 <TeamCrest slug={m.homeSlug} className="size-12" />
                 <span className="text-sm font-semibold">{teamName(m.homeSlug)}</span>
@@ -88,6 +90,7 @@ function MatchDetail() {
                 <TeamCrest slug={m.awaySlug} className="size-12" />
                 <span className="text-sm font-semibold">{teamName(m.awaySlug)}</span>
               </span>
+              {completed && <RedCardBlocks cards={m.cards.filter((c) => c.side === "away" && c.cardType !== "yellow")} />}
             </div>
           </div>
         </Card>
