@@ -43,10 +43,26 @@ type Row = {
   points: number;
 };
 
+const METRICS = [
+  { key: "points", label: "Total Points", dir: "desc" },
+  { key: "totalValue", label: "Total Market Value", dir: "desc" },
+  { key: "averageValue", label: "Average Value", dir: "desc" },
+  { key: "superValue", label: "Super Value", dir: "desc" },
+  { key: "goals", label: "Goals", dir: "desc" },
+  { key: "goalsConceded", label: "Goals Conceded", dir: "asc" },
+  { key: "gold", label: "Gold", dir: "desc" },
+  { key: "silver", label: "Silver", dir: "desc" },
+  { key: "bronze", label: "Bronze", dir: "desc" },
+] as const;
+
+type MetricKey = (typeof METRICS)[number]["key"];
+
 function ClubStatsPage() {
   const { seasons } = useSeasons();
   const { allMatches, players, loading } = useLeague("all");
   const [scope, setScope] = useState<"all" | number>("all");
+  const [sortBy, setSortBy] = useState<MetricKey>("points");
+  const metric = METRICS.find((m) => m.key === sortBy) ?? METRICS[0];
 
   // Season 1 data is inaccurate and deliberately excluded; future seasons appear automatically.
   const seasonNumbers = useMemo(() => {
@@ -92,8 +108,11 @@ function ClubStatsPage() {
         bronze: medal.bronze,
         points: row?.points ?? 0,
       };
-    }).sort((a, b) => b.points - a.points || b.gold - a.gold || a.slug.localeCompare(b.slug));
-  }, [allMatches, players, scope]);
+    }).sort((a, b) => {
+      const diff = metric.dir === "asc" ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
+      return diff || b.points - a.points || b.gold - a.gold || a.slug.localeCompare(b.slug);
+    });
+  }, [allMatches, players, scope, sortBy, metric]);
 
   return (
     <AppShell
