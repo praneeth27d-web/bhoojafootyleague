@@ -3,9 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import assistBootLight from "@/assets/assist-boot-light.png";
 import assistBootDark from "@/assets/assist-boot-dark.png";
-import ownGoalIcon from "@/assets/own-goal.png";
+import ownGoalIcon from "@/assets/own-goal-fotmob.png";
 import penaltyEarnedIcon from "@/assets/penalty-earned.png";
-import penaltyMissedIcon from "@/assets/penalty-missed.png";
+import penaltyMissedIcon from "@/assets/penalty-missed-fotmob.png";
 import { teamName, type Match, type MatchLineup } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 

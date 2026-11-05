@@ -84,7 +84,7 @@ export function StandingsTable({ highlight, compact = true }: { highlight?: stri
   );
 }
 
-function RedCardBlocks({ cards }: { cards: MatchCard[] }) {
+export function RedCardBlocks({ cards }: { cards: MatchCard[] }) {
   if (cards.length === 0) return null;
   return (
     <span className="flex shrink-0 items-center gap-0.5" aria-label={`${cards.length} red card${cards.length === 1 ? "" : "s"}`}>
