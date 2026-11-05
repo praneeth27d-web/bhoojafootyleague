@@ -217,7 +217,8 @@ function ClubStatsPage() {
         )}
         <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
           Gold, silver and bronze count finished seasons ending 1st, 2nd and 3rd. Super Value is the total
-          squad value divided by five.
+          squad value divided by five. Clubs are ranked by the stat chosen under Sort by; for Goals
+          Conceded the lowest value is best.
         </p>
       </Card>
     </AppShell>
