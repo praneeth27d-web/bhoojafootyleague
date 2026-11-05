@@ -49,6 +49,13 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
           {entry.jerseyNumber ?? "–"}
         </span>
+        {(penaltiesEarned > 0 || ownGoals > 0 || penaltiesMissed > 0) && (
+          <span className="absolute -left-3.5 -top-1 flex flex-col items-start gap-1">
+            {penaltiesEarned > 0 && <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />}
+            {ownGoals > 0 && <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalIcon} tone="own" />}
+            {penaltiesMissed > 0 && <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />}
+          </span>
+        )}
         {goals > 0 && (
           <span
             className="num absolute -bottom-1.5 -left-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
