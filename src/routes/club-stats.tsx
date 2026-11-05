@@ -43,10 +43,26 @@ type Row = {
   points: number;
 };
 
+const METRICS = [
+  { key: "points", label: "Total Points", dir: "desc" },
+  { key: "totalValue", label: "Total Market Value", dir: "desc" },
+  { key: "averageValue", label: "Average Value", dir: "desc" },
+  { key: "superValue", label: "Super Value", dir: "desc" },
+  { key: "goals", label: "Goals", dir: "desc" },
+  { key: "goalsConceded", label: "Goals Conceded", dir: "asc" },
+  { key: "gold", label: "Gold", dir: "desc" },
+  { key: "silver", label: "Silver", dir: "desc" },
+  { key: "bronze", label: "Bronze", dir: "desc" },
+] as const;
+
+type MetricKey = (typeof METRICS)[number]["key"];
+
 function ClubStatsPage() {
   const { seasons } = useSeasons();
   const { allMatches, players, loading } = useLeague("all");
   const [scope, setScope] = useState<"all" | number>("all");
+  const [sortBy, setSortBy] = useState<MetricKey>("points");
+  const metric = METRICS.find((m) => m.key === sortBy) ?? METRICS[0];
 
   // Season 1 data is inaccurate and deliberately excluded; future seasons appear automatically.
   const seasonNumbers = useMemo(() => {
@@ -92,8 +108,11 @@ function ClubStatsPage() {
         bronze: medal.bronze,
         points: row?.points ?? 0,
       };
-    }).sort((a, b) => b.points - a.points || b.gold - a.gold || a.slug.localeCompare(b.slug));
-  }, [allMatches, players, scope]);
+    }).sort((a, b) => {
+      const diff = metric.dir === "asc" ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
+      return diff || b.points - a.points || b.gold - a.gold || a.slug.localeCompare(b.slug);
+    });
+  }, [allMatches, players, scope, sortBy, metric]);
 
   return (
     <AppShell
@@ -103,22 +122,39 @@ function ClubStatsPage() {
       <Card
         title="Clubs"
         action={
-          <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            Season
-            <select
-              className={selectClass}
-              value={String(scope)}
-              aria-label="Choose season"
-              onChange={(e) => setScope(e.target.value === "all" ? "all" : Number(e.target.value))}
-            >
-              <option value="all">All seasons</option>
-              {seasonNumbers.map((n) => (
-                <option key={n} value={String(n)}>
-                  Season {n}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              Sort by
+              <select
+                className={selectClass}
+                value={sortBy}
+                aria-label="Choose the stat to sort clubs by"
+                onChange={(e) => setSortBy(e.target.value as MetricKey)}
+              >
+                {METRICS.map((m) => (
+                  <option key={m.key} value={m.key}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+              Season
+              <select
+                className={selectClass}
+                value={String(scope)}
+                aria-label="Choose season"
+                onChange={(e) => setScope(e.target.value === "all" ? "all" : Number(e.target.value))}
+              >
+                <option value="all">All seasons</option>
+                {seasonNumbers.map((n) => (
+                  <option key={n} value={String(n)}>
+                    Season {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
         }
       >
         {loading ? (
@@ -130,15 +166,25 @@ function ClubStatsPage() {
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th scope="col" className="px-4 py-2 font-semibold">Club</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Total Market Value</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Average Value</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Super Value</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Goals</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Goals Conceded</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Gold</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Silver</th>
-                  <th scope="col" className="px-3 py-2 text-right font-semibold">Bronze</th>
-                  <th scope="col" className="px-4 py-2 text-right font-semibold">Total Points</th>
+                  {([
+                    ["totalValue", "Total Market Value", "px-3 py-2 text-right"],
+                    ["averageValue", "Average Value", "px-3 py-2 text-right"],
+                    ["superValue", "Super Value", "px-3 py-2 text-right"],
+                    ["goals", "Goals", "px-3 py-2 text-right"],
+                    ["goalsConceded", "Goals Conceded", "px-3 py-2 text-right"],
+                    ["gold", "Gold", "px-3 py-2 text-right"],
+                    ["silver", "Silver", "px-3 py-2 text-right"],
+                    ["bronze", "Bronze", "px-3 py-2 text-right"],
+                    ["points", "Total Points", "px-4 py-2 text-right"],
+                  ] as const).map(([key, label, base]) => (
+                    <th
+                      key={key}
+                      scope="col"
+                      className={`${base} font-semibold${sortBy === key ? " text-foreground underline decoration-primary decoration-2 underline-offset-4" : ""}`}
+                    >
+                      {label}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -171,7 +217,8 @@ function ClubStatsPage() {
         )}
         <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
           Gold, silver and bronze count finished seasons ending 1st, 2nd and 3rd. Super Value is the total
-          squad value divided by five.
+          squad value divided by five. Clubs are ranked by the stat chosen under Sort by; for Goals
+          Conceded the lowest value is best.
         </p>
       </Card>
     </AppShell>

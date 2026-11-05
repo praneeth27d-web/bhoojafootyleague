@@ -3,21 +3,33 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import assistBootLight from "@/assets/assist-boot-light.png";
 import assistBootDark from "@/assets/assist-boot-dark.png";
-import ownGoalIcon from "@/assets/own-goal.png";
+import ownGoalIcon from "@/assets/own-goal-fotmob.png";
 import penaltyEarnedIcon from "@/assets/penalty-earned.png";
-import penaltyMissedIcon from "@/assets/penalty-missed.png";
+import penaltyMissedIcon from "@/assets/penalty-missed-fotmob.png";
 import { teamName, type Match, type MatchLineup } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 
 function SpecialBadge({ count, label, icon, tone }: { count: number; label: string; icon: string; tone: "earned" | "missed" | "own" }) {
   if (!count) return null;
-  const color = tone === "earned" ? "bg-event-earned" : tone === "missed" ? "bg-event-missed" : "bg-event-own";
-  const earned = tone === "earned";
-  return <span title={`${label}${count > 1 ? ` ×${count}` : ""}`} aria-label={`${count} ${label}`} className={`num flex shrink-0 items-center gap-1 rounded-sm border border-event-ink/30 text-[10px] font-black text-event-ink ${earned ? "min-h-8 px-1 py-0.5 shadow-sm" : "h-6 px-0.5"} ${color}`}>
-    <span className={`flex items-center justify-center rounded-sm bg-event-icon-surface ${earned ? "size-6" : "size-4"}`}><img src={icon} alt="" className={`${earned ? "size-5" : "size-3.5"} object-contain`} /></span>
-    {earned && <span className="w-9 whitespace-normal text-[9px] leading-tight">Penalty earned</span>}
-    {count > 1 && <span>{count}</span>}
-  </span>;
+  const filled = tone === "missed";
+  return (
+    <span
+      title={`${label}${count > 1 ? ` ×${count}` : ""}`}
+      aria-label={`${count} ${label}`}
+      className="relative flex shrink-0"
+    >
+      <span
+        className={`flex size-6 items-center justify-center rounded-full shadow-sm ${filled ? "border-2 border-event-ink/20 bg-event-missed" : "border-2 border-event-ink bg-event-icon-surface"}`}
+      >
+        <img src={icon} alt="" className={`size-3.5 object-contain ${filled ? "invert" : ""}`} />
+      </span>
+      {count > 1 && (
+        <span className="num absolute -bottom-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-event-ink text-[8px] font-black leading-none text-event-icon-surface">
+          {count}
+        </span>
+      )}
+    </span>
+  );
 }
 
 function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
@@ -37,6 +49,13 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
           {entry.jerseyNumber ?? "–"}
         </span>
+        {(penaltiesEarned > 0 || ownGoals > 0 || penaltiesMissed > 0) && (
+          <span className="absolute -left-3.5 -top-1 flex flex-col items-start gap-1">
+            {penaltiesEarned > 0 && <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />}
+            {ownGoals > 0 && <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalIcon} tone="own" />}
+            {penaltiesMissed > 0 && <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />}
+          </span>
+        )}
         {goals > 0 && (
           <span
             className="num absolute -bottom-1.5 -left-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
@@ -73,11 +92,6 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         <span className="truncate">{entry.playerName}</span>
         {match.potmId === entry.playerId && <span className="shrink-0 text-primary" aria-label="Player of the match" title="Player of the match">★</span>}
       </span>
-      {(ownGoals > 0 || penaltiesEarned > 0 || penaltiesMissed > 0) && <span className="mt-1 flex max-w-full flex-wrap justify-center gap-1">
-        <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalIcon} tone="own" />
-        <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />
-        <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />
-      </span>}
     </Link>
     </Button>
   );
@@ -174,7 +188,44 @@ export function MatchLineupView({ match }: { match: Match }) {
         <Substitutes side="away" match={match} />
       </div>
       <MatchExtraEvents match={match} />
+      <LineupLegend />
     </div>
+  );
+}
+
+function LineupLegend() {
+  return (
+    <section className="rounded-md border border-border bg-surface-muted px-4 py-3">
+      <h3 className="mb-3 text-xs font-bold uppercase text-muted-foreground">What the symbols mean</h3>
+      <ul className="flex flex-wrap items-center gap-x-5 gap-y-3 text-xs text-muted-foreground">
+        <li className="flex items-center gap-2">
+          <span className="num flex size-6 items-center justify-center rounded-full border-2 border-primary bg-surface text-[10px] font-black shadow-sm">4</span>
+          Shirt number
+        </li>
+        <li className="flex items-center gap-2"><span aria-hidden="true">⚽</span>Goal</li>
+        <li className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center">
+            <img src={assistBootLight} alt="" className="size-4 object-contain dark:hidden" />
+            <img src={assistBootDark} alt="" className="hidden size-4 object-contain dark:block" />
+          </span>
+          Assist
+        </li>
+        <li className="flex items-center gap-2"><SpecialBadge count={1} label="Own goal" icon={ownGoalIcon} tone="own" />Own goal</li>
+        <li className="flex items-center gap-2"><SpecialBadge count={1} label="Penalty earned" icon={penaltyEarnedIcon} tone="earned" />Penalty earned</li>
+        <li className="flex items-center gap-2"><SpecialBadge count={1} label="Penalty missed" icon={penaltyMissedIcon} tone="missed" />Penalty missed</li>
+        <li className="flex items-center gap-2"><span aria-hidden="true" className="block h-4 w-2.5 rounded-[2px] border border-border bg-pos-mid shadow-sm" />Yellow card</li>
+        <li className="flex items-center gap-2"><span aria-hidden="true" className="block h-4 w-2.5 rounded-[2px] border border-border bg-pos-low shadow-sm" />Red card</li>
+        <li className="flex items-center gap-2">
+          <span aria-hidden="true" className="relative block h-4 w-4">
+            <span className="absolute left-0 top-0 block h-4 w-2.5 -rotate-6 rounded-[2px] border border-border bg-pos-mid shadow-sm" />
+            <span className="absolute right-0 top-0 block h-4 w-2.5 rotate-6 rounded-[2px] border border-border bg-pos-low shadow-sm" />
+          </span>
+          Second yellow, then red
+        </li>
+        <li className="flex items-center gap-2"><span className="num flex size-4 items-center justify-center rounded-full bg-foreground text-[8px] font-black text-background">C</span>Captain</li>
+        <li className="flex items-center gap-2"><span aria-hidden="true" className="text-primary">★</span>Player of the match</li>
+      </ul>
+    </section>
   );
 }
 
