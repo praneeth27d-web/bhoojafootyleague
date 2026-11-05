@@ -11,13 +11,25 @@ import { useLeague } from "@/lib/league-data";
 
 function SpecialBadge({ count, label, icon, tone }: { count: number; label: string; icon: string; tone: "earned" | "missed" | "own" }) {
   if (!count) return null;
-  const color = tone === "earned" ? "bg-event-earned" : tone === "missed" ? "bg-event-missed" : "bg-event-own";
-  const earned = tone === "earned";
-  return <span title={`${label}${count > 1 ? ` ×${count}` : ""}`} aria-label={`${count} ${label}`} className={`num flex shrink-0 items-center gap-1 rounded-sm border border-event-ink/30 text-[10px] font-black text-event-ink ${earned ? "min-h-8 px-1 py-0.5 shadow-sm" : "h-6 px-0.5"} ${color}`}>
-    <span className={`flex items-center justify-center rounded-sm bg-event-icon-surface ${earned ? "size-6" : "size-4"}`}><img src={icon} alt="" className={`${earned ? "size-5" : "size-3.5"} object-contain`} /></span>
-    {earned && <span className="w-9 whitespace-normal text-[9px] leading-tight">Penalty earned</span>}
-    {count > 1 && <span>{count}</span>}
-  </span>;
+  const filled = tone === "missed";
+  return (
+    <span
+      title={`${label}${count > 1 ? ` ×${count}` : ""}`}
+      aria-label={`${count} ${label}`}
+      className="relative flex shrink-0"
+    >
+      <span
+        className={`flex size-6 items-center justify-center rounded-full shadow-sm ${filled ? "border-2 border-event-ink/20 bg-event-missed" : "border-2 border-event-ink bg-event-icon-surface"}`}
+      >
+        <img src={icon} alt="" className={`size-3.5 object-contain ${filled ? "invert" : ""}`} />
+      </span>
+      {count > 1 && (
+        <span className="num absolute -bottom-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-event-ink text-[8px] font-black leading-none text-event-icon-surface">
+          {count}
+        </span>
+      )}
+    </span>
+  );
 }
 
 function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
