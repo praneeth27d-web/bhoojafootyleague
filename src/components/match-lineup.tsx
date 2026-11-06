@@ -46,7 +46,7 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
           {entry.jerseyNumber ?? "–"}
         </span>
         {ownGoals > 0 && (
-          <span className="pointer-events-none absolute -top-2.5 left-1/2 z-10 -translate-x-1/2">
+          <span className="pointer-events-none absolute -top-4 left-1/2 z-10 -translate-x-1/2">
             <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalSymbol.url} />
           </span>
         )}
