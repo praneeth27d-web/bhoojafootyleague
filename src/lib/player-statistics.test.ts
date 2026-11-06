@@ -1,4 +1,5 @@
-import { describe, expect, test } from "bun:test";
+import { describe, test } from "node:test";
+import { strict as assert } from "node:assert";
 import { calculatePlayerStatistics, compareStatisticValues, type StatGoal } from "./player-statistics";
 
 const goal = (match_id: string, scorer_id: string, is_own_goal = true): StatGoal => ({
@@ -12,8 +13,8 @@ describe("Own Goals", () => {
       goals: [goal("done", "player"), goal("done", "player"), goal("done", "player", false), goal("done", "other"), goal("next", "player")],
       lineups: [], cards: [], penaltyEvents: [],
     });
-    expect(stats.ownGoals).toBe(2);
-    expect(stats.goals + stats.assists).toBe(1);
+    assert.equal(stats.ownGoals, 2);
+    assert.equal(stats.goals + stats.assists, 1);
   });
 
   test("excludes own goals scored as a replacement", () => {
@@ -23,11 +24,11 @@ describe("Own Goals", () => {
       lineups: [{ match_id: "done", player_id: "player", played: true, is_replacement: true }],
       cards: [], penaltyEvents: [],
     });
-    expect(stats.ownGoals).toBe(0);
+    assert.equal(stats.ownGoals, 0);
   });
 
   test("ranks fewer own goals first and treats equal counts as tied", () => {
-    expect([3, 0, 1].sort((a, b) => compareStatisticValues(a, b, "lower"))).toEqual([0, 1, 3]);
-    expect(compareStatisticValues(1, 1, "lower")).toBe(0);
+    assert.deepEqual([3, 0, 1].sort((a, b) => compareStatisticValues(a, b, "lower")), [0, 1, 3]);
+    assert.equal(compareStatisticValues(1, 1, "lower"), 0);
   });
 });
