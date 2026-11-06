@@ -1,0 +1,34 @@
+import { describe, test } from "node:test";
+import { strict as assert } from "node:assert";
+import { calculatePlayerStatistics, compareStatisticValues, type StatGoal } from "./player-statistics";
+
+const goal = (match_id: string, scorer_id: string, is_own_goal = true): StatGoal => ({
+  match_id, scorer_id, is_own_goal, assist_id: null, is_penalty: false,
+});
+
+describe("Own Goals", () => {
+  test("counts own goals separately from goals and G/A in completed matches", () => {
+    const stats = calculatePlayerStatistics("player", {
+      matches: [{ id: "done", status: "completed", potm_player_id: null }, { id: "next", status: "upcoming", potm_player_id: null }],
+      goals: [goal("done", "player"), goal("done", "player"), goal("done", "player", false), goal("done", "other"), goal("next", "player")],
+      lineups: [], cards: [], penaltyEvents: [],
+    });
+    assert.equal(stats.ownGoals, 2);
+    assert.equal(stats.goals + stats.assists, 1);
+  });
+
+  test("excludes own goals scored as a replacement", () => {
+    const stats = calculatePlayerStatistics("player", {
+      matches: [{ id: "done", status: "completed", potm_player_id: null }],
+      goals: [goal("done", "player")],
+      lineups: [{ match_id: "done", player_id: "player", played: true, is_replacement: true }],
+      cards: [], penaltyEvents: [],
+    });
+    assert.equal(stats.ownGoals, 0);
+  });
+
+  test("ranks fewer own goals first and treats equal counts as tied", () => {
+    assert.deepEqual([3, 0, 1].sort((a, b) => compareStatisticValues(a, b, "lower")), [0, 1, 3]);
+    assert.equal(compareStatisticValues(1, 1, "lower"), 0);
+  });
+});

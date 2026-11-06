@@ -81,6 +81,7 @@ export function PlayerDetails({ player }: { player: Player }) {
     {
       title: "Discipline",
       rows: [
+        { label: "Own Goals", value: player.ownGoals },
         { label: "Yellow Cards", value: player.yellowCards },
         { label: "Red Cards", value: player.redCards },
         { label: "Warnings", value: player.warnings },
