@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ClubStatsRouteImport } from './routes/club-stats'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as FixturesResultsRouteImport } from './routes/fixtures-results'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as TableRouteImport } from './routes/table'
 import { Route as TransfersRouteImport } from './routes/transfers'
@@ -57,6 +58,11 @@ const CompareRoute = CompareRouteImport.update({
 const FixturesResultsRoute = FixturesResultsRouteImport.update({
   id: '/fixtures-results',
   path: '/fixtures-results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StatsRoute = StatsRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/club-stats': typeof ClubStatsRoute
   '/compare': typeof CompareRoute
   '/fixtures-results': typeof FixturesResultsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/stats': typeof StatsRoute
   '/table': typeof TableRoute
   '/transfers': typeof TransfersRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/club-stats'
     | '/compare'
     | '/fixtures-results'
+    | '/reset-password'
     | '/stats'
     | '/table'
     | '/transfers'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/club-stats'
     | '/compare'
     | '/fixtures-results'
+    | '/reset-password'
     | '/stats'
     | '/table'
     | '/transfers'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/club-stats'
     | '/compare'
     | '/fixtures-results'
+    | '/reset-password'
     | '/stats'
     | '/table'
     | '/transfers'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   ClubStatsRoute: typeof ClubStatsRoute
   CompareRoute: typeof CompareRoute
   FixturesResultsRoute: typeof FixturesResultsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   StatsRoute: typeof StatsRoute
   TableRoute: typeof TableRoute
   TransfersRoute: typeof TransfersRoute
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       path: '/fixtures-results'
       fullPath: '/fixtures-results'
       preLoaderRoute: typeof FixturesResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/stats': {
@@ -463,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClubStatsRoute: ClubStatsRoute,
   CompareRoute: CompareRoute,
   FixturesResultsRoute: FixturesResultsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   StatsRoute: StatsRoute,
   TableRoute: TableRoute,
   TransfersRoute: TransfersRoute,

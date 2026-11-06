@@ -101,10 +101,11 @@ function AdminPage() {
       .then(({ data }) => setIsAdmin(!!data));
   }, [user]);
 
-  async function signOut() {
+  async function signOut(everywhere = false) {
+    if (everywhere && !window.confirm("Sign out of the admin account on every device?")) return;
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: everywhere ? "global" : "local" });
     void navigate({ to: "/table", replace: true });
   }
 
@@ -160,9 +161,14 @@ function AdminPage() {
             </button>
           ))}
         </div>
-        <button type="button" onClick={signOut} className={ghostBtn}>
-          Sign out
-        </button>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => signOut(true)} className={ghostBtn}>
+            Sign out all devices
+          </button>
+          <button type="button" onClick={() => signOut()} className={ghostBtn}>
+            Sign out
+          </button>
+        </div>
       </div>
 
       {isAdmin === false && (

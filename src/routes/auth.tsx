@@ -85,6 +85,25 @@ function AuthPage() {
             </button>
           </form>
         </Card>
+        <button
+          type="button"
+          disabled={busy}
+          className="mt-3 text-xs font-semibold text-primary hover:underline"
+          onClick={async () => {
+            setError(null);
+            setMessage(null);
+            if (!email) return setError("Enter the admin email above first.");
+            setBusy(true);
+            const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+              redirectTo: `${window.location.origin}/reset-password`,
+            });
+            setBusy(false);
+            if (err) setError(err.message);
+            else setMessage("If that email belongs to the admin account, a reset link has been sent.");
+          }}
+        >
+          Forgot password?
+        </button>
         <p className="mt-3 text-xs text-muted-foreground">
           Sign in with the league admin account. New accounts cannot be created.
         </p>
