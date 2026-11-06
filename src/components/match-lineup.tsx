@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import assistBootLight from "@/assets/assist-boot-light.png";
 import assistBootDark from "@/assets/assist-boot-dark.png";
 import ownGoalSymbol from "@/assets/own-goal-symbol.png.asset.json";
-import penaltyEarnedSymbol from "@/assets/penalty-earned-symbol.png.asset.json";
-import penaltyMissedSymbol from "@/assets/penalty-missed-symbol.png.asset.json";
+import penaltyEarnedSymbol from "@/assets/penalty-earned-v2.png.asset.json";
+import penaltyMissedSymbol from "@/assets/penalty-missed-v2.png.asset.json";
 import { teamName, type Match, type MatchLineup } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 

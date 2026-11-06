@@ -69,7 +69,7 @@ function StatsPage() {
 
   const rows = [...players]
     .filter((p) => club === "all" || p.teamSlug === club)
-    .sort((a, b) => compareStatisticValues(value(a), value(b), metric === "ownGoals" ? "lower" : "higher") || a.name.localeCompare(b.name))
+    .sort((a, b) => compareStatisticValues(value(a), value(b), "higher") || a.name.localeCompare(b.name))
     .map((p, i) => ({ ...p, pos: i + 1 }));
 
   return (
