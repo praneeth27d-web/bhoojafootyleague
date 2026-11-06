@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Add Own Goals to Player Stats, comparison and Discipline, rank fewer as better, and verify totals and public displays.
+- [x] Add Own Goals to Player Stats, comparison and Discipline, rank fewer as better, and verify totals and public displays.
 
 - [x] Default tables to Compact and add recent-result badges at the right of full tables; verify league and team views.
 
