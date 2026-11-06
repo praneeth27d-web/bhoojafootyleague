@@ -45,24 +45,24 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         <span className="num flex size-11 items-center justify-center rounded-full border-2 border-primary bg-surface text-sm font-black shadow-sm">
           {entry.jerseyNumber ?? "–"}
         </span>
-        {penaltiesMissed > 0 && (
-          <span className="pointer-events-none absolute -left-2 -top-2 z-10">
-            <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedSymbol.url} />
-          </span>
-        )}
         {ownGoals > 0 && (
-          <span className="pointer-events-none absolute -bottom-2 -left-2 z-10">
+          <span className="pointer-events-none absolute -top-2.5 left-1/2 z-10 -translate-x-1/2">
             <SpecialBadge count={ownGoals} label="Own goal" icon={ownGoalSymbol.url} />
           </span>
         )}
+        {penaltiesMissed > 0 && (
+          <span className="pointer-events-none absolute -left-3.5 top-[42%] z-10 -translate-y-1/2">
+            <SpecialBadge count={penaltiesMissed} label="Penalty missed" icon={penaltyMissedSymbol.url} />
+          </span>
+        )}
         {penaltiesEarned > 0 && (
-          <span className="pointer-events-none absolute -bottom-2 -right-2 z-10">
+          <span className="pointer-events-none absolute -right-3.5 top-[42%] z-10 -translate-y-1/2">
             <SpecialBadge count={penaltiesEarned} label="Penalty earned" icon={penaltyEarnedSymbol.url} />
           </span>
         )}
         {goals > 0 && (
           <span
-            className={`num absolute ${ownGoals > 0 ? "-bottom-8" : "-bottom-1.5"} -left-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm`}
+            className="num absolute -bottom-1.5 -left-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
             aria-label={`${goals} ${goals === 1 ? "goal" : "goals"}`}
           >
             <span aria-hidden="true">⚽</span>{goals > 1 && <span>{goals}</span>}
@@ -70,7 +70,7 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
         )}
         {assists > 0 && (
           <span
-            className={`num absolute ${penaltiesEarned > 0 ? "-bottom-8" : "-bottom-1.5"} -right-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm`}
+            className="num absolute -bottom-1.5 -right-2 flex min-h-5 min-w-5 items-center justify-center gap-0.5 rounded-full border border-border bg-surface px-1 text-[10px] font-black leading-none shadow-sm"
             aria-label={`${assists} ${assists === 1 ? "assist" : "assists"}`}
           >
             <img src={assistBootLight} alt="" className="size-3.5 object-contain dark:hidden" />
