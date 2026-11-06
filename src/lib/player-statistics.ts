@@ -4,6 +4,10 @@ export type StatLineup = { match_id: string; player_id: string; played: boolean;
 export type StatCard = { match_id: string; player_id: string; card_type: string };
 export type StatPenalty = { match_id: string; player_id: string; event_type: string };
 
+export function compareStatisticValues(a: number, b: number, better: "higher" | "lower") {
+  return better === "lower" ? a - b : b - a;
+}
+
 export function calculatePlayerStatistics(playerId: string, data: { matches: StatMatch[]; goals: StatGoal[]; lineups: StatLineup[]; cards: StatCard[]; penaltyEvents: StatPenalty[] }) {
   const completed = new Set(data.matches.filter((m) => m.status === "completed").map((m) => m.id));
   const replacements = new Set(data.lineups.filter((l) => l.player_id === playerId && l.is_replacement).map((l) => l.match_id));
@@ -18,6 +22,7 @@ export function calculatePlayerStatistics(playerId: string, data: { matches: Sta
   return {
     appearances: new Set(data.lineups.filter((l) => l.player_id === playerId && l.played && eligible(l.match_id)).map((l) => l.match_id)).size,
     goals: scored.length,
+    ownGoals: data.goals.filter((g) => g.scorer_id === playerId && g.is_own_goal && eligible(g.match_id)).length,
     assists: goals.filter((g) => g.assist_id === playerId).length,
     potm: data.matches.filter((m) => m.potm_player_id === playerId && eligible(m.id)).length,
     penaltyGoals,

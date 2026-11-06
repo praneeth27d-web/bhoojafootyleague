@@ -20,6 +20,7 @@ export type Player = {
   matchesBanned: number;
   appearances: number;
   goals: number;
+  ownGoals: number;
   assists: number;
   potm: number;
   penaltyGoals: number;

@@ -5,8 +5,9 @@ import { TeamBadge } from "@/components/team-badge";
 import { teams, teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { marketValueAmount } from "@/lib/market-value";
+import { compareStatisticValues } from "@/lib/player-statistics";
 
-const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "yellowCards", "redCards", "warnings", "matchesBanned"] as const;
+const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "ownGoals", "yellowCards", "redCards", "warnings", "matchesBanned"] as const;
 type Metric = (typeof metrics)[number];
 type Search = { metric: Metric; club: string };
 
@@ -14,6 +15,7 @@ const clubSlugs = teams.map((t) => t.slug);
 
 const metricLabel: Record<Metric, string> = {
   goals: "Goals",
+  ownGoals: "Own Goals",
   assists: "Assists",
   ga: "Total G/A",
   potm: "Total POTM",
@@ -67,7 +69,7 @@ function StatsPage() {
 
   const rows = [...players]
     .filter((p) => club === "all" || p.teamSlug === club)
-    .sort((a, b) => value(b) - value(a) || a.name.localeCompare(b.name))
+    .sort((a, b) => compareStatisticValues(value(a), value(b), metric === "ownGoals" ? "lower" : "higher") || a.name.localeCompare(b.name))
     .map((p, i) => ({ ...p, pos: i + 1 }));
 
   return (

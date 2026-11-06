@@ -5,6 +5,7 @@ import { TeamCrest } from "@/components/team-badge";
 import { teamName, type Player } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
 import { marketValueAmount } from "@/lib/market-value";
+import { compareStatisticValues } from "@/lib/player-statistics";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -80,6 +81,7 @@ const statGroups: { title: string; info?: { label: string; render: (p: Player) =
   {
     title: "Discipline",
     stats: [
+      { label: "Own Goals", value: (p) => p.ownGoals, better: "lower" },
       { label: "Yellow Cards", value: (p) => p.yellowCards, better: "lower" },
       { label: "Red Cards", value: (p) => p.redCards, better: "lower" },
       { label: "Warnings", value: (p) => p.warnings, better: "lower" },
@@ -120,7 +122,7 @@ function ComparePage() {
           best.set(stat.label, null);
           continue;
         }
-        best.set(stat.label, stat.better === "higher" ? Math.max(...values) : Math.min(...values));
+        best.set(stat.label, values.sort((a, b) => compareStatisticValues(a, b, stat.better))[0] ?? null);
       }
     }
     return best;
@@ -249,7 +251,7 @@ function ComparePage() {
             </table>
           </div>
           <p className="px-4 pb-3 text-xs text-muted-foreground">
-            Green marks the best value (higher is better for attacking stats, lower is better for penalties missed and cards). Ties are all marked.
+            Best values are marked: higher for attacking stats, lower for penalties missed and discipline, including own goals. Ties are all marked.
           </p>
         </Card>
       )}
