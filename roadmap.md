@@ -28,6 +28,7 @@
 - [x] Simplify fixture rows and place completed scores between the two teams.
 - [x] Show goal and card badges on lineup players, including second-yellow reds.
 - [x] Show assist, captain, player-of-the-match badges, and goal frames in lineups.
+- [x] Keep only goals and assists at the bottom of lineup players; move own goal, penalties and cards to the top and sides.
 - [x] Add squad value card on team Squad tabs (Total, Average, Super Average in ₹cr).
 - [x] Add club filter to the Stats page and a Player Comparison page with best-value highlighting.
 - [x] Add player contact info (10-digit mobile, Call/WhatsApp preference) editable in admin and shown on profiles.
