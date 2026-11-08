@@ -172,7 +172,7 @@ function ClubStatsPage() {
               <caption className="sr-only">Club statistics by season</caption>
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th scope="col" className="py-2 pl-0 pr-4 font-semibold">Pos</th>
+                  <th scope="col" className="px-4 py-2 font-semibold">Pos</th>
                   <th scope="col" className="px-4 py-2 font-semibold">Club</th>
                   <th scope="col" className="px-3 py-2 text-right font-semibold">{metric.label}</th>
                 </tr>
@@ -182,18 +182,7 @@ function ClubStatsPage() {
                   const pos = i + 1;
                   return (
                     <tr key={r.slug} className="border-b border-border last:border-0 hover:bg-accent">
-                      <td className="py-3 pl-0 pr-4">
-                        <span className="flex items-center gap-3">
-                          <span
-                            aria-hidden="true"
-                            className={
-                              "block h-7 w-1 rounded-r-sm " +
-                              (pos === 1 ? "bg-pos-top" : pos <= 3 ? "bg-pos-mid" : "bg-pos-low")
-                            }
-                          />
-                          <span className="num text-muted-foreground">{pos}</span>
-                        </span>
-                      </td>
+                      <td className="num px-4 py-3 text-muted-foreground">{pos}</td>
                       <td className="px-4 py-3">
                         <Link
                           to="/teams/$teamSlug/table"
@@ -224,20 +213,6 @@ function ClubStatsPage() {
           Conceded the lowest value is best.
         </p>
       </Card>
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-2">
-          <span className="block h-4 w-1 rounded-r-sm bg-pos-top" />
-          Green — Qualified
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="block h-4 w-1 rounded-r-sm bg-pos-mid" />
-          Orange — Playoffs
-        </span>
-        <span className="inline-flex items-center gap-2">
-          <span className="block h-4 w-1 rounded-r-sm bg-pos-low" />
-          Red — Disqualified
-        </span>
-      </div>
     </AppShell>
   );
 }
