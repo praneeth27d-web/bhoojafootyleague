@@ -20,6 +20,7 @@ type RawPlayer = {
   name: string;
   team_slug: string;
   captain: boolean;
+  vice_captain: boolean;
   jersey_number: number | null;
   position: string | null;
   market_value: string | null;
@@ -194,7 +195,7 @@ export function useLeague(scope: "season" | "all" = "season") {
         goals: buildGoals(m.id),
         lineups: raw.lineups.filter((entry) => entry.match_id === m.id).map((entry) => {
           const player = byId.get(entry.player_id);
-          return { id: entry.id, playerId: entry.player_id, playerSlug: player?.slug ?? "", playerName: player?.name ?? "Unknown", playerTeamSlug: player?.team_slug ?? null, jerseyNumber: player?.jersey_number ?? null, captain: player?.captain ?? false, side: entry.side, role: entry.role, positionIndex: entry.position_index, played: entry.played, isReplacement: entry.is_replacement };
+          return { id: entry.id, playerId: entry.player_id, playerSlug: player?.slug ?? "", playerName: player?.name ?? "Unknown", playerTeamSlug: player?.team_slug ?? null, jerseyNumber: player?.jersey_number ?? null, captain: player?.captain ?? false, viceCaptain: player?.vice_captain ?? false, side: entry.side, role: entry.role, positionIndex: entry.position_index, played: entry.played, isReplacement: entry.is_replacement };
         }),
         cards: raw.cards.filter((entry) => entry.match_id === m.id).map((entry) => {
           const player = byId.get(entry.player_id);
@@ -228,6 +229,7 @@ export function useLeague(scope: "season" | "all" = "season") {
       name: p.name,
       teamSlug: p.team_slug,
       captain: p.captain,
+      viceCaptain: p.vice_captain,
       jerseyNumber: p.jersey_number,
       position: p.position ?? null,
       marketValue: p.market_value ?? null,

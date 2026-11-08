@@ -157,7 +157,10 @@ export function PlayerRows({
   showTeam?: boolean;
 }) {
   const sorted = [...players].sort(
-    (a, b) => Number(b.captain) - Number(a.captain) || a.name.localeCompare(b.name),
+    (a, b) =>
+      Number(b.captain) - Number(a.captain) ||
+      Number(b.viceCaptain) - Number(a.viceCaptain) ||
+      a.name.localeCompare(b.name),
   );
   return (
     <div className="overflow-x-auto">
@@ -188,12 +191,17 @@ export function PlayerRows({
                     type="button"
                     onClick={() => onSelect(p.slug)}
                     className="inline-flex items-center gap-2 font-semibold hover:text-primary"
-                    aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : ""}`}
+                    aria-label={`Open profile for ${p.name}${p.captain ? ", captain" : p.viceCaptain ? ", vice captain" : ""}`}
                   >
                     {p.name}
                     {p.captain && (
                       <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                         C
+                      </span>
+                    )}
+                    {!p.captain && p.viceCaptain && (
+                      <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                        VC
                       </span>
                     )}
                   </button>
@@ -207,6 +215,11 @@ export function PlayerRows({
                     {p.captain && (
                       <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                         C
+                      </span>
+                    )}
+                    {!p.captain && p.viceCaptain && (
+                      <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+                        VC
                       </span>
                     )}
                   </Link>

@@ -94,6 +94,7 @@ function Marker({ entry, match }: { entry: MatchLineup; match: Match }) {
       </span>
       <span className="mt-3 flex w-full min-w-0 items-center justify-center gap-1 text-xs font-semibold">
         {entry.captain && <span className="num flex size-3.5 shrink-0 items-center justify-center rounded-full bg-foreground text-[8px] font-black text-background" aria-label="Captain">C</span>}
+        {!entry.captain && entry.viceCaptain && <span className="num flex h-3.5 shrink-0 items-center justify-center rounded-full bg-foreground px-1 text-[8px] font-black text-background" aria-label="Vice captain">VC</span>}
         <span className="truncate">{entry.playerName}</span>
         {match.potmId === entry.playerId && <span className="shrink-0 text-primary" aria-label="Player of the match" title="Player of the match">★</span>}
       </span>

@@ -722,6 +722,12 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
     else refresh();
   }
 
+  async function toggleViceCaptain(id: string, value: boolean) {
+    const { error: err } = await supabase.from("players").update({ vice_captain: value }).eq("id", id);
+    if (err) setError(err.message);
+    else refresh();
+  }
+
   async function removePlayer(id: string) {
     if (!window.confirm("Delete this player? Their profile and squad listing are removed. This cannot be undone.")) return;
     const { error: err } = await supabase.from("players").delete().eq("id", id);
@@ -779,6 +785,7 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
                 <span className="font-semibold">
                   {p.name}
                   {p.captain && <span className="ml-2 text-xs text-primary">Captain</span>}
+                  {!p.captain && p.viceCaptain && <span className="ml-2 text-xs text-primary">Vice captain</span>}
                 </span>
                 <span className="flex items-center gap-2">
 
@@ -789,6 +796,15 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
                   >
                     {p.captain ? "Remove captain" : "Make captain"}
                   </button>
+                  {!p.captain && (
+                    <button
+                      type="button"
+                      className={ghostBtn}
+                      onClick={() => toggleViceCaptain(p.id, !p.viceCaptain)}
+                    >
+                      {p.viceCaptain ? "Remove vice captain" : "Make vice captain"}
+                    </button>
+                  )}
                   <button type="button" className={ghostBtn} onClick={() => removePlayer(p.id)}>
                     Delete
                   </button>
@@ -839,7 +855,7 @@ function TransfersAdmin({ league, refresh }: AdminProps) {
     }
     const { error: updateErr } = await supabase
       .from("players")
-      .update({ team_slug: to, captain: false })
+      .update({ team_slug: to, captain: false, vice_captain: false })
       .eq("id", player.id);
     if (updateErr) setError(updateErr.message);
     else {

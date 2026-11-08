@@ -10,6 +10,7 @@ export type Player = {
   name: string;
   teamSlug: string;
   captain: boolean;
+  viceCaptain: boolean;
   jerseyNumber: number | null;
   position: string | null;
   marketValue: string | null;
@@ -53,6 +54,7 @@ export type MatchLineup = {
   playerTeamSlug: string | null;
   jerseyNumber: number | null;
   captain: boolean;
+  viceCaptain: boolean;
   side: "home" | "away";
   role: "starter" | "substitute";
   positionIndex: number;

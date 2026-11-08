@@ -284,6 +284,7 @@ export type Database = {
           preferred_foot: string
           slug: string
           team_slug: string
+          vice_captain: boolean
           warnings: number | null
         }
         Insert: {
@@ -300,6 +301,7 @@ export type Database = {
           preferred_foot?: string
           slug: string
           team_slug: string
+          vice_captain?: boolean
           warnings?: number | null
         }
         Update: {
@@ -316,6 +318,7 @@ export type Database = {
           preferred_foot?: string
           slug?: string
           team_slug?: string
+          vice_captain?: boolean
           warnings?: number | null
         }
         Relationships: []

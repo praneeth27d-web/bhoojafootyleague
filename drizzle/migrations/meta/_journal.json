@@ -15,6 +15,13 @@
       "when": 1793507524252,
       "tag": "0001_player_contact_and_discipline",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794142503397,
+      "tag": "0002_add_vice_captain_to_players",
+      "breakpoints": true
     }
   ]
 }

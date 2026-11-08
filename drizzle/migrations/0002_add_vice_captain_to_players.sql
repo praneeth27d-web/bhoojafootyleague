@@ -1,0 +1,1 @@
+alter table public.players add column if not exists vice_captain boolean not null default false;
