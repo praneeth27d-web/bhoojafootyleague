@@ -22,6 +22,20 @@
       "when": 1794142503397,
       "tag": "0002_add_vice_captain_to_players",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794143107829,
+      "tag": "0003_transfer_cash_and_swap_deals",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794143220539,
+      "tag": "0004_transfer_optional_swap_player",
+      "breakpoints": true
     }
   ]
 }

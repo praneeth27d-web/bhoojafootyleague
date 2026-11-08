@@ -332,6 +332,7 @@ export type Database = {
           season: number
           team_slug: string
           updated_at: string
+          vice_captain: boolean
         }
         Insert: {
           captain?: boolean
@@ -341,6 +342,7 @@ export type Database = {
           season: number
           team_slug: string
           updated_at?: string
+          vice_captain?: boolean
         }
         Update: {
           captain?: boolean
@@ -350,6 +352,7 @@ export type Database = {
           season?: number
           team_slug?: string
           updated_at?: string
+          vice_captain?: boolean
         }
         Relationships: [
           {
@@ -388,38 +391,57 @@ export type Database = {
       transfers: {
         Row: {
           created_at: string
+          deal_type: string
+          fee_cr: number | null
+          fee_payer_slug: string | null
           from_slug: string | null
           happened_on: string
           id: string
           note: string | null
           player_id: string
           season: number
+          swap_player_id: string | null
           to_slug: string
         }
         Insert: {
           created_at?: string
+          deal_type?: string
+          fee_cr?: number | null
+          fee_payer_slug?: string | null
           from_slug?: string | null
           happened_on?: string
           id?: string
           note?: string | null
           player_id: string
           season?: number
+          swap_player_id?: string | null
           to_slug: string
         }
         Update: {
           created_at?: string
+          deal_type?: string
+          fee_cr?: number | null
+          fee_payer_slug?: string | null
           from_slug?: string | null
           happened_on?: string
           id?: string
           note?: string | null
           player_id?: string
           season?: number
+          swap_player_id?: string | null
           to_slug?: string
         }
         Relationships: [
           {
             foreignKeyName: "transfers_player_id_fkey"
             columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfers_swap_player_id_fkey"
+            columns: ["swap_player_id"]
             isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
@@ -452,7 +474,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      record_transfer_deal: {
+        Args: {
+          p_deal_type: string
+          p_fee_cr: number
+          p_fee_payer_slug: string
+          p_happened_on?: string
+          p_note?: string
+          p_player_id: string
+          p_season: number
+          p_swap_player_id?: string
+          p_to_slug: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin"

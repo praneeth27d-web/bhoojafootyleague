@@ -20,3 +20,5 @@
 - Public player names navigate directly to the full player stats route so Stats, squads, transfers and lineups share the same click behavior.
 - Team form and team results share completed-match sorting and outcome helpers, including selected-season league and knockout games, to keep the displayed form consistent with results.
 - Full standings tables share TableForm badges derived from selected-season match records so league and team table forms stay consistent.
+- Record transfer deals through an admin-authorized, security-invoker database transaction so both swap legs and season roster changes either succeed together or roll back together.
+- Keep cash and swap editing in TransfersAdmin and show deals through shared TransferRows; previous-season squads resolve from season roster snapshots rather than current player clubs.

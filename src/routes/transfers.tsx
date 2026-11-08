@@ -10,7 +10,7 @@ export const Route = createFileRoute("/transfers")({
       {
         name: "description",
         content:
-          "Completed and pending transfers in the Bhooja Football League. Transfers can change club squads.",
+          "Bhooja Football League cash transfers and player swaps, with deal fees and club moves by season.",
       },
       { property: "og:title", content: "BFL Transfers" },
       {
@@ -37,13 +37,6 @@ function Transfers() {
               No transfers completed yet.
             </p>
           )}
-        </Card>
-        <Card title="How this affects squads">
-          <p className="px-4 py-4 text-sm text-muted-foreground">
-            The five confirmed players per club are the current squads. Any transfer moves a player
-            between clubs, so squad lists on the club pages will update whenever a transfer is
-            completed.
-          </p>
         </Card>
       </div>
     </AppShell>

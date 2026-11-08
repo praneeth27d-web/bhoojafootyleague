@@ -18,6 +18,7 @@ import { leagueQueryKey, useLeague } from "@/lib/league-data";
 import { seasonLabel, seasonsQueryKey, useSeasons } from "@/lib/seasons";
 import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
+import { TransfersAdmin } from "@/components/transfers-admin";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -184,7 +185,7 @@ function AdminPage() {
           <MatchesAdmin league={league} refresh={refresh} activeSeason={activeSeason} />
         )}
         {tab === "squads" && <SquadsAdmin league={league} refresh={refresh} />}
-        {tab === "transfers" && <TransfersAdmin league={league} refresh={refresh} />}
+        {tab === "transfers" && <TransfersAdmin league={league} refresh={refresh} activeSeason={activeSeason} />}
       </div>
     </AppShell>
   );
@@ -823,123 +824,3 @@ function SquadsAdmin({ league, refresh }: AdminProps) {
   );
 }
 
-function TransfersAdmin({ league, refresh }: AdminProps) {
-  const [error, setError] = useState<string | null>(null);
-  const [playerId, setPlayerId] = useState("");
-  const [to, setTo] = useState(teams[0]!.slug);
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
-  const [note, setNote] = useState("");
-
-  async function record(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const player = league.getPlayerById(playerId);
-    if (!player) {
-      setError("Choose a player.");
-      return;
-    }
-    if (player.teamSlug === to) {
-      setError("That player is already at this club.");
-      return;
-    }
-    const { error: insertErr } = await supabase.from("transfers").insert({
-      player_id: player.id,
-      from_slug: player.teamSlug,
-      to_slug: to,
-      happened_on: date,
-      note: note || null,
-    });
-    if (insertErr) {
-      setError(insertErr.message);
-      return;
-    }
-    const { error: updateErr } = await supabase
-      .from("players")
-      .update({ team_slug: to, captain: false, vice_captain: false })
-      .eq("id", player.id);
-    if (updateErr) setError(updateErr.message);
-    else {
-      setNote("");
-      setPlayerId("");
-      refresh();
-    }
-  }
-
-  async function removeTransfer(id: string) {
-    if (!window.confirm("Delete this transfer record? This cannot be undone.")) return;
-    const { error: err } = await supabase.from("transfers").delete().eq("id", id);
-    if (err) setError(err.message);
-    else refresh();
-  }
-
-  return (
-    <>
-      <Card title="Record a transfer">
-        <form onSubmit={record} className="grid gap-3 px-4 py-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Field label="Player">
-            <select
-              className={inputClass}
-              value={playerId}
-              onChange={(e) => setPlayerId(e.target.value)}
-            >
-              <option value="">Choose player</option>
-              {league.players.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} · {teamName(p.teamSlug)}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Joining">
-            <select className={inputClass} value={to} onChange={(e) => setTo(e.target.value)}>
-              {teams.map((t) => (
-                <option key={t.slug} value={t.slug}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Date">
-            <input
-              type="date"
-              className={inputClass}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </Field>
-          <Field label="Note (optional)">
-            <input className={inputClass} value={note} onChange={(e) => setNote(e.target.value)} />
-          </Field>
-          <div className="flex items-end">
-            <button type="submit" className={btnClass}>
-              Save transfer
-            </button>
-          </div>
-          <div className="sm:col-span-2 lg:col-span-4">
-            <ErrorNote error={error} />
-          </div>
-        </form>
-      </Card>
-
-      <Card title={`Transfers (${league.transfers.length})`}>
-        {league.transfers.length === 0 ? (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">No transfers yet.</p>
-        ) : (
-          <ul className="divide-y divide-border">
-            {league.transfers.map((t) => (
-              <li key={t.id} className="flex items-center justify-between gap-2 px-4 py-2.5 text-sm">
-                <span>
-                  <span className="font-semibold">{t.playerName}</span>{" "}
-                  {t.fromSlug ? teamName(t.fromSlug) : "Unattached"} → {teamName(t.toSlug)}
-                </span>
-                <button type="button" className={ghostBtn} onClick={() => removeTransfer(t.id)}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
-    </>
-  );
-}

@@ -114,6 +114,13 @@ export type Transfer = {
   toSlug: string;
   date: string;
   note: string | null;
+  season: number;
+  dealType: "legacy" | "cash" | "swap";
+  feeCr: number | null;
+  feePayerSlug: string | null;
+  swapPlayerId: string | null;
+  swapPlayerName: string | null;
+  swapPlayerSlug: string | null;
 };
 
 export const teams: Team[] = [

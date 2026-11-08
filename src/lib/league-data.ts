@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
 import { calculatePlayerStatistics } from "@/lib/player-statistics";
+import { rosterForSeason, type SeasonRoster } from "@/lib/transfer-deals";
 import {
   computeStandings,
   slugify,
@@ -69,6 +70,11 @@ type RawTransfer = {
   to_slug: string;
   happened_on: string;
   note: string | null;
+  season: number;
+  deal_type: "legacy" | "cash" | "swap";
+  fee_cr: number | null;
+  fee_payer_slug: string | null;
+  swap_player_id: string | null;
 };
 
 export type RawSnapshot = {
@@ -79,10 +85,11 @@ export type RawSnapshot = {
   lineups: RawLineup[];
   cards: RawCard[];
   penaltyEvents: RawPenaltyEvent[];
+  rosters?: SeasonRoster[];
 };
 
 async function fetchLeague(): Promise<RawSnapshot> {
-  const [playersRes, matchesRes, goalsRes, transfersRes, lineupsRes, cardsRes, penaltyEventsRes] = await Promise.all([
+  const [playersRes, matchesRes, goalsRes, transfersRes, lineupsRes, cardsRes, penaltyEventsRes, rostersRes] = await Promise.all([
     supabase.from("players").select("*").order("name"),
     supabase.from("matches").select("*").order("kickoff"),
     supabase.from("match_goals").select("*").order("minute", { nullsFirst: true }),
@@ -90,6 +97,7 @@ async function fetchLeague(): Promise<RawSnapshot> {
     supabase.from("match_lineups").select("*").order("position_index"),
     supabase.from("match_cards").select("*").order("minute", { nullsFirst: true }),
     supabase.from("match_penalty_events").select("*").order("minute", { nullsFirst: true }),
+    supabase.from("season_rosters").select("season,player_id,team_slug,captain,vice_captain"),
   ]);
 
   return {
@@ -100,6 +108,7 @@ async function fetchLeague(): Promise<RawSnapshot> {
     lineups: (lineupsRes.data ?? []) as RawLineup[],
     cards: (cardsRes.data ?? []) as RawCard[],
     penaltyEvents: (penaltyEventsRes.data ?? []) as RawPenaltyEvent[],
+    rosters: rostersRes.data ?? [],
   };
 }
 
@@ -132,7 +141,7 @@ export function useLeague(scope: "season" | "all" = "season") {
     liveListeners.add(invalidate);
     if (!liveChannel) {
       const channel = supabase.channel("league-live");
-      for (const table of ["players", "matches", "match_goals", "transfers", "match_lineups", "match_cards", "match_penalty_events"] as const) {
+      for (const table of ["players", "season_rosters", "matches", "match_goals", "transfers", "match_lineups", "match_cards", "match_penalty_events"] as const) {
         channel.on("postgres_changes", { event: "*", schema: "public", table }, () => {
           liveListeners.forEach((fn) => fn());
         });
@@ -155,6 +164,8 @@ export function useLeague(scope: "season" | "all" = "season") {
 
   return useMemo(() => {
     const byId = new Map(raw.players.map((p) => [p.id, p]));
+    const selectedRoster = new Map(rosterForSeason(raw.rosters ?? [], seasonNumber).map((r) => [r.player_id, r]));
+    const latestRosterSeason = Math.max(2, ...(raw.rosters ?? []).map((r) => r.season));
 
     const buildGoals = (matchId: string): MatchGoal[] =>
       raw.goals
@@ -227,9 +238,9 @@ export function useLeague(scope: "season" | "all" = "season") {
       id: p.id,
       slug: p.slug,
       name: p.name,
-      teamSlug: p.team_slug,
-      captain: p.captain,
-      viceCaptain: p.vice_captain,
+      teamSlug: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.team_slug ?? p.team_slug : p.team_slug,
+      captain: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.captain ?? false : p.captain,
+      viceCaptain: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.vice_captain ?? false : p.vice_captain,
       jerseyNumber: p.jersey_number,
       position: p.position ?? null,
       marketValue: p.market_value ?? null,
@@ -241,8 +252,9 @@ export function useLeague(scope: "season" | "all" = "season") {
       ...calculatePlayerStatistics(p.id, statData),
     }));
 
-    const transfers: Transfer[] = raw.transfers.map((t) => {
+    const transfers: Transfer[] = raw.transfers.filter((t) => scope === "all" || t.season === seasonNumber).map((t) => {
       const p = byId.get(t.player_id);
+      const swap = t.swap_player_id ? byId.get(t.swap_player_id) : undefined;
       return {
         id: t.id,
         playerId: t.player_id,
@@ -252,6 +264,13 @@ export function useLeague(scope: "season" | "all" = "season") {
         toSlug: t.to_slug,
         date: t.happened_on,
         note: t.note,
+        season: t.season,
+        dealType: t.deal_type ?? "legacy",
+        feeCr: t.fee_cr === null ? null : Number(t.fee_cr),
+        feePayerSlug: t.fee_payer_slug,
+        swapPlayerId: t.swap_player_id,
+        swapPlayerName: swap?.name ?? null,
+        swapPlayerSlug: swap?.slug ?? null,
       };
     });
 

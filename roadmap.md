@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add cash and swap transfers with fees, atomic season-specific squad updates, public deal details, and verification.
+
 - [x] Add Own Goals to Player Stats, comparison and Discipline, rank fewer as better, and verify totals and public displays.
 
 - [x] Default tables to Compact and add recent-result badges at the right of full tables; verify league and team views.
@@ -22,7 +24,7 @@
 - [x] Let admins edit fixture dates and times in Indian Standard Time.
 - [x] Keep knockout round optional and independent from league matchday standings.
 - [x] Ensure saved results, goals, assists, and POTM immediately refresh public tables and stats.
-- [ ] Remove prior verification test fixtures and reset accidental result data.
+- [ ] Remove prior verification test fixtures and reset accidental result data — blocked until the affected historical records are identified; do not remove real match data.
 - [x] Verify admin and public flows in the running app.
 - [x] Verify the dedicated five-a-side lineup tab, substitutes, and goal/assist icons on desktop and mobile.
 - [x] Compact match events into paired home/away rows and combine repeat scorers.
