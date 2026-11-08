@@ -37,6 +37,8 @@ type Row = {
   superValue: number;
   goals: number;
   goalsConceded: number;
+  averageGoals: number;
+  averageGoalsConceded: number;
   gold: number;
   silver: number;
   bronze: number;
@@ -50,6 +52,8 @@ const METRICS = [
   { key: "superValue", label: "Super Value", dir: "desc" },
   { key: "goals", label: "Goals", dir: "desc" },
   { key: "goalsConceded", label: "Goals Conceded", dir: "asc" },
+  { key: "averageGoals", label: "Average Goals", dir: "desc" },
+  { key: "averageGoalsConceded", label: "Average Goals Conceded", dir: "asc" },
   { key: "gold", label: "Gold", dir: "desc" },
   { key: "silver", label: "Silver", dir: "desc" },
   { key: "bronze", label: "Bronze", dir: "desc" },
@@ -96,6 +100,7 @@ function ClubStatsPage() {
       const total = squad.reduce((sum, p) => sum + Math.max(0, marketValueAmount(p.marketValue)), 0);
       const row = standings.find((r) => r.team.slug === t.slug);
       const medal = medals.get(t.slug) ?? { gold: 0, silver: 0, bronze: 0 };
+      const played = row?.played ?? 0;
       return {
         slug: t.slug,
         totalValue: total,
@@ -103,6 +108,8 @@ function ClubStatsPage() {
         superValue: total / 5,
         goals: row?.gf ?? 0,
         goalsConceded: row?.ga ?? 0,
+        averageGoals: played > 0 ? (row?.gf ?? 0) / played : 0,
+        averageGoalsConceded: played > 0 ? (row?.ga ?? 0) / played : 0,
         gold: medal.gold,
         silver: medal.silver,
         bronze: medal.bronze,
@@ -200,7 +207,9 @@ function ClubStatsPage() {
                       <td className="num px-3 py-3 text-right font-bold">
                         {sortBy === "totalValue" || sortBy === "averageValue" || sortBy === "superValue"
                           ? formatCr(r[sortBy])
-                          : r[sortBy]}
+                          : sortBy === "averageGoals" || sortBy === "averageGoalsConceded"
+                            ? r[sortBy].toFixed(2)
+                            : r[sortBy]}
                       </td>
                     </tr>
                   );
