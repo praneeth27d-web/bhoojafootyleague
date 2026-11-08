@@ -30,6 +30,8 @@ type RawPlayer = {
   contact_preference: string | null;
   warnings: number | null;
   matches_banned: number | null;
+  loan_from_slug?: string | null;
+  loan_until?: string | null;
 };
 
 type RawMatch = {
@@ -71,7 +73,8 @@ type RawTransfer = {
   happened_on: string;
   note: string | null;
   season: number;
-  deal_type: "legacy" | "cash" | "swap";
+  deal_type: "legacy" | "cash" | "swap" | "loan" | "loan_return";
+  loan_until?: string | null;
   fee_cr: number | null;
   fee_payer_slug: string | null;
   swap_player_id: string | null;
@@ -97,7 +100,7 @@ async function fetchLeague(): Promise<RawSnapshot> {
     supabase.from("match_lineups").select("*").order("position_index"),
     supabase.from("match_cards").select("*").order("minute", { nullsFirst: true }),
     supabase.from("match_penalty_events").select("*").order("minute", { nullsFirst: true }),
-    supabase.from("season_rosters").select("season,player_id,team_slug,captain,vice_captain"),
+    supabase.from("season_rosters").select("season,player_id,team_slug,captain,vice_captain,loan_from_slug,loan_until"),
   ]);
 
   return {
@@ -241,6 +244,8 @@ export function useLeague(scope: "season" | "all" = "season") {
       teamSlug: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.team_slug ?? p.team_slug : p.team_slug,
       captain: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.captain ?? false : p.captain,
       viceCaptain: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.vice_captain ?? false : p.vice_captain,
+      loanFromSlug: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.loan_from_slug ?? null : p.loan_from_slug ?? null,
+      loanUntil: seasonNumber < latestRosterSeason ? selectedRoster.get(p.id)?.loan_until ?? null : p.loan_until ?? null,
       jerseyNumber: p.jersey_number,
       position: p.position ?? null,
       marketValue: p.market_value ?? null,
@@ -271,6 +276,7 @@ export function useLeague(scope: "season" | "all" = "season") {
         swapPlayerId: t.swap_player_id,
         swapPlayerName: swap?.name ?? null,
         swapPlayerSlug: swap?.slug ?? null,
+        loanUntil: t.loan_until ?? null,
       };
     });
 

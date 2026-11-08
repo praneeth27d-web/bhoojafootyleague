@@ -204,6 +204,11 @@ export function PlayerRows({
                         VC
                       </span>
                     )}
+                    {p.loanFromSlug && (
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground" title={`On loan from ${teamName(p.loanFromSlug)}`}>
+                        LOAN
+                      </span>
+                    )}
                   </button>
                 ) : (
                   <Link
@@ -220,6 +225,11 @@ export function PlayerRows({
                     {!p.captain && p.viceCaptain && (
                       <span className="num rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                         VC
+                      </span>
+                    )}
+                    {p.loanFromSlug && (
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground" title={`On loan from ${teamName(p.loanFromSlug)}`}>
+                        LOAN
                       </span>
                     )}
                   </Link>

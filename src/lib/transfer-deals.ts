@@ -16,7 +16,7 @@ export function validateTransferDeal(deal: DealInput): string | null {
   return null;
 }
 
-export type SeasonRoster = { season: number; player_id: string; team_slug: string; captain: boolean; vice_captain: boolean };
+export type SeasonRoster = { season: number; player_id: string; team_slug: string; captain: boolean; vice_captain: boolean; loan_from_slug?: string | null; loan_until?: string | null };
 
 export function rosterForSeason(rosters: SeasonRoster[], season: number): SeasonRoster[] {
   const rosterSeason = Math.max(0, ...rosters.filter((r) => r.season <= season).map((r) => r.season));

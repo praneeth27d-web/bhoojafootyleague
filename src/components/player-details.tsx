@@ -30,7 +30,14 @@ function StatSection({ title, rows }: { title: string; rows: { label: string; va
 
 export function PlayerDetails({ player }: { player: Player }) {
   const [expanded, setExpanded] = useState(false);
-  const teamValue = <TeamBadge slug={player.teamSlug} className="justify-end" />;
+  const teamValue = player.loanFromSlug ? (
+    <span className="inline-flex flex-col items-end gap-1">
+      <TeamBadge slug={player.teamSlug} className="justify-end" />
+      <span className="text-xs font-semibold text-primary">
+        On loan from {teamName(player.loanFromSlug)}{player.loanUntil ? ` until ${formatShortDate(player.loanUntil)}` : ""}
+      </span>
+    </span>
+  ) : <TeamBadge slug={player.teamSlug} className="justify-end" />;
   const conversion =
     player.penaltyConversion === null ? "—" : `${Number(player.penaltyConversion.toFixed(1))}%`;
 

@@ -276,6 +276,8 @@ export type Database = {
           created_at: string
           id: string
           jersey_number: number | null
+          loan_from_slug: string | null
+          loan_until: string | null
           market_value: string | null
           matches_banned: number | null
           name: string
@@ -293,6 +295,8 @@ export type Database = {
           created_at?: string
           id?: string
           jersey_number?: number | null
+          loan_from_slug?: string | null
+          loan_until?: string | null
           market_value?: string | null
           matches_banned?: number | null
           name: string
@@ -310,6 +314,8 @@ export type Database = {
           created_at?: string
           id?: string
           jersey_number?: number | null
+          loan_from_slug?: string | null
+          loan_until?: string | null
           market_value?: string | null
           matches_banned?: number | null
           name?: string
@@ -328,6 +334,8 @@ export type Database = {
           captain: boolean
           created_at: string
           id: string
+          loan_from_slug: string | null
+          loan_until: string | null
           player_id: string
           season: number
           team_slug: string
@@ -338,6 +346,8 @@ export type Database = {
           captain?: boolean
           created_at?: string
           id?: string
+          loan_from_slug?: string | null
+          loan_until?: string | null
           player_id: string
           season: number
           team_slug: string
@@ -348,6 +358,8 @@ export type Database = {
           captain?: boolean
           created_at?: string
           id?: string
+          loan_from_slug?: string | null
+          loan_until?: string | null
           player_id?: string
           season?: number
           team_slug?: string
@@ -397,6 +409,7 @@ export type Database = {
           from_slug: string | null
           happened_on: string
           id: string
+          loan_until: string | null
           note: string | null
           player_id: string
           season: number
@@ -411,6 +424,7 @@ export type Database = {
           from_slug?: string | null
           happened_on?: string
           id?: string
+          loan_until?: string | null
           note?: string | null
           player_id: string
           season?: number
@@ -425,6 +439,7 @@ export type Database = {
           from_slug?: string | null
           happened_on?: string
           id?: string
+          loan_until?: string | null
           note?: string | null
           player_id?: string
           season?: number
@@ -474,6 +489,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      end_loan: {
+        Args: { p_happened_on?: string; p_player_id: string; p_season: number }
+        Returns: string
+      }
+      record_loan: {
+        Args: {
+          p_fee_cr?: number
+          p_happened_on?: string
+          p_loan_until?: string
+          p_note?: string
+          p_player_id: string
+          p_season: number
+          p_to_slug: string
+        }
+        Returns: string
+      }
       record_transfer_deal: {
         Args: {
           p_deal_type: string

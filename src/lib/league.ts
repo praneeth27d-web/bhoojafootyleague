@@ -11,6 +11,8 @@ export type Player = {
   teamSlug: string;
   captain: boolean;
   viceCaptain: boolean;
+  loanFromSlug: string | null;
+  loanUntil: string | null;
   jerseyNumber: number | null;
   position: string | null;
   marketValue: string | null;
@@ -115,7 +117,8 @@ export type Transfer = {
   date: string;
   note: string | null;
   season: number;
-  dealType: "legacy" | "cash" | "swap";
+  dealType: "legacy" | "cash" | "swap" | "loan" | "loan_return";
+  loanUntil: string | null;
   feeCr: number | null;
   feePayerSlug: string | null;
   swapPlayerId: string | null;
