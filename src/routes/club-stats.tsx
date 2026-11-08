@@ -120,7 +120,7 @@ function ClubStatsPage() {
       subtitle="Squad values, goals, season finishes and points. Season 1 is not included."
     >
       <Card
-        title="Clubs"
+        title={metric.label}
         action={
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
@@ -161,56 +161,50 @@ function ClubStatsPage() {
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading club stats…</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[880px] text-sm">
+            <table className="w-full min-w-[420px] text-sm">
               <caption className="sr-only">Club statistics by season</caption>
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <th scope="col" className="py-2 pl-0 pr-4 font-semibold">Pos</th>
                   <th scope="col" className="px-4 py-2 font-semibold">Club</th>
-                  {([
-                    ["totalValue", "Total Market Value", "px-3 py-2 text-right"],
-                    ["averageValue", "Average Value", "px-3 py-2 text-right"],
-                    ["superValue", "Super Value", "px-3 py-2 text-right"],
-                    ["goals", "Goals", "px-3 py-2 text-right"],
-                    ["goalsConceded", "Goals Conceded", "px-3 py-2 text-right"],
-                    ["gold", "Gold", "px-3 py-2 text-right"],
-                    ["silver", "Silver", "px-3 py-2 text-right"],
-                    ["bronze", "Bronze", "px-3 py-2 text-right"],
-                    ["points", "Total Points", "px-4 py-2 text-right"],
-                  ] as const).map(([key, label, base]) => (
-                    <th
-                      key={key}
-                      scope="col"
-                      className={`${base} font-semibold${sortBy === key ? " text-foreground underline decoration-primary decoration-2 underline-offset-4" : ""}`}
-                    >
-                      {label}
-                    </th>
-                  ))}
+                  <th scope="col" className="px-3 py-2 text-right font-semibold">{metric.label}</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => (
-                  <tr key={r.slug} className="border-b border-border last:border-0 hover:bg-accent">
-                    <td className="px-4 py-3">
-                      <Link
-                        to="/teams/$teamSlug/table"
-                        params={{ teamSlug: r.slug }}
-                        className="inline-flex hover:opacity-80"
-                        aria-label={`Open the ${r.slug} club page`}
-                      >
-                        <TeamBadge slug={r.slug} showName crestClassName="size-7" />
-                      </Link>
-                    </td>
-                    <td className="num px-3 py-3 text-right">{formatCr(r.totalValue)}</td>
-                    <td className="num px-3 py-3 text-right text-muted-foreground">{formatCr(r.averageValue)}</td>
-                    <td className="num px-3 py-3 text-right text-muted-foreground">{formatCr(r.superValue)}</td>
-                    <td className="num px-3 py-3 text-right">{r.goals}</td>
-                    <td className="num px-3 py-3 text-right">{r.goalsConceded}</td>
-                    <td className="num px-3 py-3 text-right">{r.gold}</td>
-                    <td className="num px-3 py-3 text-right">{r.silver}</td>
-                    <td className="num px-3 py-3 text-right">{r.bronze}</td>
-                    <td className="num px-4 py-3 text-right font-bold">{r.points}</td>
-                  </tr>
-                ))}
+                {rows.map((r, i) => {
+                  const pos = i + 1;
+                  return (
+                    <tr key={r.slug} className="border-b border-border last:border-0 hover:bg-accent">
+                      <td className="py-3 pl-0 pr-4">
+                        <span className="flex items-center gap-3">
+                          <span
+                            aria-hidden="true"
+                            className={
+                              "block h-7 w-1 rounded-r-sm " +
+                              (pos === 1 ? "bg-pos-top" : pos <= 3 ? "bg-pos-mid" : "bg-pos-low")
+                            }
+                          />
+                          <span className="num text-muted-foreground">{pos}</span>
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link
+                          to="/teams/$teamSlug/table"
+                          params={{ teamSlug: r.slug }}
+                          className="inline-flex hover:opacity-80"
+                          aria-label={`Open the ${r.slug} club page`}
+                        >
+                          <TeamBadge slug={r.slug} showName crestClassName="size-7" />
+                        </Link>
+                      </td>
+                      <td className="num px-3 py-3 text-right font-bold">
+                        {sortBy === "totalValue" || sortBy === "averageValue" || sortBy === "superValue"
+                          ? formatCr(r[sortBy])
+                          : r[sortBy]}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -221,6 +215,20 @@ function ClubStatsPage() {
           Conceded the lowest value is best.
         </p>
       </Card>
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-top" />
+          Green — Qualified
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-mid" />
+          Orange — Playoffs
+        </span>
+        <span className="inline-flex items-center gap-2">
+          <span className="block h-4 w-1 rounded-r-sm bg-pos-low" />
+          Red — Disqualified
+        </span>
+      </div>
     </AppShell>
   );
 }
