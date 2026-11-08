@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TeamBadge } from "@/components/team-badge";
-import type { Player } from "@/lib/league";
+import { formatShortDate, teamName, type Player } from "@/lib/league";
 
 type StatValue = string | number | React.ReactNode;
 
