@@ -10,7 +10,7 @@ export const Route = createFileRoute("/transfers")({
       {
         name: "description",
         content:
-          "Bhooja Football League cash transfers and player swaps, with deal fees and club moves by season.",
+          "Bhooja Football League cash transfers, player swaps and loans, with deal fees and club moves by season.",
       },
       { property: "og:title", content: "BFL Transfers" },
       {

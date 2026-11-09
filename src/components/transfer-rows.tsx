@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowLeftRight, Banknote } from "lucide-react";
+import { ArrowRight, ArrowLeftRight, Banknote, CalendarClock, Undo2 } from "lucide-react";
 import { formatShortDate, teamName, type Transfer } from "@/lib/league";
-import { transferFeeLabel } from "@/lib/transfer-deals";
+import { transferFeeLabel, transferDealLabel } from "@/lib/transfer-deals";
 import { TeamBadge } from "@/components/team-badge";
 
 export function TransferRows({ transfers }: { transfers: Transfer[] }) {
@@ -10,9 +10,9 @@ export function TransferRows({ transfers }: { transfers: Transfer[] }) {
       {transfers.map((t) => (
         <li key={t.id} className="px-4 py-3">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-primary">
-            {t.dealType === "swap" ? <ArrowLeftRight className="size-3.5" /> : <Banknote className="size-3.5" />}
-            {t.dealType === "swap" ? "Swap deal" : t.dealType === "cash" ? "All cash deal" : "Transfer"}
-            <span className="text-foreground">{t.dealType === "swap" && t.feeCr === 0 ? "No additional fee" : transferFeeLabel(t.feeCr)}</span>
+            {t.dealType === "swap" ? <ArrowLeftRight className="size-3.5" /> : t.dealType === "loan" ? <CalendarClock className="size-3.5" /> : t.dealType === "loan_return" ? <Undo2 className="size-3.5" /> : <Banknote className="size-3.5" />}
+            {transferDealLabel(t.dealType)}
+            {t.dealType !== "loan_return" && <span className="text-foreground">{t.dealType === "loan" && t.feeCr === 0 ? "No loan fee" : t.dealType === "swap" && t.feeCr === 0 ? "No additional fee" : transferFeeLabel(t.feeCr)}</span>}
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <Link
@@ -31,6 +31,7 @@ export function TransferRows({ transfers }: { transfers: Transfer[] }) {
             <TeamBadge slug={t.toSlug} showName /><ArrowRight className="size-4 text-muted-foreground" aria-hidden="true" />{t.fromSlug && <TeamBadge slug={t.fromSlug} showName />}
           </div>}
           {t.feePayerSlug && Number(t.feeCr) > 0 && <p className="mt-2 text-xs text-muted-foreground">{teamName(t.feePayerSlug)} pays {transferFeeLabel(t.feeCr)} to {teamName(t.feePayerSlug === t.toSlug ? t.fromSlug ?? "" : t.toSlug)}</p>}
+          {t.dealType === "loan" && <p className="mt-2 text-xs text-muted-foreground">{t.loanUntil ? `Loan until ${new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" }).format(new Date(t.loanUntil))}` : "Loan end date not set"}</p>}
           <p className="mt-1 text-xs text-muted-foreground">
             {formatShortDate(t.date)}
             {t.note ? ` · ${t.note}` : ""}

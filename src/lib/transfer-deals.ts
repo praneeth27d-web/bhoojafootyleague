@@ -26,3 +26,19 @@ export function rosterForSeason(rosters: SeasonRoster[], season: number): Season
 export function transferFeeLabel(feeCr: number | null): string {
   return feeCr === null ? "Fee not recorded" : `₹${feeCr}cr`;
 }
+
+export type LoanInput = { playerId: string; fromSlug: string; toSlug: string; loanFromSlug: string | null; fee: string; date: string; loanUntil: string };
+
+export function validateLoan(deal: LoanInput): string | null {
+  if (!deal.playerId) return "Choose a player.";
+  if (deal.loanFromSlug) return "Player is already on loan; end the loan first.";
+  if (!deal.fromSlug || !deal.toSlug || deal.fromSlug === deal.toSlug) return "Choose a different joining club.";
+  if (!/^\d+(\.\d{1,2})?$/.test(deal.fee) || !Number.isFinite(Number(deal.fee))) return "Enter a non-negative fee with at most two decimal places.";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(deal.date)) return "Choose a loan start date.";
+  if (deal.loanUntil && deal.loanUntil < deal.date) return "Loan end date cannot be before the start date.";
+  return null;
+}
+
+export function transferDealLabel(type: string): string {
+  return ({ cash: "All cash deal", swap: "Swap deal", loan: "Loan deal", loan_return: "Loan ended" } as Record<string, string>)[type] ?? "Transfer";
+}

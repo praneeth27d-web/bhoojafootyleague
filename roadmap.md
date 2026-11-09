@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Finish loan recording and ending in League Admin, public transfer labels, and verify squad/profile readback.
+
 - [x] Add cash and swap transfers with fees, atomic season-specific squad updates, public deal details, and verification.
 
 - [x] Add Own Goals to Player Stats, comparison and Discipline, rank fewer as better, and verify totals and public displays.
