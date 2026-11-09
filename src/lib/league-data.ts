@@ -163,12 +163,15 @@ export function useLeague(scope: "season" | "all" = "season") {
   }, [queryClient]);
 
   const raw = data ?? empty;
-  const seasonNumber = Number(season);
+  const allSeasons = season === "all";
 
   return useMemo(() => {
     const byId = new Map(raw.players.map((p) => [p.id, p]));
-    const selectedRoster = new Map(rosterForSeason(raw.rosters ?? [], seasonNumber).map((r) => [r.player_id, r]));
     const latestRosterSeason = Math.max(2, ...(raw.rosters ?? []).map((r) => r.season));
+    // "All Seasons" shows every season's matches and stats, but squads stay on the latest roster.
+    const seasonNumber = allSeasons ? latestRosterSeason : Number(season);
+    const effectiveScope = allSeasons ? "all" : scope;
+    const selectedRoster = new Map(rosterForSeason(raw.rosters ?? [], seasonNumber).map((r) => [r.player_id, r]));
 
     const buildGoals = (matchId: string): MatchGoal[] =>
       raw.goals
@@ -232,10 +235,10 @@ export function useLeague(scope: "season" | "all" = "season") {
 
     const allMatches = raw.matches.map(toMatch);
     const matches =
-      scope === "all" ? allMatches : allMatches.filter((m) => m.season === seasonNumber);
+      effectiveScope === "all" ? allMatches : allMatches.filter((m) => m.season === seasonNumber);
 
     // Player stats only count the matches in scope.
-    const statData = { ...raw, matches: raw.matches.filter((m) => scope === "all" || m.season === seasonNumber) };
+    const statData = { ...raw, matches: raw.matches.filter((m) => effectiveScope === "all" || m.season === seasonNumber) };
 
     const players: Player[] = raw.players.map((p) => ({
       id: p.id,
@@ -257,7 +260,7 @@ export function useLeague(scope: "season" | "all" = "season") {
       ...calculatePlayerStatistics(p.id, statData),
     }));
 
-    const transfers: Transfer[] = raw.transfers.filter((t) => scope === "all" || t.season === seasonNumber).map((t) => {
+    const transfers: Transfer[] = raw.transfers.filter((t) => effectiveScope === "all" || t.season === seasonNumber).map((t) => {
       const p = byId.get(t.player_id);
       const swap = t.swap_player_id ? byId.get(t.swap_player_id) : undefined;
       return {
@@ -329,5 +332,5 @@ export function useLeague(scope: "season" | "all" = "season") {
             ],
           })),
     };
-  }, [raw, isLoading, isFetching, scope, seasonNumber]);
+  }, [raw, isLoading, isFetching, scope, season, allSeasons]);
 }
