@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { defensiveRecord, tournamentScore } from "./awards";
 import type { Match, Player } from "./league";
 
