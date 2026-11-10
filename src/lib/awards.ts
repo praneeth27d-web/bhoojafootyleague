@@ -25,16 +25,20 @@ export function defensiveRecord(playerId: string, matches: Match[], goalkeeperOn
 export const tournamentScore = (p: Player) => p.potm * 3 + p.goals + p.assists;
 
 export function computeAwards(players: Player[], matches: Match[]): Record<AwardKey, AwardEntry[]> {
-  const top = (list: AwardEntry[], cmp: (a: AwardEntry, b: AwardEntry) => number) =>
-    list.sort((a, b) => cmp(a, b) || a.player.name.localeCompare(b.player.name)).slice(0, 4);
+  const top = (list: AwardEntry[], cmp: (a: AwardEntry, b: AwardEntry) => number, keepTies = false) => {
+    const sorted = list.sort((a, b) => cmp(a, b) || a.player.name.localeCompare(b.player.name));
+    if (!keepTies || !sorted.length) return sorted.slice(0, 4);
+    const leaders = sorted.filter((e) => e.value === sorted[0].value).length;
+    return sorted.slice(0, leaders + 3);
+  };
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
 
   const boot = top(players.filter((p) => p.goals > 0).map((p) => ({ player: p, value: p.goals, label: plural(p.goals, "goal") })),
-    (a, b) => b.value - a.value || a.player.appearances - b.player.appearances);
+    (a, b) => b.value - a.value, true);
   const playmaker = top(players.filter((p) => p.assists > 0).map((p) => ({ player: p, value: p.assists, label: plural(p.assists, "assist") })),
-    (a, b) => b.value - a.value || a.player.appearances - b.player.appearances);
+    (a, b) => b.value - a.value, true);
   const crown = top(players.filter((p) => p.goals + p.assists > 0).map((p) => ({ player: p, value: p.goals + p.assists, label: `${p.goals + p.assists} G/A` })),
-    (a, b) => b.value - a.value || b.player.goals - a.player.goals);
+    (a, b) => b.value - a.value, true);
   const tournament = top(players.filter((p) => tournamentScore(p) > 0).map((p) => ({ player: p, value: tournamentScore(p), label: `${plural(p.potm, "POTM")} · ${p.goals + p.assists} G/A` })),
     (a, b) => b.value - a.value || b.player.potm - a.player.potm);
 

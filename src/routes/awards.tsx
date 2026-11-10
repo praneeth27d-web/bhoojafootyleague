@@ -36,7 +36,11 @@ function AwardsPage() {
     <AppShell title="Awards" subtitle="Live race for this season's honours">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {awards.map(({ key, title, criteria, icon: Icon }) => {
-          const [leader, ...rest] = results[key];
+          const list = results[key];
+          const shared = key === "boot" || key === "playmaker" || key === "crown";
+          const leaders = list.length ? (shared ? list.filter((e) => e.value === list[0].value) : [list[0]]) : [];
+          const rest = list.slice(leaders.length);
+          const leader = leaders[0];
           return (
             <section key={key} aria-label={title} className="overflow-hidden rounded-xl border border-border bg-surface">
               <header className="flex items-center gap-3 border-b border-border bg-primary/10 px-4 py-3">
@@ -48,18 +52,21 @@ function AwardsPage() {
               </header>
               {leader ? (
                 <>
-                  <Link to="/players/$playerSlug" params={{ playerSlug: leader.player.slug }} className="flex items-center justify-between gap-3 px-4 py-4 hover:bg-accent">
-                    <div className="min-w-0">
-                      <p className="text-lg font-bold">{leader.player.name}</p>
-                      <TeamBadge slug={leader.player.teamSlug} />
-                    </div>
-                    <p className="num text-right text-sm font-bold text-primary">{leader.label}</p>
-                  </Link>
+                  {leaders.length > 1 && <p className="px-4 pt-3 text-xs font-semibold uppercase text-primary">Joint leaders</p>}
+                  {leaders.map((l) => (
+                    <Link key={l.player.id} to="/players/$playerSlug" params={{ playerSlug: l.player.slug }} className="flex items-center justify-between gap-3 px-4 py-4 hover:bg-accent">
+                      <div className="min-w-0">
+                        <p className="text-lg font-bold">{l.player.name}</p>
+                        <TeamBadge slug={l.player.teamSlug} />
+                      </div>
+                      <p className="num text-right text-sm font-bold text-primary">{l.label}</p>
+                    </Link>
+                  ))}
                   <ol className="border-t border-border">
                     {rest.map((e, i) => (
                       <li key={e.player.id}>
                         <Link to="/players/$playerSlug" params={{ playerSlug: e.player.slug }} className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-accent">
-                          <span className="num w-4 text-muted-foreground">{i + 2}</span>
+                          <span className="num w-4 text-muted-foreground">{list.findIndex((x) => x.value === e.value) + 1}</span>
                           <span className="flex-1 font-medium">{e.player.name}</span>
                           <span className="num text-xs text-muted-foreground">{e.label}</span>
                         </Link>
