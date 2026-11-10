@@ -10,6 +10,7 @@ import {
   Shield,
   ArrowLeft,
   Lock,
+  Award,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoAsset from "@/assets/bfl-logo.png.asset.json";
@@ -33,6 +34,7 @@ const nav: NavItem[] = [
   { to: "/stats", label: "Player Stats", icon: BarChart3 },
   { to: "/club-stats", label: "Club Stats", icon: Trophy },
   { to: "/compare", label: "Player Comparison", icon: GitCompare },
+  { to: "/awards", label: "Awards", icon: Award },
   { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
 ];
 
