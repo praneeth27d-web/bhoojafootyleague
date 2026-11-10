@@ -38,7 +38,8 @@ function AwardsPage() {
         {awards.map(({ key, title, criteria, icon: Icon }) => {
           const list = results[key];
           const shared = key === "boot" || key === "playmaker" || key === "crown";
-          const leaders = list.length ? (shared ? list.filter((e) => e.value === list[0].value) : [list[0]]) : [];
+          const first = list[0];
+          const leaders = first ? (shared ? list.filter((e) => e.value === first.value) : [first]) : [];
           const rest = list.slice(leaders.length);
           const leader = leaders[0];
           return (

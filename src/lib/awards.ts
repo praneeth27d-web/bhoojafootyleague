@@ -28,7 +28,7 @@ export function computeAwards(players: Player[], matches: Match[]): Record<Award
   const top = (list: AwardEntry[], cmp: (a: AwardEntry, b: AwardEntry) => number, keepTies = false) => {
     const sorted = list.sort((a, b) => cmp(a, b) || a.player.name.localeCompare(b.player.name));
     if (!keepTies || !sorted.length) return sorted.slice(0, 4);
-    const leaders = sorted.filter((e) => e.value === sorted[0].value).length;
+    const leaders = sorted.filter((e) => e.value === sorted[0]!.value).length;
     return sorted.slice(0, leaders + 3);
   };
   const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
