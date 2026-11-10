@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { describe, it } from "node:test";
+import { strict as assert } from "node:assert";
 import { defensiveRecord, tournamentScore } from "./awards";
 import type { Match, Player } from "./league";
 
@@ -18,10 +19,10 @@ describe("awards", () => {
       match(1, 2, [lineup("gk", "home")]),
       match(0, 5, [lineup("gk", "home", { isReplacement: true })]),
     ], true);
-    expect(r).toEqual({ played: 2, conceded: 2, cleanSheets: 1, perGame: 1 });
+    assert.deepEqual(r, { played: 2, conceded: 2, cleanSheets: 1, perGame: 1 });
   });
 
   it("weights POTM three times in Player of the Tournament", () => {
-    expect(tournamentScore({ potm: 2, goals: 4, assists: 1 } as Player)).toBe(11);
+    assert.equal(tournamentScore({ potm: 2, goals: 4, assists: 1 } as Player), 11);
   });
 });
