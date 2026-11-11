@@ -4,7 +4,7 @@ import { AppShell, Card } from "@/components/app-shell";
 import { TeamBadge } from "@/components/team-badge";
 import { computeStandings, teams } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
-import { formatCr, marketValueAmount } from "@/lib/market-value";
+import { formatCr, marketValueAmount, superAverageValue } from "@/lib/market-value";
 import { useSeasons } from "@/lib/seasons";
 
 export const Route = createFileRoute("/club-stats")({
@@ -105,7 +105,7 @@ function ClubStatsPage() {
         slug: t.slug,
         totalValue: total,
         averageValue: squad.length > 0 ? total / squad.length : 0,
-        superValue: total / 5,
+        superValue: superAverageValue(squad),
         goals: row?.gf ?? 0,
         goalsConceded: row?.ga ?? 0,
         averageGoals: played > 0 ? (row?.gf ?? 0) / played : 0,
@@ -208,9 +208,9 @@ function ClubStatsPage() {
           </div>
         )}
         <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-          Gold, silver and bronze count finished seasons ending 1st, 2nd and 3rd. Super Value is the total
-          squad value divided by five. Clubs are ranked by the stat chosen under Sort by; for Goals
-          Conceded the lowest value is best.
+          Gold, silver and bronze count finished seasons ending 1st, 2nd and 3rd. Super Value is the
+          average value of a club's five highest-valued players. Clubs are ranked by the stat chosen
+          under Sort by; for Goals Conceded the lowest value is best.
         </p>
       </Card>
     </AppShell>

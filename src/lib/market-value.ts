@@ -14,13 +14,22 @@ export function marketValueAmount(value: string | null): number {
   return amount * multiplier;
 }
 
+/** Average of the five highest-valued players, treating an unset market value as zero. */
+export function superAverageValue(players: { marketValue: string | null }[]): number {
+  const top5 = players
+    .map((p) => Math.max(0, marketValueAmount(p.marketValue)))
+    .sort((a, b) => b - a)
+    .slice(0, 5);
+  return top5.length > 0 ? top5.reduce((sum, v) => sum + v, 0) / top5.length : 0;
+}
+
 /** Squad value totals treat an unset market value as zero. */
 export function squadValueStats(players: { marketValue: string | null }[]) {
   const total = players.reduce((sum, p) => sum + Math.max(0, marketValueAmount(p.marketValue)), 0);
   return {
     total,
     average: players.length > 0 ? total / players.length : 0,
-    superAverage: total / 5,
+    superAverage: superAverageValue(players),
   };
 }
 
