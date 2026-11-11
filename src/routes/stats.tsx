@@ -1,15 +1,18 @@
+import { useMemo } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell, Card } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { TeamBadge } from "@/components/team-badge";
+import { useSeason } from "@/components/season-context";
 import { teams, teamName, type Player } from "@/lib/league";
-import { useLeague } from "@/lib/league-data";
+import { useLeague, useLeagueRaw } from "@/lib/league-data";
 import { marketValueAmount } from "@/lib/market-value";
-import { compareStatisticValues } from "@/lib/player-statistics";
+import { calculatePlayerStatistics, compareStatisticValues } from "@/lib/player-statistics";
+import { useSeasons } from "@/lib/seasons";
 
 const metrics = ["goals", "assists", "ga", "potm", "appearances", "marketValue", "penaltyGoals", "penaltiesMissed", "penaltiesEarned", "penaltyConversion", "ownGoals", "yellowCards", "redCards", "warnings", "matchesBanned"] as const;
 type Metric = (typeof metrics)[number];
-type Search = { metric: Metric; club: string };
+type Search = { metric: Metric; club: string; season: string };
 
 const clubSlugs = teams.map((t) => t.slug);
 
@@ -35,6 +38,10 @@ export const Route = createFileRoute("/stats")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     metric: metrics.includes(search["metric"] as Metric) ? (search["metric"] as Metric) : "goals",
     club: typeof search["club"] === "string" && clubSlugs.includes(search["club"]) ? search["club"] : "all",
+    season:
+      search["season"] === "all" || (typeof search["season"] === "string" && /^\d+$/.test(search["season"]) && Number(search["season"]) >= 2)
+        ? (search["season"] as string)
+        : "",
   }),
   head: () => ({
     meta: [
@@ -59,10 +66,21 @@ const selectClass =
   "appearance-none rounded-md border border-border bg-surface px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors hover:bg-accent focus:border-primary focus-visible:outline-none";
 
 function StatsPage() {
-  const { metric, club } = Route.useSearch();
+  const { metric, club, season: seasonParam } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
+  const { season: globalSeason } = useSeason();
+  const { seasons } = useSeasons();
 
-  const { players } = useLeague();
+  // The page has its own season filter; "all" combines every season except Season 1 (inaccurate data).
+  const scope = seasonParam || (Number(globalSeason) >= 2 ? globalSeason : "all");
+  const seasonOptions = useMemo(() => seasons.map((s) => s.number).filter((n) => n >= 2).sort((a, b) => b - a), [seasons]);
+
+  const { players: basePlayers } = useLeague("all");
+  const raw = useLeagueRaw();
+  const players = useMemo(() => {
+    const statData = { ...raw, matches: raw.matches.filter((m) => (scope === "all" ? m.season >= 2 : m.season === Number(scope))) };
+    return basePlayers.map((p) => ({ ...p, ...calculatePlayerStatistics(p.id, statData) }));
+  }, [basePlayers, raw, scope]);
 
   const value = (p: Player) => (metric === "marketValue" ? marketValueAmount(p.marketValue) : metric === "ga" ? p.goals + p.assists : p[metric] ?? -1);
   const displayValue = (p: Player) => metric === "penaltyConversion" ? (p.penaltyConversion === null ? "—" : `${Number(p.penaltyConversion.toFixed(1))}%`) : metric === "ga" ? p.goals + p.assists : p[metric] ?? "—";
@@ -78,6 +96,28 @@ function StatsPage() {
         title={metricLabel[metric]}
         action={
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+            <label className="flex items-center gap-2">
+              Season
+              <select
+                className={selectClass}
+                value={scope}
+                aria-label="Filter by season"
+                onChange={(e) =>
+                  navigate({
+                    to: ".",
+                    search: (prev) => ({ ...prev, season: e.target.value }),
+                    replace: true,
+                  })
+                }
+              >
+                <option value="all">All seasons</option>
+                {seasonOptions.map((n) => (
+                  <option key={n} value={String(n)}>
+                    Season {n}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="flex items-center gap-2">
               Club
               <select
@@ -185,6 +225,9 @@ function StatsPage() {
             </tbody>
           </table>
         </div>
+        <p className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+          All seasons combines every season except Season 1, whose data was inaccurate.
+        </p>
       </Card>
     </AppShell>
   );

@@ -163,14 +163,12 @@ export function useLeague(scope: "season" | "all" = "season") {
   }, [queryClient]);
 
   const raw = data ?? empty;
-  const allSeasons = season === "all";
 
   return useMemo(() => {
     const byId = new Map(raw.players.map((p) => [p.id, p]));
     const latestRosterSeason = Math.max(2, ...(raw.rosters ?? []).map((r) => r.season));
-    // "All Seasons" shows every season's matches and stats, but squads stay on the latest roster.
-    const seasonNumber = allSeasons ? latestRosterSeason : Number(season);
-    const effectiveScope = allSeasons ? "all" : scope;
+    const seasonNumber = Number(season);
+    const effectiveScope = scope;
     const selectedRoster = new Map(rosterForSeason(raw.rosters ?? [], seasonNumber).map((r) => [r.player_id, r]));
 
     const buildGoals = (matchId: string): MatchGoal[] =>
@@ -332,5 +330,17 @@ export function useLeague(scope: "season" | "all" = "season") {
             ],
           })),
     };
-  }, [raw, isLoading, isFetching, scope, season, allSeasons]);
+  }, [raw, isLoading, isFetching, scope, season]);
+}
+
+/** Raw league snapshot for pages that compute their own scoped statistics. Shares the league query cache. */
+export function useLeagueRaw(): RawSnapshot {
+  const { data } = useQuery({
+    queryKey: leagueQueryKey,
+    queryFn: fetchLeague,
+    staleTime: 0,
+    refetchOnMount: "always",
+    placeholderData: (prev) => prev,
+  });
+  return data ?? empty;
 }

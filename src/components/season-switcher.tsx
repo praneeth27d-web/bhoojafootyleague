@@ -20,7 +20,6 @@ export function SeasonSwitcher({ className }: { className?: string }) {
         onChange={(e) => setSeason(e.target.value)}
         className="w-full cursor-pointer bg-transparent text-xs font-semibold text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="all">All Seasons</option>
         {seasons.map((s) => (
           <option key={s.id} value={String(s.number)}>
             {seasonLabel(s)}

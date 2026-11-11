@@ -18,7 +18,7 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (touched) return;
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored && (stored === "all" || numbers.includes(Number(stored)))) {
+    if (stored && numbers.includes(Number(stored))) {
       setSeasonState(stored);
     } else {
       setSeasonState(String(latest));
