@@ -49,6 +49,10 @@ type RawMatch = {
   potm_player_id: string | null;
   home_formation: string;
   away_formation: string;
+  live_period: string;
+  period_started_at: string | null;
+  extra_time_first: number;
+  extra_time_second: number;
 };
 
 type RawGoal = {
@@ -204,7 +208,11 @@ export function useLeague(scope: "season" | "all" = "season") {
         homeSlug: m.home_slug,
         awaySlug: m.away_slug,
         venue: m.venue,
-        status: m.status === "completed" ? "completed" : "upcoming",
+        status: m.status === "completed" ? "completed" : m.status === "live" ? "live" : "upcoming",
+        livePeriod: (m.live_period ?? "first") as Match["livePeriod"],
+        periodStartedAt: m.period_started_at ?? null,
+        extraTimeFirst: m.extra_time_first ?? 0,
+        extraTimeSecond: m.extra_time_second ?? 0,
         homeGoals: m.home_goals,
         awayGoals: m.away_goals,
         goals: buildGoals(m.id),

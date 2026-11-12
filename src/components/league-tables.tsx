@@ -1,3 +1,5 @@
+import { LiveBadge } from "@/components/live-match";
+import { liveScore } from "@/lib/live-match";
 import { Link } from "@tanstack/react-router";
 import { type Match, type MatchCard, type Player } from "@/lib/league";
 import { teamName } from "@/lib/league";
@@ -117,7 +119,16 @@ export function MatchRows({ matches, resultTeamSlug }: { matches: Match[]; resul
             className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-4 py-3 transition-colors hover:bg-accent active:bg-accent/70"
           >
             <span className="num w-12 shrink-0 text-xs text-muted-foreground">MD{m.matchday}</span>
-            {m.status === "completed" ? (
+            {m.status === "live" ? (
+              <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
+                <TeamBadge slug={m.homeSlug} nameFirst className="min-w-0 justify-end" />
+                <span className="flex flex-col items-center gap-0.5">
+                  <span className="num rounded-md bg-destructive/15 px-2.5 py-1 font-bold text-destructive">{liveScore(m).home}–{liveScore(m).away}</span>
+                  <LiveBadge />
+                </span>
+                <TeamBadge slug={m.awaySlug} className="min-w-0" />
+              </span>
+            ) : m.status === "completed" ? (
               <span className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 text-sm">
                 <span className="flex min-w-0 items-center justify-end gap-1.5">
                   <RedCardBlocks cards={m.cards.filter((c) => c.side === "home" && c.cardType !== "yellow")} />

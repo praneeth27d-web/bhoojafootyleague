@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { AppShell, Card } from "@/components/app-shell";
 import { AdminPlayerDetails } from "@/components/admin-player-details";
 import { AdminLineupEditor } from "@/components/admin-lineup-editor";
+import { AdminLiveMatch } from "@/components/admin-live-match";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/components/season-context";
 import {
@@ -347,7 +348,7 @@ function MatchesAdmin({
                       <div className="text-sm font-semibold">
                         {m.round ? m.round : `MD${m.matchday}`} · {teamName(m.homeSlug)}{" "}
                         {m.status === "completed" ? m.homeGoals : ""}
-                        {m.status === "completed" ? "–" : " vs "}
+                        {m.status === "completed" ? "–" : m.status === "live" ? " (LIVE) " : " vs "}
                         {m.status === "completed" ? m.awayGoals : ""} {teamName(m.awaySlug)}
                       </div>
                       <div className="flex gap-2">
@@ -451,8 +452,8 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
       .from("matches")
       .update({
         status,
-        home_goals: status === "completed" ? homeGoals : null,
-        away_goals: status === "completed" ? awayGoals : null,
+        home_goals: status === "upcoming" ? null : homeGoals,
+        away_goals: status === "upcoming" ? null : awayGoals,
         potm_player_id: potm || null,
       })
       .eq("id", match.id);
@@ -585,6 +586,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
         </div>
       </div>
 
+      <AdminLiveMatch match={match} refresh={refresh} />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Status">
           <select
@@ -593,6 +595,7 @@ function MatchEditor({ match, league, refresh }: { match: Match } & AdminProps) 
             onChange={(e) => setStatus(e.target.value as Match["status"])}
           >
             <option value="upcoming">Upcoming</option>
+            <option value="live">Live</option>
             <option value="completed">Played</option>
           </select>
         </Field>

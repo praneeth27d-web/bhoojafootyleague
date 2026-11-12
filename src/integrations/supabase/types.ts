@@ -213,12 +213,16 @@ export type Database = {
           away_goals: number | null
           away_slug: string
           created_at: string
+          extra_time_first: number
+          extra_time_second: number
           home_formation: string
           home_goals: number | null
           home_slug: string
           id: string
           kickoff: string
+          live_period: string
           matchday: number
+          period_started_at: string | null
           potm_player_id: string | null
           round: string | null
           season: number
@@ -230,12 +234,16 @@ export type Database = {
           away_goals?: number | null
           away_slug: string
           created_at?: string
+          extra_time_first?: number
+          extra_time_second?: number
           home_formation?: string
           home_goals?: number | null
           home_slug: string
           id?: string
           kickoff?: string
+          live_period?: string
           matchday?: number
+          period_started_at?: string | null
           potm_player_id?: string | null
           round?: string | null
           season?: number
@@ -247,12 +255,16 @@ export type Database = {
           away_goals?: number | null
           away_slug?: string
           created_at?: string
+          extra_time_first?: number
+          extra_time_second?: number
           home_formation?: string
           home_goals?: number | null
           home_slug?: string
           id?: string
           kickoff?: string
+          live_period?: string
           matchday?: number
+          period_started_at?: string | null
           potm_player_id?: string | null
           round?: string | null
           season?: number

@@ -92,7 +92,11 @@ export type Match = {
   homeSlug: string;
   awaySlug: string;
   venue?: string | null;
-  status: "completed" | "upcoming";
+  status: "completed" | "upcoming" | "live";
+  livePeriod: "first" | "half_time" | "second" | "full_time";
+  periodStartedAt: string | null;
+  extraTimeFirst: number;
+  extraTimeSecond: number;
   homeGoals?: number | null;
   awayGoals?: number | null;
   goals: MatchGoal[];

@@ -7,7 +7,7 @@ const lineup = (playerId: string, side: "home" | "away", extra: Partial<Match["l
   id: playerId + side, playerId, playerSlug: playerId, playerName: playerId, playerTeamSlug: null, jerseyNumber: null,
   captain: false, viceCaptain: false, side, role: "starter" as const, positionIndex: 0, played: true, isReplacement: false, ...extra,
 });
-const match = (home: number, away: number, lineups: Match["lineups"]): Match => ({
+const match = (home: number, away: number, lineups: Match["lineups"]): Match => ({ livePeriod: "full_time", periodStartedAt: null, extraTimeFirst: 0, extraTimeSecond: 0,
   id: Math.random().toString(), season: 2, matchday: 1, date: "", homeSlug: "a", awaySlug: "b", status: "completed",
   homeGoals: home, awayGoals: away, goals: [], lineups, cards: [], penaltyEvents: [], homeFormation: "", awayFormation: "",
 });

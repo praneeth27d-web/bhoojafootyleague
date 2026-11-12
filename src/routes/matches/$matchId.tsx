@@ -5,6 +5,8 @@ import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
 import { HeadToHead } from "@/components/head-to-head";
 import { MatchLineupView } from "@/components/match-lineup";
+import { LiveBadge, LiveClock } from "@/components/live-match";
+import { liveScore } from "@/lib/live-match";
 import { RedCardBlocks } from "@/components/league-tables";
 import { formatKickoff, teamName } from "@/lib/league";
 import { useLeague } from "@/lib/league-data";
@@ -60,7 +62,9 @@ function MatchDetail() {
     );
   }
 
-  const completed = m.status === "completed";
+  const live = m.status === "live";
+  const completed = m.status === "completed" || live;
+  const score = live ? liveScore(m) : { home: m.homeGoals, away: m.awayGoals };
   const parts = formatKickoff(m.date).split(", ");
   const weekday = parts[0] ?? "";
   const datePart = parts[1] ?? "";
@@ -71,7 +75,7 @@ function MatchDetail() {
       title={`${teamName(m.homeSlug)} vs ${teamName(m.awaySlug)}`}
       subtitle={m.round ? `Season ${m.season} · ${m.round}` : `Season ${m.season} · Matchday ${m.matchday}`}
 
-      badge={completed ? "Full time" : "Upcoming"}
+      badge={live ? "Live" : completed ? "Full time" : "Upcoming"}
       back
     >
       <div className="max-w-2xl space-y-5">
@@ -84,7 +88,7 @@ function MatchDetail() {
                 <span className="text-sm font-semibold">{teamName(m.homeSlug)}</span>
               </span>
               <div className="num rounded-md bg-surface-muted px-4 py-2 text-2xl font-bold">
-                {completed ? `${m.homeGoals}–${m.awayGoals}` : "vs"}
+                {completed ? `${score.home}–${score.away}` : "vs"}
               </div>
               <span className="flex flex-1 flex-col items-center gap-2">
                 <TeamCrest slug={m.awaySlug} className="size-12" />
@@ -92,6 +96,8 @@ function MatchDetail() {
               </span>
               {completed && <RedCardBlocks cards={m.cards.filter((c) => c.side === "away" && c.cardType !== "yellow")} />}
             </div>
+            {live && <div className="mt-3 flex items-center justify-center gap-2 text-sm font-semibold"><LiveBadge /><LiveClock match={m} /></div>}
+            {m.livePeriod === "full_time" && m.status === "completed" && <p className="mt-3 text-sm font-semibold text-muted-foreground">Full time — the game is done</p>}
           </div>
         </Card>
 
