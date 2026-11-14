@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add a Timeline tab beside Lineup only for completed live-tracked matches, using stored event times and verifying eligibility and event ordering.
+
 - [x] Finish loan recording and ending in League Admin, public transfer labels, and verify squad/profile readback.
 
 - [x] Add cash and swap transfers with fees, atomic season-specific squad updates, public deal details, and verification.

@@ -5,6 +5,8 @@ import { TeamCrest } from "@/components/team-badge";
 import { Button } from "@/components/ui/button";
 import { HeadToHead } from "@/components/head-to-head";
 import { MatchLineupView } from "@/components/match-lineup";
+import { MatchTimeline } from "@/components/match-timeline";
+import { hasMatchTimeline } from "@/lib/match-timeline";
 import { LiveBadge, LiveClock } from "@/components/live-match";
 import { liveScore } from "@/lib/live-match";
 import { RedCardBlocks } from "@/components/league-tables";
@@ -47,7 +49,7 @@ function PlayerLink({ slug, name }: { slug: string | null; name: string }) {
 function MatchDetail() {
   const { matchId } = Route.useParams();
   const { getMatch, loading } = useLeague();
-  const [view, setView] = useState<"details" | "lineup">("details");
+  const [view, setView] = useState<"details" | "lineup" | "timeline">("details");
   const m = getMatch(matchId);
 
   if (!m) {
@@ -63,6 +65,7 @@ function MatchDetail() {
   }
 
   const live = m.status === "live";
+  const showTimeline = hasMatchTimeline(m);
   const completed = m.status === "completed" || live;
   const score = live ? liveScore(m) : { home: m.homeGoals, away: m.awayGoals };
   const parts = formatKickoff(m.date).split(", ");
@@ -103,8 +106,12 @@ function MatchDetail() {
 
         {completed ? (
           <>
-            <Card title="Lineup">
-              <div className="px-4 py-4"><MatchLineupView match={m} /></div>
+            <Card title={showTimeline ? undefined : "Lineup"}>
+              {showTimeline && <div role="tablist" aria-label="Match views" className="flex gap-1 border-b border-border px-4 pt-2">
+                <Button type="button" role="tab" id="match-lineup-tab" aria-controls="match-events-panel" aria-selected={view !== "timeline"} onClick={() => setView("lineup")} variant="ghost" className={view !== "timeline" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Lineup</Button>
+                <Button type="button" role="tab" id="match-timeline-tab" aria-controls="match-events-panel" aria-selected={view === "timeline"} onClick={() => setView("timeline")} variant="ghost" className={view === "timeline" ? "rounded-none border-b-2 border-primary text-foreground" : "rounded-none border-b-2 border-transparent text-muted-foreground"}>Timeline</Button>
+              </div>}
+              <div id="match-events-panel" role={showTimeline ? "tabpanel" : undefined} aria-labelledby={showTimeline ? view === "timeline" ? "match-timeline-tab" : "match-lineup-tab" : undefined} className="px-4 py-4">{showTimeline && view === "timeline" ? <MatchTimeline match={m} /> : <MatchLineupView match={m} />}</div>
             </Card>
 
             <Card title="Player of the match">
